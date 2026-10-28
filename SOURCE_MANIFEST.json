@@ -4,8 +4,8 @@
   "source_files": [
     {
       "path": ".gitignore",
-      "bytes": 613,
-      "sha256": "cb59d954d56ab7d6fc77163723519bcd5e10ed4c0271e949bb9c77ebbc7689ea"
+      "bytes": 625,
+      "sha256": "88d13b5e89e5d0c922f9966bd4ae2e0917708ca5286a34b3034eb67c94b60bb0"
     },
     {
       "path": ".npmrc",
@@ -19,8 +19,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 4665,
-      "sha256": "03b1c4bc685818957c09a4a5adc5fa6b26e8f4fc95a2ad8ce8cb87b1f35b4c74"
+      "bytes": 5570,
+      "sha256": "03ef2753f8b425f4ed8a9a339ca478159018a6219c3f78cd77a2f7a84af56feb"
     },
     {
       "path": "START_HERE_TH.txt",
@@ -89,8 +89,8 @@
     },
     {
       "path": "components/learnloom-app.tsx",
-      "bytes": 58663,
-      "sha256": "0c9f3a421b2405d3eccc3ecd54a5fc8ab49a16b833865f360f55c2922abc63dd"
+      "bytes": 59041,
+      "sha256": "5427772c63b16ed165edc74d3eeaeeaf3d145f619b0885d33725fa576de80f35"
     },
     {
       "path": "components/lesson.tsx",
@@ -448,6 +448,26 @@
       "sha256": "c2f7756317f0b1c7bbca3ac96f5d8d607841099918eee8b5ac2567240c2b3d7b"
     },
     {
+      "path": "demo/index.html",
+      "bytes": 521,
+      "sha256": "6ca3fb457c26b9ae08be8d8d5895334dc98e8cad4593233ae1e202fd4c84d607"
+    },
+    {
+      "path": "demo/main.tsx",
+      "bytes": 1265,
+      "sha256": "bcc9bb4237c9a17126b106069f6b1a79934b7ec487a950678743d1ad53ca1142"
+    },
+    {
+      "path": "demo/style.css",
+      "bytes": 351,
+      "sha256": "809c9b8aec0120a0a2e9a98f67d374e2bc0423a1a83161045d20661274ce35f2"
+    },
+    {
+      "path": "demo/use-learning.ts",
+      "bytes": 3210,
+      "sha256": "5c7b0b7f9936d0a6f0e4cfa11427b3ce3d2686e612b1da7b7b2c0f2946b4e112"
+    },
+    {
       "path": "docs/LearnLOOM_All_Questions.txt",
       "bytes": 51226,
       "sha256": "e7a36d86a5d3c5ea2af44063e7caef08cf7ca2ab3f38555bfeff96a1f8244296"
@@ -534,8 +554,8 @@
     },
     {
       "path": "package.json",
-      "bytes": 2220,
-      "sha256": "08fb167b03df85de5463d6e765a9cc46519cfa0555ef35ef48af3b73ad7e831e"
+      "bytes": 2281,
+      "sha256": "f626f634a1fad96665789140ad08f8f082df2415928626beef56fedeea26ad36"
     },
     {
       "path": "pnpm-lock.yaml",
@@ -698,10 +718,20 @@
       "sha256": "bc7d83425702955b4cb67cb14ede9d603f9d912376d57a2d81d661094d2a782a"
     },
     {
+      "path": "vercel.json",
+      "bytes": 220,
+      "sha256": "099390ecf82a990fe9d650cb3fd066925a7e5a0c0d5eebdd4285f89387402a05"
+    },
+    {
       "path": "vite.config.ts",
       "bytes": 2240,
       "sha256": "4b9d8a6b14fd155328847bc6cd063c6bf44c58c64de8d46911cdf0ede611e367"
+    },
+    {
+      "path": "vite.demo.config.ts",
+      "bytes": 535,
+      "sha256": "fa8e0da2d407cac8f28d2870c5ef758be0de8af8a21e944174100ae5ce1ab18e"
     }
   ],
-  "note": "Source archive provenance retained; file hashes regenerated for optimized GitHub import on 2026-10-28."
+  "note": "Original archive provenance; manifest regenerated for browser-local Vercel demo."
 }

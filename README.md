@@ -1,5 +1,21 @@
 # LearnLOOM
 
+## Vercel demo
+
+`vercel.json` builds the browser-only demo with `pnpm build:demo` into
+`dist-demo`. No database, authentication provider, API routes, or secrets are
+required for this deployment. The original full-stack build remains available
+with `pnpm build`.
+
+The demo supports a learner nickname, original story/questions, local progress,
+learning reports, molecule models, and backup export/import. Progress is stored
+under `learnloom-demo-v1` in this browser only; clearing browser data removes it.
+Use nicknames, not real student personal information. Teacher login, real
+classrooms, cross-device synchronization and classroom messaging are not active.
+The persistent demo banner makes these limits explicit; teacher registration and
+online sign-in are disabled. Guide text describing online services belongs to the
+full product, not the demo. No existing learner database is imported or changed.
+
 ## GitHub import and optimization — 2026-10-28
 
 Imported from `LearnLOOM_Complete_Website.zip`. This archive contains the original

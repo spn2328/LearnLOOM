@@ -1,0 +1,7 @@
+{
+  "framework": "vite",
+  "buildCommand": "pnpm build:demo",
+  "outputDirectory": "dist-demo",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "rewrites": [{"source": "/signin", "destination": "/index.html"}]
+}

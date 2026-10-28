@@ -1,0 +1,3 @@
+.demo-notice{position:sticky;top:0;z-index:60;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 16px;padding:10px 16px;background:#fff0cb;color:#493a1f;font-size:13px;text-align:center;border-bottom:1px solid #dec997}
+.demo-notice strong{letter-spacing:.08em}
+.app-sidebar [data-slot="sidebar-container"]{top:58px;height:calc(100svh - 58px)}

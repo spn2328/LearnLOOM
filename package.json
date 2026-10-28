@@ -6,6 +6,7 @@
     "node": ">=22.13.0"
   },
   "scripts": {
+    "build:demo": "vite build --config vite.demo.config.ts",
     "test": "node scripts/check-source.mjs",
     "typecheck": "tsc --noEmit",
     "install:ci": "bash scripts/install-pnpm.sh",
