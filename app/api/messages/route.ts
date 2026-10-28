@@ -1,0 +1,3 @@
+import {database} from '@/db/connection';
+import {identity,reply,profileFor,classAllowed} from '@/lib/server';
+export async function GET(request:Request){try{const who=await identity(request);const p=await profileFor(who.id);const id=new URL(request.url).searchParams.get('class')??'';if(!p||!await classAllowed(p,id))return reply({error:'ไม่มีสิทธิ์ในห้องสนทนานี้'},403);const r=await database().prepare('SELECT id,nickname,body,created_at,sender_id FROM messages WHERE classroom_id=? ORDER BY created_at DESC LIMIT 100').bind(id).all();return reply({messages:r.results.reverse()});}catch{return reply({error:'ยังโหลดข้อความไม่ได้'},503);}}

@@ -1,0 +1,72 @@
+@font-face {
+  font-family: 'Noto Sans Thai';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100;
+  font-stretch: normal;
+  src: url(/fonts/noto-thai-0.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Noto Sans Thai';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200;
+  font-stretch: normal;
+  src: url(/fonts/noto-thai-1.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Noto Sans Thai';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 300;
+  font-stretch: normal;
+  src: url(/fonts/noto-thai-2.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Noto Sans Thai';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  font-stretch: normal;
+  src: url(/fonts/noto-thai-3.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Noto Sans Thai';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  font-stretch: normal;
+  src: url(/fonts/noto-thai-4.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Noto Sans Thai';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  font-stretch: normal;
+  src: url(/fonts/noto-thai-5.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Noto Sans Thai';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  font-stretch: normal;
+  src: url(/fonts/noto-thai-6.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Noto Sans Thai';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 800;
+  font-stretch: normal;
+  src: url(/fonts/noto-thai-7.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Noto Sans Thai';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 900;
+  font-stretch: normal;
+  src: url(/fonts/noto-thai-8.woff2) format('woff2');
+}
