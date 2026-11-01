@@ -7,16 +7,16 @@ Pull Request (Draft): https://github.com/spn2328/LearnLOOM/pull/2
 
 ## Phase ปัจจุบัน
 
-**Phase 2 — สร้างเดโม: ดำเนินการแล้วในระดับโค้ดรอบแรก; ยังไม่จบ Phase 2 อย่างเป็นทางการ**
-**Phase 3 — ตรวจคุณภาพ: เริ่มตรวจโครงสร้างไฟล์ แต่ยังไม่ได้รันการทดสอบ/build จริง**
+**Phase 2 — สร้างเดโม: โค้ดรอบแรกและ Build Vercel ผ่านแล้ว; พร้อมทดสอบการเล่น**
+**Phase 3 — ตรวจคุณภาพ: CI ผ่าน install/source checks/typecheck/build:demo; ยังไม่ได้ตรวจ interaction/browser/iPad จริง**
 Phase 4/5: **พักไว้ตามคำขอ**
 
 | Phase | รายละเอียด | สถานะ |
 | --- | --- | --- |
 | 0 | กำหนดขอบเขตเดโม Scene 01–03, C01 และยืนยันชื่อเจฟ | เสร็จ |
 | 1 | วาง flow และเลือกข้อความจาก PDF ต้นฉบับ | เสร็จระดับแผน; รอตรวจเทียบถ้อยคำ A02 สมุดหลักฐาน |
-| 2 | สร้างหน้าและระบบตอบโต้, branching, localStorage | โค้ดรอบแรกเสร็จ; ยังไม่ยืนยัน Build |
-| 3 | Test, TypeScript, demo build, browser/iPad | ค้างทดสอบ |
+| 2 | สร้างหน้าและระบบตอบโต้, branching, localStorage | Build เดโมผ่านใน GitHub Actions; รอทดสอบ interaction |
+| 3 | Test, TypeScript, demo build, browser/iPad | CI ผ่าน; ค้างทดสอบ browser/iPad |
 | 4 | Pilot กับผู้เรียน | พัก |
 | 5 | Deploy/ขยายผล | พัก |
 
@@ -48,8 +48,8 @@ demo/
 ```
 
 ## สิ่งที่ยังไม่ได้ทำและข้อจำกัด
-- **ยังไม่ได้รัน** `pnpm install --frozen-lockfile`, `pnpm test`, `pnpm typecheck`, `pnpm build:demo` เพราะไม่มี runtime ของ GitHub checkout ในเครื่องมือเชื่อมต่อครั้งนี้ และการ checkout โดยตรงจากสภาพแวดล้อมทดสอบไม่สำเร็จ (DNS)
-- ยังไม่มีผล browser test, iPad test หรือ Vercel preview test ที่ยืนยัน
+- **GitHub Actions รันผ่านทุกขั้นหลักแล้ว**: `pnpm install --frozen-lockfile`, `pnpm test`, `pnpm typecheck`, `pnpm build:demo` (run #2, 41315982560, ขณะตรวจขั้นตอนหลักเสร็จแล้ว และกำลังจบ post-job). เครื่อง container ภายในแชตยัง clone GitHub ไม่ได้เนื่องจาก DNS; ใช้ผล CI เป็นหลักฐานแทน
+- Vercel ระบุ preview commit `39e57417` สถานะ `READY` ที่ `https://learnloom-mwfr1drym-manifest23.vercel.app/?fake-hero`; ยังไม่มีผล browser interaction / iPad test ที่ยืนยัน
 - ภาพ/วิดีโอ/แอนิเมชัน/3D/ลากบัตรยังไม่ใส่ตามคำสั่ง ใช้ข้อความและปุ่มแทน
 - A02 สมุดหลักฐานย่อความจากต้นฉบับ ไม่ใช่ทุกประโยคจาก PDF; ต้องตรวจอีกครั้งก่อนอนุมัติ
 - ระบบผิดหลายประเภทใช้การช่วยเหลือทั่วไป; ยังไม่พัฒนา Path A/C/D แบบเต็ม
@@ -65,3 +65,8 @@ demo/
 
 ## หลักเกณฑ์รายงานสถานะ
 สถานะ `เขียนโค้ดแล้ว` ไม่เท่ากับ `ทดสอบผ่าน`. อย่าระบุว่ารันเว็บหรือใช้งานจริงผ่าน จนมีผลตรวจรองรับ
+
+## ผลตรวจ CI และ Preview (1 พฤศจิกายน 2569)
+- GitHub Actions: [Fake Hero demo checks run #2](https://github.com/spn2328/LearnLOOM/actions/runs/41315982560). ขั้น install, source checks, TypeScript checks และ demo build แสดง success ใน job steps (ยังไม่ได้ยืนยันสถานะสุดท้ายทั้ง workflow ตอนจดบันทึก)
+- Vercel preview: https://learnloom-mwfr1drym-manifest23.vercel.app/?fake-hero — deployment READY สำหรับ commit `39e57417f8e2376af452a97418fa4c491bfe0f18`
+- ตรรกะ interaction, accessibility, device test และความถูกต้องของภาพยังไม่ได้ตรวจผ่าน browser จริง จึงยังไม่ปิด Phase 3
