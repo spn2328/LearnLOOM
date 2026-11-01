@@ -3,7 +3,7 @@
 อัปเดต: 1 พฤศจิกายน 2569
 Branch พัฒนา: `feat/fake-hero-interactive-demo`
 Pull Request (Draft): https://github.com/spn2328/LearnLOOM/pull/2
-ฐานแผน: `docs/fake-hero-demo-plan` — **ยังไม่ merge เข้า main และยังไม่ deploy**
+ฐานแผน: `docs/fake-hero-demo-plan` — **PR #3 merge เข้า main แล้ว; ดู Production update ด้านล่าง**
 
 ## Phase ปัจจุบัน
 
@@ -94,3 +94,10 @@ PDF อ้างอิงจากผู้ใช้: `เนื้อเรื�
 **ประเด็นขัดแย้งใน PDF**: `ข้อมูลเว็บล่าสุด(1).pdf` หน้า 4 มีชื่อ 'เต' แต่ `เนื้อเรื่องและคำถามล่าสุด(1).pdf` หน้า 2–3 ใช้ 'เจฟ'; เจ้าของยืนยัน 'เจฟ' จึงใช้ชื่อนี้ในหน้าเว็บ. เอกสารแผนใหม่ต้องการ EP.01 ทั้งตอน แต่แผน `docs/fake-hero/plan.md` เดิมเป็นเพียง excerpt; สถานะการพัฒนาจะยึดความจริงว่า excerpt พร้อมก่อน ไม่อ้างว่าทำครบ EP.01
 
 **ข้อควรจำ**: การ merge ไป main จึงจะกระทบ URL production. การสร้าง Vercel preview ใน feature branch เพียงอย่างเดียวไม่เปลี่ยน `learnloom-murex.vercel.app`.
+
+## Production update — 1 พฤศจิกายน 2569
+- PR #3 merged into `main` by squash commit `ae08f0f54cf0dad27693626e02938420c5433ba3`.
+- ค่าเริ่มต้นของ `demo/main.tsx` แสดง The Fake Hero (เคมีอินทรีย์ ม.6, **เฉพาะ Scene 01–03/C01 เท่านั้น**) แทนเรื่องเก่า; เว็บไซต์เดิมยังเข้าด้วย `?legacy`.
+- Vercel production build for commit above triggered automatically; ตรวจสถานะ deployment ก่อนอ้างว่า URL สาธารณะเปลี่ยนแล้ว.
+- **ยังไม่ครบเป้าหมาย PDF ใหม่:** EP.01 C02–C05, Scene 04–09, Q02–Q05, Adaptive R02–R05, Episode/Transfer Checkpoint และ Dashboard จำเป็นต้องพัฒนาต่อ. Phase 4/5 ยังคงพักไว้.
+- PDF ฉบับล่าสุดเป็น source of truth สำหรับเนื้อเรื่อง/คำถาม; ภาพและแอนิเมชันทำภายหลังตามคำขอ.
