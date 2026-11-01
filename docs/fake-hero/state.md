@@ -101,3 +101,19 @@ PDF อ้างอิงจากผู้ใช้: `เนื้อเรื�
 - Vercel production build for commit above triggered automatically; ตรวจสถานะ deployment ก่อนอ้างว่า URL สาธารณะเปลี่ยนแล้ว.
 - **ยังไม่ครบเป้าหมาย PDF ใหม่:** EP.01 C02–C05, Scene 04–09, Q02–Q05, Adaptive R02–R05, Episode/Transfer Checkpoint และ Dashboard จำเป็นต้องพัฒนาต่อ. Phase 4/5 ยังคงพักไว้.
 - PDF ฉบับล่าสุดเป็น source of truth สำหรับเนื้อเรื่อง/คำถาม; ภาพและแอนิเมชันทำภายหลังตามคำขอ.
+
+## งานขยาย EP.01 — 1 พฤศจิกายน 2569 (Phase 2 → Phase 3)
+- Branch: `feat/fake-hero-complete-ep01`; Draft PR #4: https://github.com/spn2328/LearnLOOM/pull/4
+- **ข้อกำหนด UI ล่าสุด:** เจ้าของสั่งรักษาหน้าตาเว็บเดิมทั้งหมด เปลี่ยนเฉพาะบทเรียนและเนื้อหา — ไม่มีการแก้ `features/fake-hero/styles/fake-hero.css` ใน branch นี้
+- เพิ่ม `features/fake-hero/content/episode01.ts`: เนื้อหา C01–C05, Q01–Q05, Q01-E–Q05-E, กิจกรรมข้อความและชุดคำถามตัวอย่างจากต้นฉบับ
+- เพิ่ม `components/EpisodeContinuation.tsx`: Scene 04–09, S02, Recheck, Episode Checkpoint, Transfer แบบอธิบาย และ Learning Report; เชื่อมต่อจาก `FakeHero.tsx` ที่ C01 เดิม
+- เพิ่ม `docs/fake-hero/PROMPTS.md`: ตัวอย่าง prompt ปรับเนื้อหา UI เฉพาะจุด แอนิเมชัน และฟังก์ชัน โดยห้ามเปลี่ยน UI เดิมหากไม่ได้รับคำสั่ง
+- ปรับ GitHub Actions ให้ทดสอบ branch นี้ / PR to main
+
+### ข้อจำกัดที่ต้องตรวจแก้ก่อนปิด Phase 3
+1. Adaptive ในส่วน C02–C05 ยังเป็นการช่วยเหลือแบบสั้น ไม่ใช่ Path A–D และ Diagnostic ทั้งหมดใน PDF
+2. กิจกรรม C02–C05 ยังเป็นการตอบคำถามแทนการหมุน/ประกอบโมเลกุล; สื่อภาพและแอนิเมชันคงเว้นไว้
+3. Episode Checkpoint ตอนนี้มี 5 ข้อเลือกตอบและให้คะแนนแบบ 5 ข้อ ยังไม่ใช่คะแนนเต็ม 10 (คำตอบและเหตุผล) ที่เอกสารต้องการ
+4. Transfer เป็นคำตอบอิสระสำหรับครูตรวจ ไม่ใช่ระบบตรวจอัตโนมัติ
+5. ต้องตรวจด้วยเบราว์เซอร์จริงบน Desktop / iPad / mobile รวมทั้ง back/refresh, C01 ออกจากบทช่วย, ทุกเส้นทาง และความตรงของบทสนทนา
+6. ห้ามอ้างว่าผ่านการทดสอบกับนักเรียนจริง / ซิงก์ cloud / offline / dashboard จนกว่าจะมีหลักฐาน
