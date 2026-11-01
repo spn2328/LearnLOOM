@@ -124,3 +124,11 @@ PDF อ้างอิงจากผู้ใช้: `เนื้อเรื�
 - ตรวจรักษาหน้าตาเดิมด้วยการ **ไม่แก้ CSS** ของเว็บไซต์ใน branch นี้
 - **ยังไม่ปิด Phase 3 แบบการใช้งานจริง**: ไม่มีผล browser automated end-to-end / physical iPad/phone และไม่มีผลทดลองโดยเจ้าของ; ต้องทดสอบการเล่นตาม acceptance cases ก่อน merge main
 - สถานะ PR #4 เป็น draft สำหรับลองเล่นและตรวจข้อเสนอแนะ; production `learnloom-murex.vercel.app` ยังไม่เปลี่ยนเป็น EP01 ฉบับขยาย
+
+### UI clarification / original screenshot (1 November 2026)
+User clarified the appearance to preserve is the **original cream-and-green dashboard** screenshot: LearnLOOM logo, left sidebar, top bar, welcoming home hero with red panda Loom, course cards and My Skills. The prior dark Fake Hero standalone page was **not** the desired UI.
+- Changed `demo/main.tsx` to show the original `LearnloomApp` shell by default. Standalone preview only at `?standalone`.
+- Updated `components/learnloom-app.tsx` home copy to M.6 organic chemistry / The Fake Hero and added the `fakehero` view to open the episode **inside the original layout**.
+- Updated only Fake Hero feature styling to blend with existing cream/green dashboard; did not redesign core `app/globals.css` or sidebar/navigation layout.
+- Note: legacy pages 'My Skills', older courses and history still depend on earlier curriculum data and require content migration later. Original banner image is retained unchanged as requested; no new image/animation assets.
+- Phase 3 requires checking that login, dashboard and all episode stages display consistently in Vercel preview on desktop/tablet/mobile.
