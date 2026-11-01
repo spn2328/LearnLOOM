@@ -48,7 +48,7 @@ demo/
 ```
 
 ## สิ่งที่ยังไม่ได้ทำและข้อจำกัด
-- **GitHub Actions รันผ่านทุกขั้นหลักแล้ว**: `pnpm install --frozen-lockfile`, `pnpm test`, `pnpm typecheck`, `pnpm build:demo` (run #2, 41315982560, ขณะตรวจขั้นตอนหลักเสร็จแล้ว และกำลังจบ post-job). เครื่อง container ภายในแชตยัง clone GitHub ไม่ได้เนื่องจาก DNS; ใช้ผล CI เป็นหลักฐานแทน
+- **GitHub Actions รันผ่านทุกขั้นหลักแล้ว**: `pnpm install --frozen-lockfile`, `pnpm test`, `pnpm typecheck`, `pnpm build:demo` (run #2, 41315982560, workflow completed / success). เครื่อง container ภายในแชตยัง clone GitHub ไม่ได้เนื่องจาก DNS; ใช้ผล CI เป็นหลักฐานแทน
 - Vercel ระบุ preview commit `39e57417` สถานะ `READY` ที่ `https://learnloom-mwfr1drym-manifest23.vercel.app/?fake-hero`; ยังไม่มีผล browser interaction / iPad test ที่ยืนยัน
 - ภาพ/วิดีโอ/แอนิเมชัน/3D/ลากบัตรยังไม่ใส่ตามคำสั่ง ใช้ข้อความและปุ่มแทน
 - A02 สมุดหลักฐานย่อความจากต้นฉบับ ไม่ใช่ทุกประโยคจาก PDF; ต้องตรวจอีกครั้งก่อนอนุมัติ
@@ -67,6 +67,6 @@ demo/
 สถานะ `เขียนโค้ดแล้ว` ไม่เท่ากับ `ทดสอบผ่าน`. อย่าระบุว่ารันเว็บหรือใช้งานจริงผ่าน จนมีผลตรวจรองรับ
 
 ## ผลตรวจ CI และ Preview (1 พฤศจิกายน 2569)
-- GitHub Actions: [Fake Hero demo checks run #2](https://github.com/spn2328/LearnLOOM/actions/runs/41315982560). ขั้น install, source checks, TypeScript checks และ demo build แสดง success ใน job steps (ยังไม่ได้ยืนยันสถานะสุดท้ายทั้ง workflow ตอนจดบันทึก)
+- GitHub Actions: [Fake Hero demo checks run #2](https://github.com/spn2328/LearnLOOM/actions/runs/41315982560). workflow **completed / success**: install, source checks, TypeScript checks และ demo build ผ่านทั้งหมด
 - Vercel preview: https://learnloom-mwfr1drym-manifest23.vercel.app/?fake-hero — deployment READY สำหรับ commit `39e57417f8e2376af452a97418fa4c491bfe0f18`
 - ตรรกะ interaction, accessibility, device test และความถูกต้องของภาพยังไม่ได้ตรวจผ่าน browser จริง จึงยังไม่ปิด Phase 3
