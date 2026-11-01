@@ -117,3 +117,10 @@ PDF อ้างอิงจากผู้ใช้: `เนื้อเรื�
 4. Transfer เป็นคำตอบอิสระสำหรับครูตรวจ ไม่ใช่ระบบตรวจอัตโนมัติ
 5. ต้องตรวจด้วยเบราว์เซอร์จริงบน Desktop / iPad / mobile รวมทั้ง back/refresh, C01 ออกจากบทช่วย, ทุกเส้นทาง และความตรงของบทสนทนา
 6. ห้ามอ้างว่าผ่านการทดสอบกับนักเรียนจริง / ซิงก์ cloud / offline / dashboard จนกว่าจะมีหลักฐาน
+
+### Phase 3 — ผลตรวจเทคนิคล่าสุด
+- GitHub Actions run #21 https://github.com/spn2328/LearnLOOM/actions/runs/41317476676 **completed / success** สำหรับ commit `c213f153b59fe41a32a7685f1341fc855ba30b30`: install, source checks, verify EP01 question-bank, TypeScript, Vite demo build ผ่าน
+- Vercel preview `https://learnloom-ec1uw70t2-manifest23.vercel.app/` สถานะ **READY** สำหรับ commit เดียวกัน
+- ตรวจรักษาหน้าตาเดิมด้วยการ **ไม่แก้ CSS** ของเว็บไซต์ใน branch นี้
+- **ยังไม่ปิด Phase 3 แบบการใช้งานจริง**: ไม่มีผล browser automated end-to-end / physical iPad/phone และไม่มีผลทดลองโดยเจ้าของ; ต้องทดสอบการเล่นตาม acceptance cases ก่อน merge main
+- สถานะ PR #4 เป็น draft สำหรับลองเล่นและตรวจข้อเสนอแนะ; production `learnloom-murex.vercel.app` ยังไม่เปลี่ยนเป็น EP01 ฉบับขยาย
