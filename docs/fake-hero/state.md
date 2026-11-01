@@ -101,3 +101,47 @@ PDF อ้างอิงจากผู้ใช้: `เนื้อเรื�
 - Vercel production build for commit above triggered automatically; ตรวจสถานะ deployment ก่อนอ้างว่า URL สาธารณะเปลี่ยนแล้ว.
 - **ยังไม่ครบเป้าหมาย PDF ใหม่:** EP.01 C02–C05, Scene 04–09, Q02–Q05, Adaptive R02–R05, Episode/Transfer Checkpoint และ Dashboard จำเป็นต้องพัฒนาต่อ. Phase 4/5 ยังคงพักไว้.
 - PDF ฉบับล่าสุดเป็น source of truth สำหรับเนื้อเรื่อง/คำถาม; ภาพและแอนิเมชันทำภายหลังตามคำขอ.
+
+## งานขยาย EP.01 — 1 พฤศจิกายน 2569 (Phase 2 → Phase 3)
+- Branch: `feat/fake-hero-complete-ep01`; Draft PR #4: https://github.com/spn2328/LearnLOOM/pull/4
+- **ข้อกำหนด UI ล่าสุด:** เจ้าของสั่งรักษาหน้าตาเว็บเดิมทั้งหมด เปลี่ยนเฉพาะบทเรียนและเนื้อหา — ไม่มีการแก้ `features/fake-hero/styles/fake-hero.css` ใน branch นี้
+- เพิ่ม `features/fake-hero/content/episode01.ts`: เนื้อหา C01–C05, Q01–Q05, Q01-E–Q05-E, กิจกรรมข้อความและชุดคำถามตัวอย่างจากต้นฉบับ
+- เพิ่ม `components/EpisodeContinuation.tsx`: Scene 04–09, S02, Recheck, Episode Checkpoint, Transfer แบบอธิบาย และ Learning Report; เชื่อมต่อจาก `FakeHero.tsx` ที่ C01 เดิม
+- เพิ่ม `docs/fake-hero/PROMPTS.md`: ตัวอย่าง prompt ปรับเนื้อหา UI เฉพาะจุด แอนิเมชัน และฟังก์ชัน โดยห้ามเปลี่ยน UI เดิมหากไม่ได้รับคำสั่ง
+- ปรับ GitHub Actions ให้ทดสอบ branch นี้ / PR to main
+
+### ข้อจำกัดที่ต้องตรวจแก้ก่อนปิด Phase 3
+1. Adaptive ในส่วน C02–C05 ยังเป็นการช่วยเหลือแบบสั้น ไม่ใช่ Path A–D และ Diagnostic ทั้งหมดใน PDF
+2. กิจกรรม C02–C05 ยังเป็นการตอบคำถามแทนการหมุน/ประกอบโมเลกุล; สื่อภาพและแอนิเมชันคงเว้นไว้
+3. Episode Checkpoint ตอนนี้มี 5 ข้อเลือกตอบและให้คะแนนแบบ 5 ข้อ ยังไม่ใช่คะแนนเต็ม 10 (คำตอบและเหตุผล) ที่เอกสารต้องการ
+4. Transfer เป็นคำตอบอิสระสำหรับครูตรวจ ไม่ใช่ระบบตรวจอัตโนมัติ
+5. ต้องตรวจด้วยเบราว์เซอร์จริงบน Desktop / iPad / mobile รวมทั้ง back/refresh, C01 ออกจากบทช่วย, ทุกเส้นทาง และความตรงของบทสนทนา
+6. ห้ามอ้างว่าผ่านการทดสอบกับนักเรียนจริง / ซิงก์ cloud / offline / dashboard จนกว่าจะมีหลักฐาน
+
+### Phase 3 — ผลตรวจเทคนิคล่าสุด
+- GitHub Actions run #21 https://github.com/spn2328/LearnLOOM/actions/runs/41317476676 **completed / success** สำหรับ commit `c213f153b59fe41a32a7685f1341fc855ba30b30`: install, source checks, verify EP01 question-bank, TypeScript, Vite demo build ผ่าน
+- Vercel preview `https://learnloom-ec1uw70t2-manifest23.vercel.app/` สถานะ **READY** สำหรับ commit เดียวกัน
+- ตรวจรักษาหน้าตาเดิมด้วยการ **ไม่แก้ CSS** ของเว็บไซต์ใน branch นี้
+- **ยังไม่ปิด Phase 3 แบบการใช้งานจริง**: ไม่มีผล browser automated end-to-end / physical iPad/phone และไม่มีผลทดลองโดยเจ้าของ; ต้องทดสอบการเล่นตาม acceptance cases ก่อน merge main
+- สถานะ PR #4 เป็น draft สำหรับลองเล่นและตรวจข้อเสนอแนะ; production `learnloom-murex.vercel.app` ยังไม่เปลี่ยนเป็น EP01 ฉบับขยาย
+
+### UI clarification / original screenshot (1 November 2026)
+User clarified the appearance to preserve is the **original cream-and-green dashboard** screenshot: LearnLOOM logo, left sidebar, top bar, welcoming home hero with red panda Loom, course cards and My Skills. The prior dark Fake Hero standalone page was **not** the desired UI.
+- Changed `demo/main.tsx` to show the original `LearnloomApp` shell by default. Standalone preview only at `?standalone`.
+- Updated `components/learnloom-app.tsx` home copy to M.6 organic chemistry / The Fake Hero and added the `fakehero` view to open the episode **inside the original layout**.
+- Updated only Fake Hero feature styling to blend with existing cream/green dashboard; did not redesign core `app/globals.css` or sidebar/navigation layout.
+- Note: legacy pages 'My Skills', older courses and history still depend on earlier curriculum data and require content migration later. Original banner image is retained unchanged as requested; no new image/animation assets.
+- Phase 3 requires checking that login, dashboard and all episode stages display consistently in Vercel preview on desktop/tablet/mobile.
+
+### Readability follow-up — Screenshot feedback
+- ผู้ใช้ยืนยันว่าชอบ layout/ธีมครีม–เขียวเดิม และต้องการแก้เฉพาะข้อความที่อ่านยากกับฟอนต์
+- ปรับ `features/fake-hero/styles/fake-hero.css` เฉพาะฟีเจอร์: จัดลำดับ `Noto Sans Thai` ให้แสดงจริงก่อน system font, เพิ่มความชัดของตัวอักษร/น้ำหนัก, เปลี่ยนบัตร A03 จากพื้นเขียวเข้มตัวหนังสือเข้มเป็นพื้นเขียวอ่อนตัวหนังสือเข้ม และคงปุ่ม/เลย์เอาต์/สีหลักเดิม
+- ไม่แก้ `app/globals.css` และไม่เปลี่ยน assets/fonts; รอ CI และตรวจภาพหน้าเว็บจริง
+
+### Phase 3 follow-up — Itim + 10-point checkpoint
+- เปลี่ยนฟอนต์หน้า Demo และบทเรียนเป็น **Itim** ผ่าน Google Fonts โดยใช้ Noto Sans Thai เป็น fallback; ยังคง layout สีและเมนูเดิมตามคำขอ; ไม่แนบหรือแจกจ่ายไฟล์ฟอนต์
+- ปรับ `demo/index.html`, `app/globals.css`, `features/fake-hero/styles/fake-hero.css`; ฟอนต์สูตรเคมีและเครื่องหมายคง fallback ที่อ่านง่าย
+- เพิ่ม `checkpointReasons` ใน `features/fake-hero/content/episode01.ts`: เหตุผลประกอบใหม่ห้าข้อ (ร่างใหม่ ไม่ใช่ตัวเลือกคำถามหลักจาก PDF) เพื่อเก็บคะแนนแยกคำตอบและเหตุผล
+- `EpisodeContinuation.tsx` ให้คะแนน Checkpoint จากคำตอบ 5 + เหตุผล 5 = เต็ม 10 คะแนน เกณฑ์คะแนนรวม >=7/10 โดยไม่เปลี่ยนคำตอบหรือเหตุผลของ Main Questions Q01–Q05 และไม่ใช้การฝึกหลังช่วยมาทับการตอบครั้งแรก
+- เพิ่มการตรวจเฉลย CP-E ใน `scripts/test-fake-hero.mjs`
+- ข้อจำกัด: คะแนนตามแนวคิดและเหตุผลใน CP ใหม่ต้องได้รับการตรวจความตรงตามเนื้อหาจากผู้สอน; ยังไม่ได้ทดลองกับผู้เรียน, ยังไม่มี Automated browser E2E หรือ iPad test จึง **ไม่ประกาศ Phase 3 เสร็จ**

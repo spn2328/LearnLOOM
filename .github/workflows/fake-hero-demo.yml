@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - docs/fake-hero-demo-plan
+      - main
     paths:
       - "features/fake-hero/**"
       - "demo/**"
@@ -14,6 +15,7 @@ on:
   push:
     branches:
       - feat/fake-hero-interactive-demo
+      - feat/fake-hero-complete-ep01
 
 jobs:
   validate-demo:
@@ -33,6 +35,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Source checks
         run: pnpm test
+      - name: Verify EP01 question bank
+        run: node scripts/test-fake-hero.mjs
       - name: TypeScript checks
         run: pnpm typecheck
       - name: Build Vercel browser demo
