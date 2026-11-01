@@ -161,3 +161,12 @@ User clarified the appearance to preserve is the **original cream-and-green dash
 - Updated `app/globals.css` with narrowly scoped episode cards and focus-mode rules, retaining palette and typography.
 - This is an interactive prototype, not a functioning cloud notebook or actual series-wide certification; unfinished EP.02–EP.06 remain locked. Progress remains browser-local.
 - Need confirm CI and browser/iPad manual tests; not considered Phase 3 finished until interactions verified. Do not automatically merge before verification.
+
+### Production UI/UX navigation release — 1 พฤศจิกายน 2569
+- User requested implementation of the 7-part plan's UI/UX section, keeping original cream/green LearnLOOM dashboard and Itim.
+- PR #5 merged into `main`: https://github.com/spn2328/LearnLOOM/pull/5, merge commit `e34c693a6272058881560c4e9505811ee2b80913`.
+- Vercel Production deployment for merge commit: `READY` (https://learnloom-murex.vercel.app/).
+- Implemented functional Chapter Library (EP.01 active and EP.02–06 marked unavailable), My Progress based on browser-local EP01 record, Notes/Case Notebook, honest Certificate status page, and Focus Mode with return-home and notebook controls.
+- Original sidebar dashboard, color palette, logo and Itim font maintained. Added scoped CSS for episode cards and focus.
+- GitHub Actions run #55 passed source checks, question bank, TypeScript and demo build: https://github.com/spn2328/LearnLOOM/actions/runs/41326193738.
+- Important limitations: My Progress and Notes are demo views using browser-local storage; no cloud sync, live teacher dashboard or certificate issuance. EP.02–EP.06 remain unavailable; old Home recommendation panels may still refer to preexisting chemistry concept data. No confirmed physical iPad/mobile browser E2E test, so Phase 3 remains open.
