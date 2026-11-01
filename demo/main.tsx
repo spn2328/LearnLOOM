@@ -1,7 +1,7 @@
 import React from 'react';
 import {createRoot} from 'react-dom/client';
 import LearnloomApp from '../components/learnloom-app';
-import FakeHero from '../features/fake-hero/fake-hero';
+import FakeHero from '../features/fake-hero/components/FakeHero';
 import '../app/globals.css';
 import './style.css';
 
