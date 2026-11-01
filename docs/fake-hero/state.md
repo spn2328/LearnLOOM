@@ -70,3 +70,27 @@ demo/
 - GitHub Actions: [Fake Hero demo checks run #2](https://github.com/spn2328/LearnLOOM/actions/runs/41315982560). workflow **completed / success**: install, source checks, TypeScript checks และ demo build ผ่านทั้งหมด
 - Vercel preview: https://learnloom-mwfr1drym-manifest23.vercel.app/?fake-hero — deployment READY สำหรับ commit `39e57417f8e2376af452a97418fa4c491bfe0f18`
 - ตรรกะ interaction, accessibility, device test และความถูกต้องของภาพยังไม่ได้ตรวจผ่าน browser จริง จึงยังไม่ปิด Phase 3
+
+## เทียบ PDF ใหม่กับเว็บไซต์เดิม (1 พฤศจิกายน 2569)
+
+PDF อ้างอิงจากผู้ใช้: `เนื้อเรื่องและคำถามล่าสุด(1).pdf` (26 หน้า) และ `ข้อมูลเว็บล่าสุด(1).pdf` (19 หน้า)
+
+### สาเหตุที่ production แสดงเรื่องเดิม
+- `main/demo/main.tsx` เดิม import และ render `components/learnloom-app.tsx` (บทเรียนเดิม ม.1) เสมอ
+- The Fake Hero สร้างแยกใน `feat/fake-hero-interactive-demo` และเดิมต้องใช้ `?fake-hero`; ไม่ได้ merge เข้า `main`
+- ปรับใน branch นี้แล้ว: เส้นทางปกติแสดง The Fake Hero; ระบบเดิมยังเปิดได้ผ่าน `?legacy` เพื่อย้อนตรวจ/เปรียบเทียบ
+- PR ไป `main`: https://github.com/spn2328/LearnLOOM/pull/3
+
+### Scope gap ตาม PDF ใหม่
+| ประเด็นใน PDF | เว็บไซต์ใหม่ใน branch นี้ | งานที่เหลือ |
+|---|---|---|
+| เป้าหมาย ม.6 เคมีอินทรีย์ / The Fake Hero | ตั้งชื่อและ C01 | สร้างเนื้อหา C02–C05 |
+| Scene 01–03, A01–A03, Q01/E | มีแบบ text-first | เพิ่มภาพ/สื่อภายหลัง และตรวจ A02 ให้ตรงต้นฉบับ |
+| R01 adaptive | Path B และ general feedback | Path A/C/D, D01 ทุกข้อ, RC01-B |
+| Scene 04–09 / Q02–Q05 | ยังไม่มี | พัฒนาตามลำดับต้นฉบับ ห้ามแก้ข้อความโดยพลการ |
+| Episode Checkpoint / Transfer | ยังไม่มี | ใช้ข้อที่ไม่ซ้ำกับข้อฝึกและเก็บผลครั้งแรก |
+| Online/offline, Dashboard, PWA, Certificates | ยังไม่รองรับในฟีเจอร์ใหม่ | แยกเป็นงานระยะต่อไป ไม่กล่าวอ้างว่าใช้งานแล้ว |
+
+**ประเด็นขัดแย้งใน PDF**: `ข้อมูลเว็บล่าสุด(1).pdf` หน้า 4 มีชื่อ 'เต' แต่ `เนื้อเรื่องและคำถามล่าสุด(1).pdf` หน้า 2–3 ใช้ 'เจฟ'; เจ้าของยืนยัน 'เจฟ' จึงใช้ชื่อนี้ในหน้าเว็บ. เอกสารแผนใหม่ต้องการ EP.01 ทั้งตอน แต่แผน `docs/fake-hero/plan.md` เดิมเป็นเพียง excerpt; สถานะการพัฒนาจะยึดความจริงว่า excerpt พร้อมก่อน ไม่อ้างว่าทำครบ EP.01
+
+**ข้อควรจำ**: การ merge ไป main จึงจะกระทบ URL production. การสร้าง Vercel preview ใน feature branch เพียงอย่างเดียวไม่เปลี่ยน `learnloom-murex.vercel.app`.
