@@ -16,6 +16,7 @@ on:
     branches:
       - feat/fake-hero-interactive-demo
       - feat/fake-hero-complete-ep01
+      - feat/fake-hero-navigation-focus
 
 jobs:
   validate-demo:
