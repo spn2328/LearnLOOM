@@ -137,3 +137,11 @@ User clarified the appearance to preserve is the **original cream-and-green dash
 - ผู้ใช้ยืนยันว่าชอบ layout/ธีมครีม–เขียวเดิม และต้องการแก้เฉพาะข้อความที่อ่านยากกับฟอนต์
 - ปรับ `features/fake-hero/styles/fake-hero.css` เฉพาะฟีเจอร์: จัดลำดับ `Noto Sans Thai` ให้แสดงจริงก่อน system font, เพิ่มความชัดของตัวอักษร/น้ำหนัก, เปลี่ยนบัตร A03 จากพื้นเขียวเข้มตัวหนังสือเข้มเป็นพื้นเขียวอ่อนตัวหนังสือเข้ม และคงปุ่ม/เลย์เอาต์/สีหลักเดิม
 - ไม่แก้ `app/globals.css` และไม่เปลี่ยน assets/fonts; รอ CI และตรวจภาพหน้าเว็บจริง
+
+### Phase 3 follow-up — Itim + 10-point checkpoint
+- เปลี่ยนฟอนต์หน้า Demo และบทเรียนเป็น **Itim** ผ่าน Google Fonts โดยใช้ Noto Sans Thai เป็น fallback; ยังคง layout สีและเมนูเดิมตามคำขอ; ไม่แนบหรือแจกจ่ายไฟล์ฟอนต์
+- ปรับ `demo/index.html`, `app/globals.css`, `features/fake-hero/styles/fake-hero.css`; ฟอนต์สูตรเคมีและเครื่องหมายคง fallback ที่อ่านง่าย
+- เพิ่ม `checkpointReasons` ใน `features/fake-hero/content/episode01.ts`: เหตุผลประกอบใหม่ห้าข้อ (ร่างใหม่ ไม่ใช่ตัวเลือกคำถามหลักจาก PDF) เพื่อเก็บคะแนนแยกคำตอบและเหตุผล
+- `EpisodeContinuation.tsx` ให้คะแนน Checkpoint จากคำตอบ 5 + เหตุผล 5 = เต็ม 10 คะแนน เกณฑ์คะแนนรวม >=7/10 โดยไม่เปลี่ยนคำตอบหรือเหตุผลของ Main Questions Q01–Q05 และไม่ใช้การฝึกหลังช่วยมาทับการตอบครั้งแรก
+- เพิ่มการตรวจเฉลย CP-E ใน `scripts/test-fake-hero.mjs`
+- ข้อจำกัด: คะแนนตามแนวคิดและเหตุผลใน CP ใหม่ต้องได้รับการตรวจความตรงตามเนื้อหาจากผู้สอน; ยังไม่ได้ทดลองกับผู้เรียน, ยังไม่มี Automated browser E2E หรือ iPad test จึง **ไม่ประกาศ Phase 3 เสร็จ**
