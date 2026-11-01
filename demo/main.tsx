@@ -13,4 +13,4 @@ class DemoBoundary extends React.Component<React.PropsWithChildren, {failed:bool
     return this.props.children;
   }
 }
-createRoot(document.getElementById('root')!).render(<DemoBoundary><aside className="demo-notice" role="note"><strong>LearnLOOM DEMO</strong><span>ทดลองเรียนได้ · บันทึกเฉพาะเบราว์เซอร์นี้ · ไม่มีบัญชีออนไลน์/ห้องเรียนจริง · ใช้ชื่อเล่นเท่านั้น</span></aside>{new URLSearchParams(location.search).has('fake-hero')?<FakeHero/>:<LearnloomApp/>}</DemoBoundary>);
+createRoot(document.getElementById('root')!).render(<DemoBoundary><aside className="demo-notice" role="note"><strong>LearnLOOM · THE FAKE HERO (EP.01 EXCERPT)</strong><span>เคมีอินทรีย์ ม.6 · เดโมบางช่วง (C01) · ภาพและแอนิเมชันกำลังพัฒนา · บันทึกเฉพาะเบราว์เซอร์นี้</span></aside>{new URLSearchParams(location.search).has('legacy')?<LearnloomApp/>:<FakeHero/>}</DemoBoundary>);
