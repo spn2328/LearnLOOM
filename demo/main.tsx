@@ -1,6 +1,7 @@
 import React from 'react';
 import {createRoot} from 'react-dom/client';
 import LearnloomApp from '../components/learnloom-app';
+import FakeHero from '../features/fake-hero/fake-hero';
 import '../app/globals.css';
 import './style.css';
 
@@ -12,4 +13,4 @@ class DemoBoundary extends React.Component<React.PropsWithChildren, {failed:bool
     return this.props.children;
   }
 }
-createRoot(document.getElementById('root')!).render(<DemoBoundary><aside className="demo-notice" role="note"><strong>LearnLOOM DEMO</strong><span>ทดลองเรียนได้ · บันทึกเฉพาะเบราว์เซอร์นี้ · ไม่มีบัญชีออนไลน์/ห้องเรียนจริง · ใช้ชื่อเล่นเท่านั้น</span></aside><LearnloomApp/></DemoBoundary>);
+createRoot(document.getElementById('root')!).render(<DemoBoundary><aside className="demo-notice" role="note"><strong>LearnLOOM DEMO</strong><span>ทดลองเรียนได้ · บันทึกเฉพาะเบราว์เซอร์นี้ · ไม่มีบัญชีออนไลน์/ห้องเรียนจริง · ใช้ชื่อเล่นเท่านั้น</span></aside>{new URLSearchParams(location.search).has('fake-hero')?<FakeHero/>:<LearnloomApp/>}</DemoBoundary>);
