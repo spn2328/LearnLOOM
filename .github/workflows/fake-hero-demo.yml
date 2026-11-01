@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - docs/fake-hero-demo-plan
+      - main
     paths:
       - "features/fake-hero/**"
       - "demo/**"
@@ -14,6 +15,7 @@ on:
   push:
     branches:
       - feat/fake-hero-interactive-demo
+      - feat/fake-hero-complete-ep01
 
 jobs:
   validate-demo:
