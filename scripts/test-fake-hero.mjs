@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {lessons,checkpoint} from '../features/fake-hero/content/episode01.ts';
+import {lessons,checkpoint,checkpointReasons} from '../features/fake-hero/content/episode01.ts';
 const expected=[['Q01','A','B','A','B'],['Q02','B','B','B','B'],['Q03','A','C','B','B'],['Q04','C','B','C','C'],['Q05','B','A','A','B']];
 assert.equal(lessons.length,5,'Expected five chemistry concepts');
 for(let i=0;i<5;i++){
@@ -14,4 +14,7 @@ for(let i=0;i<5;i++){
  assert.ok(l.story.length>0&&l.concept.length>0&&l.models.length>0);
 }
 assert.deepEqual(checkpoint.map(q=>q.answer),['A','C','B','A','C']);
+assert.equal(checkpointReasons.length,5);
+assert.deepEqual(checkpointReasons.map(q=>q.answer),['B','A','D','A','B']);
+for(const reason of checkpointReasons){assert.equal(reason.choices.length,4);assert.ok(reason.choices['ABCD'.indexOf(reason.answer)]);}
 console.log('Fake Hero EP01 content: five concepts and answer keys verified');
