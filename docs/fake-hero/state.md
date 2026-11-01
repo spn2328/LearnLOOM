@@ -132,3 +132,8 @@ User clarified the appearance to preserve is the **original cream-and-green dash
 - Updated only Fake Hero feature styling to blend with existing cream/green dashboard; did not redesign core `app/globals.css` or sidebar/navigation layout.
 - Note: legacy pages 'My Skills', older courses and history still depend on earlier curriculum data and require content migration later. Original banner image is retained unchanged as requested; no new image/animation assets.
 - Phase 3 requires checking that login, dashboard and all episode stages display consistently in Vercel preview on desktop/tablet/mobile.
+
+### Readability follow-up — Screenshot feedback
+- ผู้ใช้ยืนยันว่าชอบ layout/ธีมครีม–เขียวเดิม และต้องการแก้เฉพาะข้อความที่อ่านยากกับฟอนต์
+- ปรับ `features/fake-hero/styles/fake-hero.css` เฉพาะฟีเจอร์: จัดลำดับ `Noto Sans Thai` ให้แสดงจริงก่อน system font, เพิ่มความชัดของตัวอักษร/น้ำหนัก, เปลี่ยนบัตร A03 จากพื้นเขียวเข้มตัวหนังสือเข้มเป็นพื้นเขียวอ่อนตัวหนังสือเข้ม และคงปุ่ม/เลย์เอาต์/สีหลักเดิม
+- ไม่แก้ `app/globals.css` และไม่เปลี่ยน assets/fonts; รอ CI และตรวจภาพหน้าเว็บจริง
