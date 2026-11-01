@@ -152,3 +152,12 @@ User clarified the appearance to preserve is the **original cream-and-green dash
 - Vercel production deployment commit เดียวกัน `READY`: `dpl_98cguS9cc1xRWRjb1Tq8uNYGp8wL`, URL production ที่กำหนด `https://learnloom-murex.vercel.app/`
 - รายการ: UI เดิมครีม–เขียว, font Itim และ fallback, The Fake Hero EP.01 C01–C05, Checkpoint 10 คะแนนคำตอบ+เหตุผล, บันทึกความคืบหน้าแบบ local
 - ข้อจำกัดยังคงเดิม: ยังไม่มีผล automated browser E2E หรือทดลองบน iPad/โทรศัพท์จริง; Adaptive Path A–D ยังไม่ครบ; ข้อเหตุผล CP เพิ่มเติมยังต้องผู้สอนตรวจ; สื่อภาพและแอนิเมชันยังไม่ได้ทำ; ไม่อ้างว่าจบ Phase 3 ครบทุกเกณฑ์
+
+### Phase 2 / 3 — UI/UX workflow navigation update
+- User requests full workflow from original cream-and-green LearnLOOM dashboard, retaining visual identity and Itim font. Reference: Notion-style sidebar, Goodnotes-inspired notebook, YPT-inspired personal progress, Duolingo-style Chapter/Episode sequence, Focus Mode.
+- Branch `feat/fake-hero-navigation-focus`; PR #5 https://github.com/spn2328/LearnLOOM/pull/5
+- Added `features/fake-hero/components/LearningHub.tsx`: Chapter 01 / The Fake Hero, EP.01–EP.06 (future episodes clearly locked); personal progress based on locally stored C01–C05 attempts; evidence and concept notes; certificate page clearly disabled until series completion.
+- Updated `components/learnloom-app.tsx` to route original sidebar navigation: `courses`, `skills`, `notebook`, `certificates`. Existing Home design retained. Entering `fakehero` shows a Focus Mode toolbar with return home and open notebook buttons.
+- Updated `app/globals.css` with narrowly scoped episode cards and focus-mode rules, retaining palette and typography.
+- This is an interactive prototype, not a functioning cloud notebook or actual series-wide certification; unfinished EP.02–EP.06 remain locked. Progress remains browser-local.
+- Need confirm CI and browser/iPad manual tests; not considered Phase 3 finished until interactions verified. Do not automatically merge before verification.
