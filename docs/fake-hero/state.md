@@ -176,3 +176,5 @@ User clarified the appearance to preserve is the **original cream-and-green dash
 - Added `features/fake-hero/components/StoryMedia.tsx`, wired Scene 01–03 in `FakeHero.tsx`, Scene 08–09 in `EpisodeContinuation.tsx`; responsive story-media CSS in existing design palette.
 - **Binary assets not yet in GitHub:** packed optimized WebP/H.264 files in separate user download `LearnLOOM_FakeHero_Media_For_GitHub.zip`. Read `docs/fake-hero/MEDIA.md` for exact path and upload instructions. React currently shows fallback if missing; do not claim assets uploaded or visible in Production.
 - Testing needed: upload asset files, check scene order, verify first video and river clip play, mobile performance, Thai captions, accessible controls. Until done Phase 3 is still in progress. No merge main in this change.
+
+- GitHub Actions run #56: CI checks (source, EP01 question bank, TypeScript, demo build) succeeded: https://github.com/spn2328/LearnLOOM/actions/runs/41328891941. This verifies the code only; image/video playback still awaits binary upload.
