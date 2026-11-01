@@ -145,3 +145,10 @@ User clarified the appearance to preserve is the **original cream-and-green dash
 - `EpisodeContinuation.tsx` ให้คะแนน Checkpoint จากคำตอบ 5 + เหตุผล 5 = เต็ม 10 คะแนน เกณฑ์คะแนนรวม >=7/10 โดยไม่เปลี่ยนคำตอบหรือเหตุผลของ Main Questions Q01–Q05 และไม่ใช้การฝึกหลังช่วยมาทับการตอบครั้งแรก
 - เพิ่มการตรวจเฉลย CP-E ใน `scripts/test-fake-hero.mjs`
 - ข้อจำกัด: คะแนนตามแนวคิดและเหตุผลใน CP ใหม่ต้องได้รับการตรวจความตรงตามเนื้อหาจากผู้สอน; ยังไม่ได้ทดลองกับผู้เรียน, ยังไม่มี Automated browser E2E หรือ iPad test จึง **ไม่ประกาศ Phase 3 เสร็จ**
+
+### Production release — 1 November 2026
+- เจ้าของอนุญาตให้ merge PR #4 เข้าสู่เว็บไซต์หลักโดยตรง
+- Pull Request: https://github.com/spn2328/LearnLOOM/pull/4 — merged to `main`, squash commit `45a227a47801488be1a759615e3a218fc7c4ac74`
+- Vercel production deployment commit เดียวกัน `READY`: `dpl_98cguS9cc1xRWRjb1Tq8uNYGp8wL`, URL production ที่กำหนด `https://learnloom-murex.vercel.app/`
+- รายการ: UI เดิมครีม–เขียว, font Itim และ fallback, The Fake Hero EP.01 C01–C05, Checkpoint 10 คะแนนคำตอบ+เหตุผล, บันทึกความคืบหน้าแบบ local
+- ข้อจำกัดยังคงเดิม: ยังไม่มีผล automated browser E2E หรือทดลองบน iPad/โทรศัพท์จริง; Adaptive Path A–D ยังไม่ครบ; ข้อเหตุผล CP เพิ่มเติมยังต้องผู้สอนตรวจ; สื่อภาพและแอนิเมชันยังไม่ได้ทำ; ไม่อ้างว่าจบ Phase 3 ครบทุกเกณฑ์
