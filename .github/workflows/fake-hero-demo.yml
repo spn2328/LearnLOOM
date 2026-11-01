@@ -35,6 +35,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Source checks
         run: pnpm test
+      - name: Verify EP01 question bank
+        run: node scripts/test-fake-hero.mjs
       - name: TypeScript checks
         run: pnpm typecheck
       - name: Build Vercel browser demo
