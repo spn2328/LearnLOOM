@@ -170,3 +170,9 @@ User clarified the appearance to preserve is the **original cream-and-green dash
 - Original sidebar dashboard, color palette, logo and Itim font maintained. Added scoped CSS for episode cards and focus.
 - GitHub Actions run #55 passed source checks, question bank, TypeScript and demo build: https://github.com/spn2328/LearnLOOM/actions/runs/41326193738.
 - Important limitations: My Progress and Notes are demo views using browser-local storage; no cloud sync, live teacher dashboard or certificate issuance. EP.02–EP.06 remain unavailable; old Home recommendation panels may still refer to preexisting chemistry concept data. No confirmed physical iPad/mobile browser E2E test, so Phase 3 remains open.
+
+### EP.01 Story images and animation — 1 November 2026
+- Received 10 illustrated PNG scenes and 2 videos from owner; inspected media and aligned by narrative: opening clip → เจฟ/คำให้การ/ข้อความแม่ → อ่านข้อมูลเคมี → หลักฐานแม่น้ำ → เฮียศักดิ์และถังน้ำยาท้าย EP01.
+- Added `features/fake-hero/components/StoryMedia.tsx`, wired Scene 01–03 in `FakeHero.tsx`, Scene 08–09 in `EpisodeContinuation.tsx`; responsive story-media CSS in existing design palette.
+- **Binary assets not yet in GitHub:** packed optimized WebP/H.264 files in separate user download `LearnLOOM_FakeHero_Media_For_GitHub.zip`. Read `docs/fake-hero/MEDIA.md` for exact path and upload instructions. React currently shows fallback if missing; do not claim assets uploaded or visible in Production.
+- Testing needed: upload asset files, check scene order, verify first video and river clip play, mobile performance, Thai captions, accessible controls. Until done Phase 3 is still in progress. No merge main in this change.
