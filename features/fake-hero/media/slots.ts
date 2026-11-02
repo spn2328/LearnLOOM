@@ -18,6 +18,11 @@ export const mediaSlots = {
   "ep01-c05-learn": "Learn L05 · บทเรียน C05",
   "ep01-s08": "Scene 08 · คราบแวววาวบนแม่น้ำ / สมุดหลักฐาน",
   "ep01-s09": "Scene 09 · ฮีโร่กำลังมา (เสียงเรือ / เรือเฮียศักดิ์ / ถังน้ำยา)",
+  "loom-point": "ลูมชี้ / อธิบาย (PNG พื้นใส)",
+  "loom-think": "ลูมคิด / บอกใบ้ (PNG พื้นใส)",
+  "loom-cheer": "ลูมชื่นชม / ผ่าน (PNG พื้นใส)",
+  "loom-happy": "ลูมยิ้ม / ทักทาย (PNG พื้นใส)",
+  "loom-clipboard": "ลูมถือแฟ้มหลักฐาน (PNG พื้นใส)",
 } as const;
 
 export type MediaSlotId = keyof typeof mediaSlots;

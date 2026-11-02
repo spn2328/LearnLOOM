@@ -1,6 +1,7 @@
 // Result file a student downloads and hands to the teacher (no server needed).
 // Built from the two Fake Hero saves; the teacher view imports many of these files.
 import {lessons,checkpoint,checkpointReasons,type Choice} from "./content/episode01";
+import {recheckB} from "./content/adaptive04";
 
 export const RESULT_FORMAT = "learnloom-fake-hero-result";
 const C01_KEY = "learnloom-fake-hero-v1";
@@ -9,12 +10,15 @@ const PROFILE_KEY = "learnloom-demo-v1";
 
 export type ConceptResult = {
   id: string;
-  firstMain?: Choice;
+  firstMain?: string; // choice letter (Q03 drag may store an arrangement that matches no choice)
   firstReason?: Choice;
   firstCorrect: boolean; // answer AND reason right on the first attempt
   assisted: boolean;
   recheck?: Choice;
   recheckCorrect: boolean;
+  path?: string; // Q04 adaptive: help path A–D
+  diagnosis?: Record<string, Choice>; // Q04 adaptive: D01–D04 answers
+  recheckB?: Choice;
   outcome: "ผ่านด้วยตนเอง" | "ผ่านหลังช่วยเหลือ" | "ยังต้องทบทวน" | "ยังไม่ได้ทำ";
 };
 export type StudentResult = {
@@ -33,14 +37,15 @@ function read(key: string): any {
   try { return JSON.parse(localStorage.getItem(key) || "null") ?? {}; } catch { return {}; }
 }
 
-function concept(i: number, first?: {main?: Choice; reason?: Choice}, assisted = false, recheck?: Choice): ConceptResult {
+function concept(i: number, first?: {main?: string; reason?: Choice}, assisted = false, recheck?: Choice, adaptive?: any): ConceptResult {
   const l = lessons[i];
   const firstCorrect = first?.main === l.main.answer && first?.reason === l.reason.answer;
-  const recheckCorrect = recheck === l.recheck.answer;
+  const recheckCorrect = recheck === l.recheck.answer || (!!adaptive?.recheckB && adaptive.recheckB === recheckB.answer);
   return {
     id: l.main.id.replace("Q", "C"),
     firstMain: first?.main, firstReason: first?.reason, firstCorrect,
     assisted, recheck, recheckCorrect,
+    ...(adaptive?.path ? {path: adaptive.path, diagnosis: adaptive.diagnosis, recheckB: adaptive.recheckB} : {}),
     outcome: !first?.main ? "ยังไม่ได้ทำ" : firstCorrect ? "ผ่านด้วยตนเอง" : recheckCorrect ? "ผ่านหลังช่วยเหลือ" : "ยังต้องทบทวน",
   };
 }
@@ -52,7 +57,7 @@ export function buildResult(): StudentResult {
     concept(0, c01.first ? {main: c01.first.answer, reason: c01.first.reason} : undefined, !!c01.assisted, c01.recheck),
     ...lessons.slice(1).map((l, k) => {
       const r = records[l.main.id.replace("Q", "C")] ?? {};
-      return concept(k + 1, r.first, !!r.assisted, r.recheck);
+      return concept(k + 1, r.first, !!r.assisted, r.adaptive?.recheck ?? r.recheck, r.adaptive);
     }),
   ];
   const answers = ext.cp ?? {}, reasons = ext.cpReasons ?? {};

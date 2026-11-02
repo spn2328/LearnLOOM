@@ -186,3 +186,13 @@ User clarified the appearance to preserve is the **original cream-and-green dash
 - ซ่อนแชทห้องเรียน/ล็อกอิน/รหัสห้อง (ต้องใช้ server); ลบคำว่า "เดโม" ใน UI; ระดับชั้นเป็น ม.4–ม.6; ไฟล์สำรองรวมความคืบหน้า Fake Hero แล้ว
 - ตรวจแล้ว: test, test-fake-hero, typecheck, build:demo ผ่าน; เล่นใน browser (localhost) ส่งผล→นำเข้า→Excel ทำงาน, สื่อ png/loop mp4 แสดงได้
 - ยังไม่ได้ตรวจ: iPad/มือถือจริง, เปิดไฟล์ Excel ใน Excel จริง, ไฟล์สื่อจริงยังไม่ได้ตั้งชื่อ/ใส่
+### ปรับตาม แก้ไข.pdf — 2 พฤศจิกายน 2569 (branch `feat/playtest-ready`)
+- S01: ตอบผิดมี pop-up เตือน · L01: infographic (การ์ดสารอินทรีย์ + โมเลกุล 3D/2D + แท็บ, ข้อยกเว้น CO₂/Na₂CO₃, ตารางเปรียบเทียบ, เชื่อมคดี) · A03: ลากการ์ดลงกล่องเขียว/ส้ม + pop-up วางผิด
+- รวม Q01+Q01-E, Q02+Q02-E … เป็นหน้าเดียว (คำตอบ+เหตุผล) มีปุ่ม "ต้องการความช่วยเหลือหรือไม่?" · หน้าสรุปทุกแนวคิดเป็นการ์ด dashboard
+- C02 การ์ดพันธะ+3D · C03 แท็บโซ่ตรง/โซ่กิ่ง/วง · C04/C05 รูปแบบเดียวกัน · Q03 ลากป้ายชื่อโซ่ · Q03-E แสดงโครงสร้างสาร B
+- Q04 แทนที่ตาม PDF (เฉลย B / เหตุผล A) + ต้นแบบ adaptive: D01–D04 → Path A/B/C/D → ตรวจระหว่างกิจกรรม → เปลี่ยนวิธีช่วย (ลงมือทำ) → Recheck → คำใบ้ L2 → Recheck-B → Learning Memory (`content/adaptive04.ts`, `components/AdaptiveQ04.tsx`); คำตอบครั้งแรกไม่ถูกเขียนทับ
+- **ร่างโดย Claude ต้องให้ครูตรวจ:** ตัวเลือก D01–D04, เนื้อหา Path A–D, M04-A..D, Recheck-B, รายละเอียดการ์ดใน L01/C02–C05
+- **สงสัยพิมพ์ตกใน PDF:** โจทย์ Q04 "…จึงจะมีผลรวมอันดับพันธะเท่ากับ?" ไม่มีเลข 4 — คงข้อความตาม PDF ไว้ รอเจ้าของยืนยัน
+- รูปลูมพื้นใส (รอเจ้าของส่ง): `media/loom-point.png`, `loom-think`, `loom-cheer`, `loom-happy`, `loom-clipboard` — ถ้าไม่มีใช้ `/images/loom.webp`
+- ตรวจแล้ว (localhost): typecheck, test, test-fake-hero, build:demo ผ่าน; เล่นใน browser: L01 3D, A03, Q01 รวม, สรุป C01, Q03 ลาก, Q04 adaptive ครบทุกขั้น (Path A → เปลี่ยนวิธี → Recheck ผิด → L2 → Recheck-B ถูก), ความกว้าง 375px ไม่ล้นจอ, ไม่มี console error
+- ยังไม่ได้ตรวจ: iPad/มือถือจริง, Path B/C/D ทีละเส้นใน browser, หน้า Checkpoint/Transfer หลังเปลี่ยน
