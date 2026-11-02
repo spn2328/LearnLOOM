@@ -8,7 +8,7 @@ import {getMedia} from "../media/registry";
 import {lessons} from "../content/episode01";
 import {buildResult, type StudentResult} from "../results";
 import "../styles/hub.css";
-import {ArrowRight, CheckCircle2, Circle, Flame, LockKeyhole, Play, Plus, Trash2, Download, Award, NotebookPen, HelpCircle} from "lucide-react";
+import {ArrowRight, CheckCircle2, Circle, LockKeyhole, Play, Plus, Trash2, Download, Award, NotebookPen, HelpCircle} from "lucide-react";
 
 export type HubMode = "home" | "library" | "episodes" | "intro" | "progress" | "notebook" | "certificates" | "settings";
 export type HubSettings = {
@@ -28,19 +28,10 @@ function readJSON<T>(key: string, fallback: T): T {
 function readActivity(): Activity { return readJSON<Activity>(ACTIVITY_KEY, {study: [], notebook: [], base: {}}); }
 function writeActivity(a: Activity) { try { localStorage.setItem(ACTIVITY_KEY, JSON.stringify(a)); } catch {} }
 
-// Called when the student opens the story or the notebook; drives the streak and today's goals.
+// Called when the student opens the story or the notebook (local activity log only).
 export function markActivity(kind: "study" | "notebook") {
   const a = readActivity(), d = today();
   if (!a[kind].includes(d)) { a[kind] = [...a[kind], d].slice(-60); writeActivity(a); }
-}
-
-function streak(days: string[]) {
-  const set = new Set(days);
-  const cur = new Date();
-  if (!set.has(today())) cur.setDate(cur.getDate() - 1);
-  let n = 0;
-  while (set.has(cur.toLocaleDateString("sv-SE"))) { n++; cur.setDate(cur.getDate() - 1); }
-  return n;
 }
 
 export const hubImage = (slot: string) => getMedia(slot).find(m => m.kind === "image")?.url ?? "/images/archive.webp";
@@ -206,13 +197,7 @@ function Title({eyebrow, title, text}: {eyebrow: string; title: string; text: st
 }
 
 function Home({data, nickname, go, onStart}: {data: Data; nickname: string; go: (v: string) => void; onStart: () => void}) {
-  const {r, started, active, pct, next, act} = data;
-  const days = streak(act.study);
-  const goals = [
-    ["เข้าเรียน The Fake Hero วันนี้", act.study.includes(today())],
-    [next < 0 ? "ทำครบทุกแนวคิดแล้ว" : `ทำแนวคิด C0${next + 1} ${lessons[next].title}`, next < 0 || started > (act.base[today()] ?? started)],
-    ["ทบทวนสมุดบันทึก", act.notebook.includes(today())],
-  ] as const;
+  const {r, active, pct} = data;
   return <>
     <div className="fh-hello">
       <div><span className="eyebrow">ยินดีต้อนรับกลับมา</span><h1>สวัสดี{nickname ? ` ${nickname}` : ""}! 👋</h1><p>พร้อมสืบคดีใหม่แล้วหรือยัง?</p></div>
@@ -231,10 +216,9 @@ function Home({data, nickname, go, onStart}: {data: Data; nickname: string; go: 
         <button className="fh-play big" aria-label={active ? "เรียนต่อ EP.01" : "เริ่ม EP.01"} onClick={() => go("intro")}><Play size={24} fill="currentColor"/></button>
       </article>
       <aside className="fh-card fh-streak">
-        <div className="fh-streak-top"><Flame size={30}/><div><small>เรียนต่อเนื่อง</small><b>{days} วัน</b></div></div>
-        <h3>เป้าหมายวันนี้</h3>
+        <h3>แนวคิดใน EP.01</h3>
         <ul className="fh-checks">
-          {goals.map(([text, done]) => <li key={text} className={done ? "done" : ""}>{done ? <CheckCircle2 size={18}/> : <Circle size={18}/>}{text}</li>)}
+          {lessons.map((l, i) => { const done = r.concepts[i]?.outcome !== "ยังไม่ได้ทำ"; return <li key={i} className={done ? "done" : ""}>{done ? <CheckCircle2 size={18}/> : <Circle size={18}/>}C0{i + 1} {l.title}</li>; })}
         </ul>
       </aside>
     </div>

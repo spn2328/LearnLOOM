@@ -70,14 +70,14 @@ export default function StoryPlayer({script, end, label = "ฉาก"}: {script:
 
         <button type="button" className="fh-sp-tap" aria-label={done ? "จบฉาก" : "แตะเพื่ออ่านประโยคถัดไป"} onClick={next}
           onKeyDown={(e) => { if (e.key === "ArrowLeft") { e.preventDefault(); back(); } }}>
-          <span className={`fh-sp-caption ${beat.quote ? "quote" : ""} ${who === "ผู้เล่น" ? "me" : ""} ${who ? "" : "narration"}`} key={i} aria-live="polite">
+          <span className={`fh-sp-caption ${beat.quote ? "quote" : who ? "say" : "narration"} ${who === "ผู้เล่น" ? "me" : who === "ลูม" ? "loom" : ""}`} key={i} aria-live="polite">
             {who === "ลูม" && <img className="fh-sp-avatar" src={loomSrc(i % 2 ? "think" : "point")} alt="" />}
             <span>
               {who && <b className="fh-sp-who">{who}</b>}
               <span className="fh-sp-line">{said}</span>
             </span>
-            {!done && <em className="fh-sp-more" aria-hidden="true">แตะ ▸</em>}
           </span>
+          {!done && <em className="fh-sp-more" aria-hidden="true">แตะเพื่อพลิกหน้า ▸</em>}
         </button>
 
         <div className="fh-sp-tools">
