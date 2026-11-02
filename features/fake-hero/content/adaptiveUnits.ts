@@ -148,3 +148,12 @@ export function pickPath(unit: AdaptiveUnitData, answers: Record<string, string>
   if (wrong.size >= 2) return "D";
   return ([...wrong][0] as PathId | undefined) ?? "C";
 }
+
+// ข้อมูลเว็บล่าสุด.pdf p.11: during the activity the system checks understanding and changes the
+// form of help if the first one did not work. A wrong practice item switches to another path's
+// activity: the neighbouring Bloom level first, never one already used as a switch in this unit.
+const SWITCH_ORDER: Record<PathId, ("A" | "B" | "C")[]> = {A: ["B", "C"], B: ["A", "C"], C: ["B", "A"], D: ["A", "B", "C"]};
+export function nextSwitch(path: PathId, used: string[]): "A" | "B" | "C" {
+  const order = SWITCH_ORDER[path];
+  return order.find(p => !used.includes(p)) ?? order[0];
+}

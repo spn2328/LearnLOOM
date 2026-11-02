@@ -2,18 +2,24 @@
 import React, {useState} from "react";
 import type {Choice, Question} from "../content/episode01";
 import type {PathId} from "../content/adaptive04";
-import {pickPath, pickTransfer, type AdaptiveUnitData} from "../content/adaptiveUnits";
+import {nextSwitch, pickPath, pickTransfer, type AdaptiveUnitData} from "../content/adaptiveUnits";
 import {Choices, Loom, Popup} from "./ui";
 import {PathActivity} from "./PathActivities";
 
 // Generic adaptive flow for R01–R05 (เนื้อเรื่องและคำถามล่าสุด.pdf):
-// diagnose → path (hands-on activity + PDF text) → practice R0x-1/R0x-2 → recheck RC0x → RC0x-B if wrong → transfer.
+// diagnose → path (hands-on activity + PDF text) → practice R0x-1/R0x-2 (a wrong item switches to
+// another path's activity, then the item is tried once more; ข้อมูลเว็บล่าสุด.pdf p.11) → recheck RC0x → RC0x-B if wrong → transfer.
 // The first attempt is stored by the parent and never touched here.
-export type UnitStage = "diagnose" | "path" | "practice" | "recheck" | "recheckB" | "transfer";
+export type UnitStage = "diagnose" | "path" | "practice" | "switch" | "recheck" | "recheckB" | "transfer";
 export type UnitRecord = {
   stage?: UnitStage; diagnosis?: Record<string, Choice>; path?: PathId; pathStep?: number;
-  practice?: Record<string, Choice>; recheck?: Choice; recheckB?: Choice; transfer?: string;
+  practice?: Record<string, Choice>; recheck?: Choice;
+  // help switches: the first practice answer stays in practice; the retry after the switch goes to practiceRetry
+  switches?: {at: string; from: PathId; to: PathId}[]; switchFor?: string; practiceRetry?: Record<string, Choice>; recheckB?: Choice; transfer?: string;
 };
+
+export const unitRoute = (unit: AdaptiveUnitData, n: UnitRecord) =>
+  `${unit.paths[n.path ?? "C"].name}${(n.switches ?? []).map(x => ` → เปลี่ยนวิธีช่วยเป็น Path ${x.to}`).join("")} → Recheck${n.recheckB ? " → Recheck-B" : ""}${n.transfer ? " → ยืนยันความเข้าใจ" : ""}`;
 
 export default function AdaptiveUnit({unit, rec, onChange, onFinish}: {unit: AdaptiveUnitData; rec: UnitRecord; onChange: (r: UnitRecord) => void; onFinish: () => void}) {
   const [sel, setSel] = useState<Choice>();
@@ -31,8 +37,14 @@ export default function AdaptiveUnit({unit, rec, onChange, onFinish}: {unit: Ada
   const transfer = pickTransfer(unit, d);
   const pr = rec.practice ?? {};
   const pIndex = unit.practice.findIndex(q => !pr[q.id]);
+  const switches = rec.switches ?? [];
+  const lastSwitch = switches[switches.length - 1];
+  const retry = rec.practiceRetry ?? {};
+  const retryQ = rec.switchFor && !retry[rec.switchFor] ? unit.practice.find(q => q.id === rec.switchFor) : undefined;
+  // move on to the recheck once every practice item has a first answer and no retry is pending
+  const afterPractice = (r: UnitRecord): UnitRecord => unit.practice.every(q => (r.practice ?? pr)[q.id]) ? {...r, stage: "recheck"} : r;
   const answerText = (q: Question) => q.choices[q.answer.charCodeAt(0) - 65];
-  const flowOn = (s: string) => s === stage || (s === "recheck" && stage === "recheckB") || (s === "path" && stage === "practice");
+  const flowOn = (s: string) => s === stage || (s === "recheck" && stage === "recheckB") || (s === "path" && (stage === "practice" || stage === "switch"));
 
   const ask = (q: Question, label: string, onSave: (v: Choice) => void) => <>
     <span className="fh-eyebrow">{q.id} · {label}</span>
@@ -74,11 +86,27 @@ export default function AdaptiveUnit({unit, rec, onChange, onFinish}: {unit: Ada
           : <button className="fh-primary" disabled={!actDone[`${pathSteps[step]}-${step}`]} onClick={() => set({stage: "practice"})}>ทำแบบฝึกก่อนตรวจซ้ำ</button>}
       </>}
 
-      {stage === "practice" && pIndex >= 0 && ask(unit.practice[pIndex], `แบบฝึก ${pIndex + 1}/${unit.practice.length}`, v => {
-        const q = unit.practice[pIndex], ok = v === q.answer;
-        setPop({tone: ok ? "good" : "warn", title: ok ? "ถูกต้อง!" : "ยังไม่ถูก", text: ok ? "ไปข้อต่อไปกัน" : `คำตอบที่ถูกคือ ${answerText(q)}`,
-          next: () => set({practice: {...pr, [q.id]: v}, ...(pIndex === unit.practice.length - 1 ? {stage: "recheck" as const} : {})})});
+      {stage === "practice" && retryQ && ask(retryQ, "ลองอีกครั้งหลังเปลี่ยนวิธี", v => {
+        const ok = v === retryQ.answer;
+        setPop({tone: ok ? "good" : "warn", title: ok ? "ถูกต้อง! วิธีนี้ช่วยได้" : "ยังไม่ถูก", text: ok ? "ไปต่อกัน" : `คำตอบที่ถูกคือ ${answerText(retryQ)}`,
+          next: () => set(afterPractice({practiceRetry: {...retry, [retryQ.id]: v}}))});
       })}
+
+      {stage === "practice" && !retryQ && pIndex >= 0 && ask(unit.practice[pIndex], `แบบฝึก ${pIndex + 1}/${unit.practice.length}`, v => {
+        const q = unit.practice[pIndex];
+        if (v === q.answer) { setPop({tone: "good", title: "ถูกต้อง!", text: "ไปข้อต่อไปกัน", next: () => set(afterPractice({practice: {...pr, [q.id]: v}}))}); return; }
+        const to = nextSwitch(path, switches.map(x => x.to));
+        setPop({tone: "warn", title: "ยังไม่ถูก ลองอีกวิธีกัน", text: "วิธีเดิมอาจยังไม่ช่วย ลูมจะเปลี่ยนเป็นกิจกรรมแบบอื่น แล้วกลับมาลองข้อนี้อีกครั้ง",
+          next: () => set({practice: {...pr, [q.id]: v}, stage: "switch", switchFor: q.id, switches: [...switches, {at: q.id, from: path, to}]})});
+      })}
+
+      {stage === "switch" && lastSwitch && <>
+        <span className="fh-eyebrow">เปลี่ยนวิธีช่วย · {unit.paths[lastSwitch.to].name}</span>
+        <Loom pose="point" small>วิธีแรกอาจยังไม่ช่วย ลองมองอีกแบบนะ ทำกิจกรรมนี้ให้สำเร็จ แล้วกลับไปลองข้อ {lastSwitch.at} อีกครั้ง</Loom>
+        <PathActivity key={`sw-${switches.length}`} unit={unit.id} path={lastSwitch.to} onDone={() => setActDone(a => ({...a, [`sw-${switches.length}`]: true}))} />
+        {!actDone[`sw-${switches.length}`] && <p className="fh-hint">ทำกิจกรรมด้านบนให้สำเร็จก่อน แล้วปุ่มจะกดได้</p>}
+        <button className="fh-primary" disabled={!actDone[`sw-${switches.length}`]} onClick={() => set({stage: "practice"})}>ลองข้อเดิมอีกครั้ง</button>
+      </>}
 
       {stage === "recheck" && ask(unit.recheck, "Recheck", v => {
         if (v === unit.recheck.answer) setPop({tone: "good", title: "ถูกต้อง!", text: "ผ่านการตรวจซ้ำแล้ว ไปยืนยันความเข้าใจอีกขั้น", next: () => set({recheck: v, stage: "transfer"})});
