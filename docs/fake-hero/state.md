@@ -196,3 +196,8 @@ User clarified the appearance to preserve is the **original cream-and-green dash
 - รูปลูมพื้นใส (รอเจ้าของส่ง): `media/loom-point.png`, `loom-think`, `loom-cheer`, `loom-happy`, `loom-clipboard` — ถ้าไม่มีใช้ `/images/loom.webp`
 - ตรวจแล้ว (localhost): typecheck, test, test-fake-hero, build:demo ผ่าน; เล่นใน browser: L01 3D, A03, Q01 รวม, สรุป C01, Q03 ลาก, Q04 adaptive ครบทุกขั้น (Path A → เปลี่ยนวิธี → Recheck ผิด → L2 → Recheck-B ถูก), ความกว้าง 375px ไม่ล้นจอ, ไม่มี console error
 - ยังไม่ได้ตรวจ: iPad/มือถือจริง, Path B/C/D ทีละเส้นใน browser, หน้า Checkpoint/Transfer หลังเปลี่ยน
+### ใส่ภาพ/วิดีโอ EP.01 ลง `media/` — 2 พฤศจิกายน 2569
+- สาเหตุภาพไม่ขึ้นบนเว็บ: `media/` ยังไม่มีไฟล์ (ไฟล์ดิบอยู่ใน `Pic_video/` ซึ่งไม่ขึ้น GitHub)
+- แปลงภาพ 10 ภาพเป็น webp กว้าง 1600px (~120–250KB) จับคู่ตามเลขหน้ามุมภาพ: s02a(02) s02b(03) s02c(04) l01(05) s08-1 คราบแวววาว, s08-2(06), a02 + s08-3(07 สมุด), s09-1 เสียงเครื่องยนต์, s09-2(08), s09-3(09); วิดีโอเปิดเรื่อง → `ep01-s01.mp4` (H.264)
+- ยังไม่ใส่: `Animate_illustration_with_red_panda….mov` เป็น HEVC (hvc1) เล่นไม่ได้บน Chrome/Android ส่วนใหญ่ ต้องแปลงเป็น H.264 mp4 ก่อน (เครื่องนี้ไม่มี ffmpeg)
+- ตรวจแล้ว (localhost): build รวมไฟล์สื่อ, วิดีโอ s01 โหลดได้ (1920px), ภาพ Scene 02 แสดงผล
