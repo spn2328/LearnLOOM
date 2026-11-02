@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {lessons,checkpoint,checkpointReasons} from '../features/fake-hero/content/episode01.ts';
-const expected=[['Q01','A','B','A','B'],['Q02','B','B','B','B'],['Q03','A','C','B','B'],['Q04','B','A','C','B'],['Q05','B','A','A','B']];
+const expected=[['Q01','A','B','A','B'],['Q02','B','B','B','B'],['Q03','A','C','B','B'],['Q04','B','A','C','C'],['Q05','B','A','A','B']];
 assert.equal(lessons.length,5,'Expected five chemistry concepts');
 for(let i=0;i<5;i++){
  const l=lessons[i], [id,q,r,a,rc]=expected[i];
@@ -39,6 +39,8 @@ for(const u of Object.values(adaptiveUnits)){
 }
 const keys=Object.fromEntries(Object.values(adaptiveUnits).flatMap(u=>[...u.practice,u.recheck,u.recheckB]).map(q=>[q.id,q.answer]));
 assert.deepEqual(keys,{'R01-1':'A','R01-2':'B',RC01:'B','RC01-B':'C','R02-1':'A','R02-2':'C',RC02:'B','RC02-B':'C','R03-1':'A','R03-2':'C',RC03:'B','RC03-B':'C','R04-1':'C','R04-2':'C',RC04:'C','RC04-B':'B','R05-1':'A','R05-2':'C',RC05:'B','RC05-B':'A'});
+// each RC0x in the adaptive flow is the same item as the lesson's recheck
+for(const [i,u] of Object.values(adaptiveUnits).entries())assert.deepEqual(u.recheck,lessons[i].recheck,u.id+' recheck matches episode01');
 const c04=adaptiveUnits.C04,all=Object.fromEntries(c04.diagnosis.map(d=>[d.id,d.answer]));
 assert.equal(pickPath(c04,{...all,'D04-1':'A','D04-2':'A'}),'D');
 assert.match(pickTransfer(c04,all).id,/T04-B/);
