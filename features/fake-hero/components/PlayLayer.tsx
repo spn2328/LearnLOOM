@@ -5,7 +5,7 @@ import {useEffect, useRef, useState} from "react";
 import {buildResult} from "../results";
 import {CARD_ICON, badgesOf, cardsOf, levelOf, questTick, xpOf} from "../game";
 import {setSfx, sfx, sfxOn} from "../sfx";
-import {NO_THAI_VOICE, useThaiVoice, VARK_INFO, VARK_ORDER, VARK_QUIZ, canSpeak, markVark, quizResult, setVarkPref, skipVarkQuiz, speak, stopSpeak, useVark, type VarkKey} from "../vark";
+import {NO_THAI_VOICE, useThaiVoice, VARK_INFO, VARK_ORDER, VARK_QUIZ, canListen, markVark, quizResult, setVarkPref, skipVarkQuiz, speak, stopSpeak, textParts, useVark, type VarkKey} from "../vark";
 import {loomSrc} from "./ui";
 import {autoSync} from "../sheets";
 import "../styles/game.css";
@@ -74,7 +74,7 @@ export default function PlayLayer() {
       if (!el || !el.closest(".fh-shell,.fh-sp") || el.closest(".gm-dock,.fh-sp-tap")) return;
       last.current?.classList.remove("gm-reading");
       el.classList.add("gm-reading"); last.current = el;
-      speak((el as HTMLElement).innerText, () => el.classList.remove("gm-reading"));
+      speak(textParts(el), () => el.classList.remove("gm-reading"));
     };
     document.addEventListener("click", on, true);
     return () => { document.removeEventListener("click", on, true); last.current?.classList.remove("gm-reading"); };
@@ -117,7 +117,7 @@ export default function PlayLayer() {
   const readPage = () => {
     if (reading) { stopSpeak(); setReading(false); return; }
     const root = document.querySelector(".fh-shell");
-    const text = root ? [...root.querySelectorAll("h1,h2,h3,p,.fh-choice,.fh-sp-line")].filter(e => (e as HTMLElement).offsetParent && !e.closest(".gm-dock")).map(e => (e as HTMLElement).innerText).join(" ") : "";
+    const text = root ? [...root.querySelectorAll("h1,h2,h3,p,.fh-choice,.fh-sp-line")].filter(e => (e as HTMLElement).offsetParent && !e.closest(".gm-dock")).flatMap(textParts) : [];
     markVark("A"); setReading(true);
     if (!speak(text, () => setReading(false))) setReading(false);
   };
@@ -137,7 +137,7 @@ export default function PlayLayer() {
           <span aria-hidden>{pref ? VARK_INFO[pref].icon : "🎨"}</span>{pref ? VARK_INFO[pref].name : "สไตล์เรียน"}
         </button>
         <button type="button" className="gm-dock-read" aria-pressed={sound} aria-label={sound ? "ปิดเสียงเอฟเฟกต์" : "เปิดเสียงเอฟเฟกต์"} onClick={() => { setSfx(!sound); setSound(!sound); if (!sound) setTimeout(() => sfx("xp"), 50); }}>{sound ? "🔔" : "🔕"}</button>
-        {pref === "A" && canSpeak() && <button type="button" className="gm-dock-read" onClick={readPage} aria-label={reading ? "หยุดอ่าน" : "ฟังทั้งหน้า"}>{reading ? "⏹ หยุด" : "▶ ฟังทั้งหน้า"}</button>}
+        {pref === "A" && canListen() && <button type="button" className="gm-dock-read" onClick={readPage} aria-label={reading ? "หยุดอ่าน" : "ฟังทั้งหน้า"}>{reading ? "⏹ หยุด" : "▶ ฟังทั้งหน้า"}</button>}
       </div>
     </div>
 

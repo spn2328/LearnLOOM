@@ -3,6 +3,7 @@
 // counted so the learner and teacher can see which styles were actually used.
 import {useEffect, useState} from "react";
 import type {VarkKey, VarkUse} from "./game";
+import {hasVoice, loadVoiceIndex, norm, voiceKey, voiceUrl} from "./voice";
 
 export type {VarkKey};
 export type VarkState = {pref?: VarkKey; how?: "quiz" | "choose"; use: VarkUse; quiz?: Record<string, VarkKey>; skipped?: boolean};
@@ -61,27 +62,67 @@ export function useVark(): VarkState {
 // ---- read aloud (Web Speech API, works offline when the device has a Thai voice)
 export const canSpeak = () => typeof window !== "undefined" && "speechSynthesis" in window;
 export function hasThaiVoice() { return canSpeak() && speechSynthesis.getVoices().some(v => v.lang.toLowerCase().startsWith("th")); }
-export function speak(text: string, onEnd?: () => void) {
-  if (!canSpeak() || !text.trim()) { onEnd?.(); return false; }
-  speechSynthesis.cancel();
+// Parts are read one after another: a pre-rendered Thai AI voice file when there is one (voice.ts),
+// otherwise the device voice. Passing fixed texts as separate parts lets each one find its file.
+let audio: HTMLAudioElement | null = null;
+let run = 0;
+export function speak(text: string | string[], onEnd?: () => void) {
+  const parts = (Array.isArray(text) ? text : [text]).map(norm).filter(Boolean);
+  if (typeof window === "undefined" || !parts.length || (!canSpeak() && !parts.some(hasVoice))) { onEnd?.(); return false; }
+  stopSpeak();
+  const me = ++run;
+  const next = (i: number) => {
+    if (me !== run) return;
+    if (i >= parts.length) { onEnd?.(); return; }
+    const p = parts[i], go = () => next(i + 1);
+    if (hasVoice(p)) {
+      // file missing or blocked: read this part with the device voice instead (error and play() both report it)
+      let fell = false;
+      const fallback = () => { if (me === run && !fell) { fell = true; device(p, go); } };
+      audio = new Audio(voiceUrl(voiceKey(p)));
+      audio.onended = go;
+      audio.onerror = fallback;
+      audio.play().catch(e => { if ((e as Error).name !== "AbortError") fallback(); });
+    } else device(p, go);
+  };
+  next(0);
+  return true;
+}
+function device(text: string, done: () => void) {
+  if (!canSpeak()) { done(); return; }
   const u = new SpeechSynthesisUtterance(text.replace(/[–=≡]/g, m => ({"–": " พันธะเดี่ยว ", "=": " พันธะคู่ ", "≡": " พันธะสาม "})[m]!));
   u.lang = "th-TH"; u.rate = 0.95;
   const th = speechSynthesis.getVoices().find(v => v.lang.toLowerCase().startsWith("th"));
   if (th) u.voice = th;
-  u.onend = () => onEnd?.(); u.onerror = () => onEnd?.();
+  u.onend = done; u.onerror = done;
   speechSynthesis.speak(u);
-  return true;
 }
-export function stopSpeak() { if (canSpeak()) speechSynthesis.cancel(); }
-// Voices load asynchronously; null = not known yet. Without a Thai voice, Thai text may be read badly or not at all.
+export function stopSpeak() {
+  run++;
+  if (audio) { audio.onended = audio.onerror = null; audio.pause(); audio = null; }
+  if (canSpeak()) speechSynthesis.cancel();
+}
+// Text of an element as parts: whole text when it has a voice file, else its direct children one by one
+// (e.g. "<strong>A.</strong> choice" -> "ตัวเลือก A", choice).
+export function textParts(el: Element): string[] {
+  const all = norm((el as HTMLElement).innerText ?? el.textContent ?? "");
+  if (hasVoice(all) || !el.childNodes.length) return [all];
+  return [...el.childNodes].map(n => norm(n.textContent ?? "")).filter(Boolean).map(t => /^[A-D]\.$/.test(t) ? `ตัวเลือก ${t[0]}` : t);
+}
+export const canListen = () => canSpeak() || aiVoiceReady();
+const aiVoiceReady = () => hasVoice("ตัวเลือก A");
+// Thai voice available: the pre-rendered AI voice, or a Thai voice installed on the device.
+// null = not known yet (voices and the voice index load asynchronously).
 export function useThaiVoice(): boolean | null {
   const [ok, setOk] = useState<boolean | null>(null);
   useEffect(() => {
-    if (!canSpeak()) { setOk(false); return; }
-    const check = () => { if (speechSynthesis.getVoices().length) setOk(hasThaiVoice()); };
+    let live = true;
+    void loadVoiceIndex().then(() => { if (live && aiVoiceReady()) setOk(true); });
+    if (!canSpeak()) { const t = setTimeout(() => setOk(o => o ?? aiVoiceReady()), 1500); return () => { live = false; clearTimeout(t); }; }
+    const check = () => { if (aiVoiceReady()) setOk(true); else if (speechSynthesis.getVoices().length) setOk(hasThaiVoice()); };
     check(); speechSynthesis.addEventListener("voiceschanged", check);
     const t = setTimeout(() => setOk(o => o ?? hasThaiVoice()), 2500);
-    return () => { speechSynthesis.removeEventListener("voiceschanged", check); clearTimeout(t); };
+    return () => { live = false; speechSynthesis.removeEventListener("voiceschanged", check); clearTimeout(t); };
   }, []);
   return ok;
 }

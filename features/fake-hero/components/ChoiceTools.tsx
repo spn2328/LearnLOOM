@@ -4,7 +4,7 @@
 // K lets the learner cross out choices they have ruled out before answering.
 import {Fragment, useEffect, useState, type ReactNode} from "react";
 import type {Question} from "../content/episode01";
-import {NO_THAI_SHORT, canSpeak, markVark, speak, stopSpeak, useThaiVoice, useVark} from "../vark";
+import {NO_THAI_SHORT, canListen, markVark, speak, stopSpeak, useThaiVoice, useVark} from "../vark";
 
 const ATOM = /(?<![A-Za-z])(Cl|Br|C|H|O|N)(?![a-z])/g;
 
@@ -34,12 +34,12 @@ export function useChoiceTools(q: Question) {
   const listen = () => {
     if (talk) { stopSpeak(); setTalk(false); return; }
     markVark("A"); setTalk(true);
-    const text = `${q.prompt}. ${q.choices.map((c, i) => `ตัวเลือก ${"ABCD"[i]}. ${c}`).join(". ")}`;
-    if (!speak(text, () => setTalk(false))) setTalk(false);
+    const parts = [q.prompt, ...q.choices.flatMap((c, i) => [`ตัวเลือก ${"ABCD"[i]}`, String(c)])];
+    if (!speak(parts, () => setTalk(false))) setTalk(false);
   };
   const bar = pref ? <div className="gm-qtools" role="group" aria-label="เครื่องมือตามสไตล์การเรียน">
     {pref === "V" && <span className="gm-qtip">👁️ สีบอกธาตุ: <span className="gm-atom gm-atom-C">C</span> คาร์บอน <span className="gm-atom gm-atom-H">H</span> ไฮโดรเจน <span className="gm-atom gm-atom-O">O</span> ออกซิเจน</span>}
-    {pref === "A" && canSpeak() && <button type="button" className="gm-qbtn" onClick={listen}>{talk ? "⏹ หยุดฟัง" : "🔊 ฟังโจทย์และตัวเลือก"}</button>}
+    {pref === "A" && canListen() && <button type="button" className="gm-qbtn" onClick={listen}>{talk ? "⏹ หยุดฟัง" : "🔊 ฟังโจทย์และตัวเลือก"}</button>}
     {pref === "A" && thai === false && <span className="gm-qtip">{NO_THAI_SHORT}</span>}
     {pref === "R" && <button type="button" className="gm-qbtn" aria-expanded={noteOpen} onClick={() => { setNoteOpen(o => !o); if (!noteOpen) markVark("R"); }}>📝 จดโน้ตข้อนี้</button>}
     {pref === "K" && <span className="gm-qtip">✋ แตะ ✕ เพื่อตัดตัวเลือกที่คิดว่าไม่ใช่ออกก่อน แล้วค่อยเลือกคำตอบ</span>}

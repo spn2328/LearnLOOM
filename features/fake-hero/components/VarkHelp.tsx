@@ -5,7 +5,7 @@ import {useEffect, useState, type ReactNode} from "react";
 import type {Choice} from "../content/episode01";
 import type {AdaptiveUnitData} from "../content/adaptiveUnits";
 import type {PathId} from "../content/adaptive04";
-import {NO_THAI_VOICE, VARK_INFO, VARK_ORDER, canSpeak, markVark, speak, stopSpeak, useThaiVoice, useVark, type VarkKey} from "../vark";
+import {NO_THAI_VOICE, VARK_INFO, VARK_ORDER, canListen, markVark, speak, stopSpeak, useThaiVoice, useVark, type VarkKey} from "../vark";
 import {loomSrc} from "./ui";
 import "../styles/game.css";
 
@@ -43,15 +43,15 @@ export function VarkHelp({id, title, lines, pre = [], children}: {id: string; ti
   const listen = () => {
     if (talking) { stopSpeak(); setTalking(false); return; }
     setTalking(true); markVark("A");
-    if (!speak(`${title}. ${all.join(" ")}`, () => setTalking(false))) setTalking(false);
+    if (!speak([title, ...all], () => setTalking(false))) setTalking(false);
   };
 
   const support = mode === "V"
     ? <ol className="gm-steps">{all.map((l, i) => <li key={l}><span aria-hidden>{["🧩", "🔍", "💡", "🎯", "✅", "📌"][i % 6]}</span><p>{l}</p></li>)}</ol>
     : mode === "A"
       ? <div className="gm-listen">
-          {canSpeak() ? <button type="button" className="gm-btn" onClick={listen}>{talking ? "⏹ หยุดฟัง" : "🔊 ฟังลูมอธิบายเส้นทางนี้"}</button> : <p className="fh-hint">เบราว์เซอร์นี้อ่านออกเสียงไม่ได้ จึงแสดงเป็นข้อความแทน</p>}
-          {canSpeak() && thai === false && <p className="fh-hint">{NO_THAI_VOICE}</p>}
+          {canListen() ? <button type="button" className="gm-btn" onClick={listen}>{talking ? "⏹ หยุดฟัง" : "🔊 ฟังลูมอธิบายเส้นทางนี้"}</button> : <p className="fh-hint">เบราว์เซอร์นี้อ่านออกเสียงไม่ได้ จึงแสดงเป็นข้อความแทน</p>}
+          {canListen() && thai === false && <p className="fh-hint">{NO_THAI_VOICE}</p>}
           <details open={thai === false}><summary>ดูข้อความที่ลูมอ่าน</summary>{all.map(l => <p key={l}>{l}</p>)}</details>
         </div>
       : mode === "R"

@@ -48,4 +48,9 @@ assert.match(pickTransfer(c04,{}).id,/T04-A/);
 // help switch: neighbouring level first, never repeat, never the path already taught
 assert.equal(nextSwitch('B',[]),'A');assert.equal(nextSwitch('B',['A']),'C');assert.equal(nextSwitch('C',[]),'B');assert.equal(nextSwitch('A',['B']),'C');assert.equal(nextSwitch('D',['A']),'B');
 for(const p of ['A','B','C'])assert.notEqual(nextSwitch(p,[]),p);
+// Thai AI voice: the runtime key must match the generator, and every question text must get a voice file
+const voice=await import("../features/fake-hero/voice.ts"), gen=await import("./voice-texts.mjs");
+for(const t of ["ตัวเลือก A","  CH₃–CH₂  ด้วยพันธะ\n คู่ ","abc"])assert.equal(voice.voiceKey(t),gen.voiceKey(t),"voiceKey mismatch");
+const spoken=new Set(gen.collectTexts());
+for(const item of [...lessons.flatMap(l=>[l.activity,l.main,l.reason,l.practice,l.recheck]),...checkpoint,...checkpointReasons])for(const t of [item.prompt,...item.choices])if(/[฀-๿]/.test(t))assert.ok(spoken.has(voice.norm(t)),item.id+" text not collected for voice: "+t.slice(0,30));
 console.log('Fake Hero EP01 content: five concepts and answer keys verified');
