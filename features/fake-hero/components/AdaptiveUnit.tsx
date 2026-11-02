@@ -2,10 +2,10 @@
 import React, {useState} from "react";
 import type {Choice, Question} from "../content/episode01";
 import type {PathId} from "../content/adaptive04";
-import {pickPath, type AdaptiveUnitData} from "../content/adaptiveUnits";
+import {pickPath, pickTransfer, type AdaptiveUnitData} from "../content/adaptiveUnits";
 import {Choices, Loom, Popup} from "./ui";
 
-// Generic adaptive flow for R01/R02/R03/R05 (เนื้อเรื่องและคำถามล่าสุด.pdf):
+// Generic adaptive flow for R01–R05 (เนื้อเรื่องและคำถามล่าสุด.pdf):
 // diagnose → path (PDF text) → practice R0x-1/R0x-2 → recheck RC0x → RC0x-B if wrong → transfer.
 // The first attempt is stored by the parent and never touched here.
 export type UnitStage = "diagnose" | "path" | "practice" | "recheck" | "recheckB" | "transfer";
@@ -26,6 +26,7 @@ export default function AdaptiveUnit({unit, rec, onChange, onFinish}: {unit: Ada
   const path = rec.path ?? "C";
   const pathSteps: PathId[] = path === "D" ? ["A", "B", "C"] : [path];
   const step = Math.min(rec.pathStep ?? 0, pathSteps.length - 1);
+  const transfer = pickTransfer(unit, d);
   const pr = rec.practice ?? {};
   const pIndex = unit.practice.findIndex(q => !pr[q.id]);
   const answerText = (q: Question) => q.choices[q.answer.charCodeAt(0) - 65];
@@ -84,14 +85,15 @@ export default function AdaptiveUnit({unit, rec, onChange, onFinish}: {unit: Ada
       })}
 
       {stage === "transfer" && <>
-        <span className="fh-eyebrow">{unit.transfer.id}</span>
-        <h2>{unit.transfer.prompt}</h2>
+        <span className="fh-eyebrow">{transfer.id}</span>
+        {transfer.structure && <p className="fh-formula">{transfer.structure}<small>? คือจำนวน H ที่เชื่อมกับคาร์บอนตรงกลาง</small></p>}
+        <h2>{transfer.prompt}</h2>
         <textarea className="fh-reason" rows={3} value={text} onChange={e => setText(e.target.value)} placeholder="พิมพ์คำตอบและเหตุผลของคุณ" aria-label="คำตอบยืนยันความเข้าใจ" />
         {!shown
           ? <button className="fh-primary" disabled={!text.trim()} onClick={() => { setShown(true); onChange({...rec, transfer: text.trim()}); }}>บันทึกคำตอบ</button>
           : <>
-            {unit.transfer.answer && <p className="fh-good fh-pop">แนวคำตอบ: {unit.transfer.answer}</p>}
-            {!unit.transfer.answer && <p className="fh-hint">บันทึกคำตอบแล้ว ครูจะอ่านเหตุผลนี้ในรายงาน</p>}
+            {transfer.answer && <p className="fh-good fh-pop">แนวคำตอบ: {transfer.answer}</p>}
+            {!transfer.answer && <p className="fh-hint">บันทึกคำตอบแล้ว ครูจะอ่านเหตุผลนี้ในรายงาน</p>}
             <button className="fh-primary" onClick={onFinish}>ไปต่อ</button>
           </>}
       </>}

@@ -27,4 +27,20 @@ assert.equal(choosePath({...right,D01:'A'}),'A');
 assert.equal(choosePath({...right,D02:'A'}),'B');
 assert.equal(choosePath({...right,D04:'A'}),'C');
 assert.equal(choosePath({...right,D02:'A',D03:'A'}),'D');
+// PDF adaptive flows (เนื้อเรื่องและคำถามล่าสุด.pdf): valid keys, PDF answer keys, path rule.
+const {adaptiveUnits,pickPath,pickTransfer}=await import('../features/fake-hero/content/adaptiveUnits.ts');
+assert.deepEqual(Object.keys(adaptiveUnits),['C01','C02','C03','C04','C05']);
+for(const u of Object.values(adaptiveUnits)){
+  for(const q of [...u.diagnosis,...u.practice,u.recheck,u.recheckB])assert.ok(q.choices['ABCD'.indexOf(q.answer)],q.id+' valid answer');
+  assert.deepEqual(Object.keys(u.paths),['A','B','C','D']);
+  const right=Object.fromEntries(u.diagnosis.map(d=>[d.id,d.answer]));
+  assert.equal(pickPath(u,right),'C');
+  for(const d of u.diagnosis){const wrong=d.answer==='A'?'B':'A';assert.equal(pickPath(u,{...right,[d.id]:wrong}),d.group,d.id+' path');}
+}
+const keys=Object.fromEntries(Object.values(adaptiveUnits).flatMap(u=>[...u.practice,u.recheck,u.recheckB]).map(q=>[q.id,q.answer]));
+assert.deepEqual(keys,{'R01-1':'A','R01-2':'B',RC01:'B','RC01-B':'C','R02-1':'A','R02-2':'C',RC02:'B','RC02-B':'C','R03-1':'A','R03-2':'C',RC03:'B','RC03-B':'C','R04-1':'C','R04-2':'C',RC04:'C','RC04-B':'B','R05-1':'A','R05-2':'C',RC05:'B','RC05-B':'A'});
+const c04=adaptiveUnits.C04,all=Object.fromEntries(c04.diagnosis.map(d=>[d.id,d.answer]));
+assert.equal(pickPath(c04,{...all,'D04-1':'A','D04-2':'A'}),'D');
+assert.match(pickTransfer(c04,all).id,/T04-B/);
+assert.match(pickTransfer(c04,{}).id,/T04-A/);
 console.log('Fake Hero EP01 content: five concepts and answer keys verified');

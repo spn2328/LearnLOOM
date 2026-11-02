@@ -1,16 +1,18 @@
-// R01, R02, R03, R05 adaptive data from เนื้อเรื่องและคำถามล่าสุด.pdf (pp.5-12, 19-22).
+// R01–R05 adaptive data from เนื้อเรื่องและคำถามล่าสุด.pdf (pp.5-22).
 // Prompts, correct answers, path text, practice/recheck items and transfer items are copied from
 // the PDF. The PDF gives diagnostic questions with the correct answer only, so the WRONG options
-// of every D item (and of D01-4) are DRAFTS for teacher review. R04 lives in adaptive04.ts.
+// of every D item (and of D01-4) are DRAFTS for teacher review. adaptive04.ts is the older
+// R04 prototype (แก้ไข.pdf), kept only so earlier saved progress still reads.
 import type {Question} from "./episode01";
 import type {PathId} from "./adaptive04";
 
 export type Diag = Question & {group: "A" | "B" | "C"; code: string};
 export type UnitPath = {name: string; level: string; lines: string[]};
-export type Transfer = {id: string; prompt: string; answer?: string};
+// seenIn: a diagnostic item that already showed this structure; the next transfer is used instead.
+export type Transfer = {id: string; prompt: string; answer?: string; structure?: string; seenIn?: string};
 export type AdaptiveUnitData = {
   id: string; label: string; diagnosis: Diag[]; paths: Record<PathId, UnitPath>;
-  practice: Question[]; recheck: Question; recheckB: Question; transfer: Transfer; misconception: string;
+  practice: Question[]; recheck: Question; recheckB: Question; transfer: Transfer | Transfer[]; misconception: string;
 };
 
 const yesNo = (yes: string, no: string) => [yes, no];
@@ -82,6 +84,32 @@ export const adaptiveUnits: Record<string, AdaptiveUnitData> = {
     recheckB: {id: "RC03-B", prompt: "ไซโคลเพนเทนมีโครงสร้างคาร์บอนแบบใด?", choices: ["โซ่ตรง", "โซ่กิ่ง", "วง"], answer: "C"},
     transfer: {id: "R03 · Transfer เพิ่มเติม", prompt: "ผู้เรียนได้รับแบบจำลองคาร์บอนห้าอะตอมที่หมุนได้ และต้องระบุว่ามีคาร์บอนแตกกิ่งหรือไม่ พร้อมแตะตำแหน่งที่ใช้เป็นหลักฐานในการตัดสิน"},
   },
+  C04: {
+    id: "C04", label: "R04 — Diagnostic Check", misconception: "M04_BOND_ORDER",
+    diagnosis: [
+      {id: "D04-1", prompt: "= คือพันธะชนิดใด?", choices: ["พันธะเดี่ยว", "พันธะคู่", "พันธะสาม"], answer: "B", group: "A", code: "C04_BOND_SYMBOL"},
+      {id: "D04-2", prompt: "C=C ใช้อิเล็กตรอนร่วมกันกี่คู่?", choices: ["1 คู่", "2 คู่", "3 คู่"], answer: "B", group: "B", code: "C04_BOND_ORDER"},
+      {id: "D04-3", prompt: "ใน CH₂=CH₂ คาร์บอนหนึ่งอะตอมเชื่อมโดยตรงกับอะตอมอื่นกี่อะตอม?", choices: ["2 อะตอม", "3 อะตอม", "4 อะตอม"], answer: "B", group: "C", code: "C04_COUNT_BONDS"},
+      {id: "D04-4", prompt: "ใน CH₃–CH=CH₂ คาร์บอน CH ตรงกลางมีพันธะ C–H กี่พันธะ?", choices: ["0 พันธะ", "1 พันธะ", "2 พันธะ"], answer: "B", group: "C", code: "C04_COUNT_CH"},
+      {id: "D04-5", prompt: "ใน CH₃–C(?)=CH₂ ต้องเติม H บนคาร์บอนตรงกลางกี่อะตอม?", choices: ["0 อะตอม", "1 อะตอม", "2 อะตอม"], answer: "B", group: "C", code: "C04_FILL_H"},
+    ],
+    paths: {
+      A: {name: "Path A — ไม่รู้จักสัญลักษณ์พันธะ", level: "Bloom L1 → L2", lines: ["กิจกรรมแรก — Bond Symbol Match", "ผู้เรียนได้รับสัญลักษณ์ –, =, ≡ และบัตรชื่อพันธะ แล้วต้องจับคู่ให้ตรงกัน", "ตรวจระหว่างกิจกรรม: ให้ดู CH₂=CH₂ แล้วตอบว่าพันธะระหว่าง C เป็นชนิดใด", "หากยังผิด ระบบเปลี่ยนเป็นแบบจำลองแสดงจำนวนคู่อิเล็กตรอนและให้เชื่อมกลับไปยังสัญลักษณ์", "หากผ่าน จะตรวจความเข้าใจ L2 แล้วจึงเข้าสู่โจทย์ประยุกต์ L3", "การระบุสัญลักษณ์ถูกเพียงอย่างเดียวไม่ถือว่าผ่านเป้าหมาย Q04"]},
+      B: {name: "Path B — เข้าใจอันดับพันธะคู่ผิด", level: "Bloom L2 → L3", lines: ["กิจกรรมแรก — Electron Pair Explorer", "ผู้เรียนแตะพันธะเดี่ยวแล้วเห็นคู่อิเล็กตรอนร่วมกันหนึ่งคู่ จากนั้นแตะพันธะคู่แล้วเปรียบเทียบกับสองคู่", "คำถามระหว่างกิจกรรม: “C=C มีอันดับพันธะเท่าใด และเพราะอะไร?”", "ถ้ายังตอบผิด เปลี่ยนเป็น Build a Double Bond ให้ลากคู่อิเล็กตรอนสองคู่มาจัดเป็นพันธะคู่ด้วยตนเอง", "จากนั้นกลับไปใช้หลักการกับโครงสร้างโมเลกุลใหม่"]},
+      C: {name: "Path C — เข้าใจหลักการ แต่ตรวจพันธะไม่ครบ", level: "Bloom L3", lines: ["กิจกรรมแรก — Carbon Bond Highlighter", "ผู้เรียนต้องแตะพันธะที่เชื่อมกับคาร์บอนเป้าหมายทั้งหมด", "ระบบแสดงว่ามีพันธะ C–C, C=C และ C–H ที่ต้องพิจารณา แต่ยังไม่บอกผลรวมอันดับพันธะให้ทันที", "ตรวจระหว่างกิจกรรม: ให้ผู้เรียนเลือกพันธะทีละตำแหน่งและรวมอันดับพันธะเอง", "หากยังผิด เปลี่ยนเป็น Molecular Repair โดยให้เติม H ในโครงสร้างที่ยังไม่สมบูรณ์ แล้วอธิบายวิธีคิด"]},
+      D: {name: "Path D — ขาดความรู้หลายส่วน", level: "Bloom L1 → L2 → L3", lines: ["กิจกรรมแบบขั้นบันได", "1. L1 — Bond Identification: จับคู่ชนิดพันธะกับสัญลักษณ์", "2. L2 — Electron Pair Explanation: สร้างและอธิบายพันธะเดี่ยว คู่ สาม", "3. L3 — Carbon Valence Checker: นับอันดับพันธะในโครงสร้างอย่างง่าย", "4. L3 — Molecular Repair: เติมพันธะหรือไฮโดรเจนที่หายไปในโครงสร้างใหม่", "หากผ่านขั้น L1 แต่ไม่ผ่าน L2 ระบบจะช่วยเฉพาะ L2 ต่อ ไม่ย้อนกลับไปเริ่ม L1 โดยไม่มีเหตุจำเป็น"]},
+    },
+    practice: [
+      {id: "R04-1", prompt: "ใน CH₄ คาร์บอนสร้างพันธะเดี่ยวกับ H กี่พันธะ?", choices: ["2", "3", "4"], answer: "C"},
+      {id: "R04-2", prompt: "ใน CH₂=CH₂ คาร์บอนแต่ละอะตอมมีผลรวมอันดับพันธะเท่าใด?", choices: ["2", "3", "4"], answer: "C"},
+    ],
+    recheck: {id: "RC04", prompt: "ใน CH₃–CH=CH₂ คาร์บอนตำแหน่ง CH ตรงกลางมีผลรวมอันดับพันธะเท่าใด?", choices: ["2", "3", "4"], answer: "C"},
+    recheckB: {id: "RC04-B", prompt: "ใน HC≡CH คาร์บอนแต่ละอะตอมมีผลรวมอันดับพันธะเท่าใด?", choices: ["3", "4", "5"], answer: "B"},
+    transfer: [
+      {id: "TRANSFER T04-A · BLOOM L3 · ซ่อมโครงสร้างโมเลกุล", structure: "CH₃–C(?)=CH₂", seenIn: "D04-5", prompt: "ต้องเติม H กี่อะตอม และเพราะเหตุใด?", answer: "1 อะตอม เพราะมีพันธะเดี่ยวกับ C ด้านซ้ายอันดับ 1 และพันธะคู่กับ C ด้านขวาอันดับ 2 รวมเป็น 3 จึงต้องมีพันธะเดี่ยว C–H อีก 1"},
+      {id: "TRANSFER T04-B · BLOOM L3 · ซ่อมโครงสร้างโมเลกุลใหม่", structure: "CH₃–C(?)≡CH", prompt: "ต้องเติม H กี่อะตอม และเพราะเหตุใด?", answer: "0 อะตอม เพราะมีพันธะเดี่ยวอันดับ 1 และพันธะสามอันดับ 3 รวมเป็น 4 อยู่แล้ว"},
+    ],
+  },
   C05: {
     id: "C05", label: "R05 — ระบบตรวจอะไรบ้าง?", misconception: "M05_FORMULA_COUNT",
     diagnosis: [
@@ -106,6 +134,12 @@ export const adaptiveUnits: Record<string, AdaptiveUnitData> = {
     transfer: {id: "T05-A", prompt: "กำหนด CH₃–CH₂–CH=CH₂ ให้ผู้เรียนระบุจำนวน C และ H พร้อมแสดงการนับแต่ละกลุ่ม", answer: "C₄H₈ โดยมี H = 3 + 2 + 1 + 2 = 8"},
   },
 };
+
+// First transfer item whose structure the learner has not already met in the diagnosis (PDF p.18).
+export function pickTransfer(unit: AdaptiveUnitData, answers: Record<string, string>): Transfer {
+  const list = Array.isArray(unit.transfer) ? unit.transfer : [unit.transfer];
+  return list.find(t => !t.seenIn || !answers[t.seenIn]) ?? list[list.length - 1];
+}
 
 // Path from the diagnostic groups that were answered wrongly: one group -> that path,
 // two or more groups -> D, none wrong (knows the parts but missed the main question) -> C.

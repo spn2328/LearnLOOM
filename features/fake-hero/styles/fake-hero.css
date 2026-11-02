@@ -174,3 +174,5 @@
 /* free-text answer in the adaptive transfer step */
 .fh-adaptive .fh-reason{display:block;width:100%;box-sizing:border-box;margin:10px 0;padding:12px 14px;border:2px solid #cfdccc;border-radius:14px;background:#fff;color:#27392f;font:inherit;font-size:17px;line-height:1.6;resize:vertical}
 .fh-adaptive .fh-reason:focus-visible{outline:3px solid #f4c44e;outline-offset:2px}
+.fh-adaptive .fh-formula{display:grid;gap:4px;justify-items:center;margin:10px 0;padding:16px;border-radius:12px;background:#f3f5ee;font-family:"Noto Sans Thai",Tahoma,sans-serif;font-size:28px;font-weight:700;color:#27392f}
+.fh-adaptive .fh-formula small{font-size:14px;font-weight:400;color:#5d6b62}
