@@ -25,16 +25,45 @@ export function roleOf(text, loom = new Set()) {
   return "narrator";
 }
 
-// What the voice actually says (the file key stays the on-screen text), XML-escaped for SSML.
+// Chemical formulas are read the way Thai classes say them: element letters by their English names,
+// subscripts as English numbers (CH₄ "ซีเอชโฟร์", Na₂CO₃ "เอ็นเอทู ซีโอทรี"). Bond symbols are read by
+// their look ("ขีดคู่"), not their name, so the voice never gives an answer away.
 const SUB = "₀₁₂₃₄₅₆₇₈₉";
+const ELEMENTS = new Set("H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr".split(" "));
+const LETTER = {A: "เอ", B: "บี", C: "ซี", D: "ดี", E: "อี", F: "เอฟ", G: "จี", H: "เอช", I: "ไอ", J: "เจ", K: "เค", L: "แอล", M: "เอ็ม", N: "เอ็น", O: "โอ", P: "พี", Q: "คิว", R: "อาร์", S: "เอส", T: "ที", U: "ยู", V: "วี", W: "ดับเบิลยู", X: "เอ็กซ์", Y: "วาย", Z: "แซด"};
+const ONES = ["", "วัน", "ทู", "ทรี", "โฟร์", "ไฟว์", "ซิกซ์", "เซเว่น", "เอท", "ไนน์", "เทน", "อีเลฟเว่น", "ทเวลฟ์", "เธอร์ทีน", "โฟร์ทีน", "ฟิฟทีน", "ซิกซ์ทีน", "เซเว่นทีน", "เอททีน", "ไนน์ทีน"];
+const TENS = ["", "", "ทเวนตี้", "เธอร์ตี้", "ฟอร์ตี้", "ฟิฟตี้"];
+const english = n => n < 20 ? ONES[n] : TENS[Math.floor(n / 10)] + ONES[n % 10];
+const BOND = {"–": " ขีดเดี่ยว ", "=": " ขีดคู่ ", "≡": " ขีดสาม "};
+// whole runs only (no backtracking "CP01" -> "C"); a run touching a digit or hyphen is an id, not a formula
+const FORMULA = /(?<![0-9A-Za-z-])(?:\(\?\)|[A-Za-z₀-₉()–=≡])+/g;
+function formula(tok) {
+  let t = tok;
+  const n = c => t.split(c).length - 1;
+  while (t.startsWith("(") && n("(") > n(")")) t = t.slice(1);
+  while (t.endsWith(")") && n(")") > n("(")) t = t.slice(0, -1);
+  while (t.startsWith(")")) t = t.slice(1);
+  if (/^\([^()]*\)$/.test(t)) t = t.slice(1, -1);
+  const atoms = t.replace(/\(\?\)|[()₀-₉–=≡]/g, "");
+  if (!atoms || !/^(?:[A-Z][a-z]?)+$/.test(atoms) || !atoms.match(/[A-Z][a-z]?/g).every(e => ELEMENTS.has(e))) return null;
+  const say = t.replace(/\(\?\)|[A-Z][a-z]?|[₀-₉]+|[()–=≡]/g, m =>
+    m === "(?)" ? " วงเล็บ เครื่องหมายคำถาม ปิดวงเล็บ " :
+    m === "(" ? " วงเล็บ " : m === ")" ? " ปิดวงเล็บ " : BOND[m] ??
+    (/[₀-₉]/.test(m) ? english(Number([...m].map(c => SUB.indexOf(c)).join(""))) + " " : [...m].map(c => LETTER[c.toUpperCase()]).join("")));
+  return ` ${say} `;
+}
 const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 export function spokenText(text) {
   const s = text
     .replace(LABEL, "")
     .replace(/\p{Extended_Pictographic}|️|[✕✓⠿]/gu, "")
+    .replace(FORMULA, (tok, i, all) => (/[0-9-]/.test(all[i + tok.length] ?? "") ? null : formula(tok)) ?? tok)
+    // symbols written alone: named as a symbol ("เครื่องหมาย = …", "–, =, ≡"), in arithmetic, or a range (C02–C05)
+    .replace(/(^|\s)([–=≡])(?=\s*(?:,|และ|$|\s(?:ระหว่าง|คือ|เป็น|แต่|กับ)))/g, (_, a, b) => a + BOND[b])
+    .replace(/(เครื่องหมาย|เห็น|ว่า)\s*([–=≡])(?=\s)/g, (_, a, b) => a + BOND[b])
+    .replace(/(?<=[0-9A-Za-z])\s*–\s*(?=[0-9A-Za-z])/g, " ถึง ")
+    .replace(/\s=\s/g, " เท่ากับ ").replace(/\s[−-]\s/g, " ลบ ").replace(/\s\+\s/g, " บวก ")
     .replace(/[₀-₉]/g, c => String(SUB.indexOf(c)))
-    // bond symbols are read by their look, not their name, so the voice never gives an answer away
-    .replace(/\s*([–=≡])\s*(?=[A-Z(\s])/g, (_, b) => ({"–": " ขีดเดี่ยว ", "=": " ขีดคู่ ", "≡": " ขีดสาม "})[b])
     .replace(/\s*→\s*/g, " แล้วไปที่ ")
     .replace(/(?<=[฀-๿])\s*\/\s*(?=[฀-๿])/g, " หรือ ")
     .replace(/\bXP\b/g, "เอ็กซ์พี").replace(/\bEP\.?\s?0?(\d)/g, "อีพี $1")
