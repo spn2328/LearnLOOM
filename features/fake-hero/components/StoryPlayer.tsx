@@ -85,7 +85,7 @@ export default function StoryPlayer({script, end, label = "ฉาก"}: {script:
             {who === "ลูม" && <img className="fh-sp-avatar" src={loomSrc(i % 2 ? "think" : "point")} alt="" />}
             <span>
               {who && <b className="fh-sp-who">{who}</b>}
-              <span className="fh-sp-line">{said}</span>
+              <span className="fh-sp-line" data-voice={beat.text}>{said}</span>
             </span>
           </span>
           {!done && <em className="fh-sp-more" aria-hidden="true">แตะเพื่อพลิกหน้า ▸</em>}

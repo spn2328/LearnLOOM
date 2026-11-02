@@ -11,7 +11,7 @@ import {autoSync} from "../sheets";
 import "../styles/game.css";
 
 const SEEN_KEY = "learnloom-game-seen-v1";
-const TEXT = "h1,h2,h3,p,li,label,.fh-choice,.fh-sp-line,.fh-act-card,.fh-act-bin b";
+const TEXT = "h1,h2,h3,p,li,label,.fh-choice,.fh-sp-line,.fh-bubble,.fh-say,.fh-act-card,.fh-act-bin b";
 
 function readSeen(): {xp: number; level: number; badges: string[]; cards?: string[]} | null {
   try { return JSON.parse(localStorage.getItem(SEEN_KEY) || "null"); } catch { return null; }

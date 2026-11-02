@@ -38,6 +38,20 @@ export function collectTexts() {
   return [...out].filter(s => s.length > 1 && !/[{}]|=>|<\/|className|=\{/.test(s));
 }
 
+// Texts Loom says (speech bubbles, hints): lesson notes, literals in loom={...}, JSX text inside <Loom>
+export function loomTexts() {
+  const out = new Set();
+  const lit = /"((?:[^"\\\n]|\\.)*)"/g;
+  for (const d of DIRS) for (const f of fs.readdirSync(path.join(ROOT, d))) {
+    if (!/\.(ts|tsx)$/.test(f)) continue;
+    const src = fs.readFileSync(path.join(ROOT, d, f), "utf8");
+    for (const m of src.matchAll(/\bnote:\s*"((?:[^"\\\n]|\\.)*)"/g)) out.add(norm(m[1]));
+    for (const m of src.matchAll(/\bloom=\{([^}]*)\}/g)) for (const s of m[1].matchAll(lit)) out.add(norm(s[1]));
+    for (const m of src.matchAll(/<Loom\b[^>]*>([^<{]+)/g)) out.add(norm(m[1]));
+  }
+  return out;
+}
+
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
   const t = collectTexts();
   console.log(`${t.length} texts, ${t.reduce((n, s) => n + s.length, 0)} characters`);

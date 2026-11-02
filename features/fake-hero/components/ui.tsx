@@ -11,11 +11,12 @@ export type LoomPose = "point" | "think" | "cheer" | "happy" | "clipboard";
 export function loomSrc(pose: LoomPose = "point") {
   return getMedia("loom-" + pose)[0]?.url ?? "/images/loom.webp";
 }
-export function Loom({pose = "point", children, side = "left", small = false}: {pose?: LoomPose; children: ReactNode; side?: "left" | "right"; small?: boolean}) {
+// voice = the full source line ("ลูม: …") so read-aloud finds its pre-rendered file
+export function Loom({pose = "point", children, side = "left", small = false, voice}: {pose?: LoomPose; children: ReactNode; side?: "left" | "right"; small?: boolean; voice?: string}) {
   return (
     <div className={`fh-loom ${side} ${small ? "small" : ""}`}>
       <img src={loomSrc(pose)} alt="ลูม" />
-      <div className="fh-bubble">{children}</div>
+      <div className="fh-bubble" data-voice={voice}>{children}</div>
     </div>
   );
 }
@@ -26,10 +27,10 @@ export function Dialogue({lines}: {lines: string[]}) {
     <div className="fh-dialogue">
       {lines.map((line, i) => {
         const m = /^(ลูม|ผู้เล่น|เจฟ|ชาวบ้าน|เฮียศักดิ์)\s*:\s*(.*)$/.exec(line);
-        if (!m) return <p key={i} className="fh-narration">{line}</p>;
+        if (!m) return <p key={i} className="fh-narration" data-voice={line}>{line}</p>;
         const [, who, text] = m;
-        if (who === "ลูม") return <Loom key={i} pose={i % 2 ? "think" : "point"} small><b>ลูม</b> {text}</Loom>;
-        return <div key={i} className={`fh-say ${who === "ผู้เล่น" ? "me" : ""}`}><b>{who}</b> {text}</div>;
+        if (who === "ลูม") return <Loom key={i} pose={i % 2 ? "think" : "point"} small voice={line}><b>ลูม</b> {text}</Loom>;
+        return <div key={i} className={`fh-say ${who === "ผู้เล่น" ? "me" : ""}`} data-voice={line}><b>{who}</b> {text}</div>;
       })}
     </div>
   );

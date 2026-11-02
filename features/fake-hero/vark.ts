@@ -102,9 +102,11 @@ export function stopSpeak() {
   if (audio) { audio.onended = audio.onerror = null; audio.pause(); audio = null; }
   if (canSpeak()) speechSynthesis.cancel();
 }
-// Text of an element as parts: whole text when it has a voice file, else its direct children one by one
+// Text of an element as parts: its data-voice source line or whole text when it has a voice file, else its direct children one by one
 // (e.g. "<strong>A.</strong> choice" -> "ตัวเลือก A", choice).
 export function textParts(el: Element): string[] {
+  const src = el.closest("[data-voice]")?.getAttribute("data-voice");
+  if (src && hasVoice(src)) return [src];
   const all = norm((el as HTMLElement).innerText ?? el.textContent ?? "");
   if (hasVoice(all) || !el.childNodes.length) return [all];
   return [...el.childNodes].map(n => norm(n.textContent ?? "")).filter(Boolean).map(t => /^[A-D]\.$/.test(t) ? `ตัวเลือก ${t[0]}` : t);
