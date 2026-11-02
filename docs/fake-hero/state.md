@@ -201,3 +201,4 @@ User clarified the appearance to preserve is the **original cream-and-green dash
 - แปลงภาพ 10 ภาพเป็น webp กว้าง 1600px (~120–250KB) จับคู่ตามเลขหน้ามุมภาพ: s02a(02) s02b(03) s02c(04) l01(05) s08-1 คราบแวววาว, s08-2(06), a02 + s08-3(07 สมุด), s09-1 เสียงเครื่องยนต์, s09-2(08), s09-3(09); วิดีโอเปิดเรื่อง → `ep01-s01.mp4` (H.264)
 - ยังไม่ใส่: `Animate_illustration_with_red_panda….mov` เป็น HEVC (hvc1) เล่นไม่ได้บน Chrome/Android ส่วนใหญ่ ต้องแปลงเป็น H.264 mp4 ก่อน (เครื่องนี้ไม่มี ffmpeg)
 - ตรวจแล้ว (localhost): build รวมไฟล์สื่อ, วิดีโอ s01 โหลดได้ (1920px), ภาพ Scene 02 แสดงผล
+- แก้ต่อ 3 พ.ย.: แปลง `Animate_illustration_with_red_panda….mov` (HEVC) เป็น H.264 mp4 ด้วย ffmpeg → `ep01-s01.mp4` (คลิปเปิดคดี "คลิปหนึ่งกำลังถูกส่งต่อ…", 6 วินาที, 2.4MB); คลิปเดิมใน s01 คือคลิปคราบแวววาวบนแม่น้ำ ย้ายไป `ep01-s08-1.mp4` แทนภาพนิ่งซ้ำ; ตรวจแล้ว: คลิป s01 เล่นได้ใน browser (localhost)
