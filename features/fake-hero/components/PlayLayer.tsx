@@ -3,8 +3,9 @@
 // style quiz, and XP / level-up / badge pop-ups. XP is derived from the saved result (game.ts).
 import {useEffect, useRef, useState} from "react";
 import {buildResult} from "../results";
-import {badgesOf, levelOf, xpOf} from "../game";
-import {VARK_INFO, VARK_ORDER, VARK_QUIZ, canSpeak, markVark, quizResult, setVarkPref, skipVarkQuiz, speak, stopSpeak, useVark, type VarkKey} from "../vark";
+import {CARD_ICON, badgesOf, cardsOf, levelOf, questTick, xpOf} from "../game";
+import {setSfx, sfx, sfxOn} from "../sfx";
+import {NO_THAI_VOICE, useThaiVoice, VARK_INFO, VARK_ORDER, VARK_QUIZ, canSpeak, markVark, quizResult, setVarkPref, skipVarkQuiz, speak, stopSpeak, useVark, type VarkKey} from "../vark";
 import {loomSrc} from "./ui";
 import {autoSync} from "../sheets";
 import "../styles/game.css";
@@ -12,7 +13,7 @@ import "../styles/game.css";
 const SEEN_KEY = "learnloom-game-seen-v1";
 const TEXT = "h1,h2,h3,p,li,label,.fh-choice,.fh-sp-line,.fh-act-card,.fh-act-bin b";
 
-function readSeen(): {xp: number; level: number; badges: string[]} | null {
+function readSeen(): {xp: number; level: number; badges: string[]; cards?: string[]} | null {
   try { return JSON.parse(localStorage.getItem(SEEN_KEY) || "null"); } catch { return null; }
 }
 
@@ -45,11 +46,14 @@ export function VarkQuiz({onClose}: {onClose: () => void}) {
 
 export default function PlayLayer() {
   const vark = useVark();
+  const thai = useThaiVoice();
   const [open, setOpen] = useState(false);
   const [quiz, setQuiz] = useState(false);
   const [reading, setReading] = useState(false);
   const [toasts, setToasts] = useState<{id: number; icon: string; text: string}[]>([]);
   const [levelUp, setLevelUp] = useState<{level: number; name: string} | null>(null);
+  const [sound, setSound] = useState(true);
+  useEffect(() => setSound(sfxOn()), []);
   const last = useRef<Element | null>(null);
   const pref = vark.pref;
 
@@ -82,13 +86,21 @@ export default function PlayLayer() {
       const r = buildResult(), {xp, parts} = xpOf(r), lv = levelOf(xp);
       const got = badgesOf(r, vark.use).filter(b => b.got);
       const seen = readSeen();
-      const save = () => { try { localStorage.setItem(SEEN_KEY, JSON.stringify({xp, level: lv.level, badges: got.map(b => b.id)})); } catch {} };
+      const cards = cardsOf(r);
+      const save = () => { try { localStorage.setItem(SEEN_KEY, JSON.stringify({xp, level: lv.level, badges: got.map(b => b.id), cards})); } catch {} };
+      const quests = questTick(xp, vark.use, vark.pref).newly;
       if (!seen) { save(); return; }
       const add: {icon: string; text: string}[] = [];
       if (xp > seen.xp) add.push({icon: "⭐", text: `+${xp - seen.xp} XP · ${parts[parts.length - 1]?.label ?? ""}`});
       got.filter(b => !seen.badges.includes(b.id)).forEach(b => add.push({icon: b.icon, text: `ได้เหรียญ “${b.name}”`}));
-      if (lv.level > seen.level) setLevelUp({level: lv.level, name: lv.name});
-      if (add.length || xp !== seen.xp) save();
+      const newCards = cards.filter(c => !(seen.cards ?? cards).includes(c));
+      newCards.forEach(c => add.push({icon: CARD_ICON[c] ?? "🃏", text: `ได้การ์ดหลักฐาน ${c} เข้าแฟ้มคดี`}));
+      quests.forEach(q => add.push({icon: "🎟️", text: `ภารกิจวันนี้สำเร็จ: ${q.name}`}));
+      if (lv.level > seen.level) { setLevelUp({level: lv.level, name: lv.name}); sfx("level"); }
+      else if (got.length > seen.badges.length || newCards.length) sfx(newCards.length ? "card" : "badge");
+      else if (quests.length) sfx("quest");
+      else if (xp > seen.xp) sfx("xp");
+      if (add.length || xp !== seen.xp || newCards.length) save();
       autoSync(r, xp !== seen.xp);
       if (add.length) {
         const stamp = Date.now();
@@ -99,7 +111,7 @@ export default function PlayLayer() {
     tick();
     const t = setInterval(tick, 1500);
     return () => clearInterval(t);
-  }, [vark.use]);
+  }, [vark.use, vark.pref]);
 
   const choose = (k: VarkKey) => { setVarkPref(k, "choose"); setOpen(false); };
   const readPage = () => {
@@ -117,12 +129,14 @@ export default function PlayLayer() {
         {VARK_ORDER.map(k => <button key={k} type="button" aria-pressed={pref === k} className={pref === k ? "on" : ""} onClick={() => choose(k)}>
           <span aria-hidden>{VARK_INFO[k].icon}</span><span><b>{VARK_INFO[k].name}</b><small>{VARK_INFO[k].long}</small></span>
         </button>)}
+        {pref === "A" && thai === false && <p className="gm-fine">{NO_THAI_VOICE}</p>}
         <button type="button" className="gm-link" onClick={() => { setOpen(false); setQuiz(true); }}>ทำแบบทดสอบสไตล์อีกครั้ง</button>
       </div>}
       <div className="gm-dock-bar">
         <button type="button" className="gm-dock-main" aria-expanded={open} onClick={() => setOpen(o => !o)}>
           <span aria-hidden>{pref ? VARK_INFO[pref].icon : "🎨"}</span>{pref ? VARK_INFO[pref].name : "สไตล์เรียน"}
         </button>
+        <button type="button" className="gm-dock-read" aria-pressed={sound} aria-label={sound ? "ปิดเสียงเอฟเฟกต์" : "เปิดเสียงเอฟเฟกต์"} onClick={() => { setSfx(!sound); setSound(!sound); if (!sound) setTimeout(() => sfx("xp"), 50); }}>{sound ? "🔔" : "🔕"}</button>
         {pref === "A" && canSpeak() && <button type="button" className="gm-dock-read" onClick={readPage} aria-label={reading ? "หยุดอ่าน" : "ฟังทั้งหน้า"}>{reading ? "⏹ หยุด" : "▶ ฟังทั้งหน้า"}</button>}
       </div>
     </div>

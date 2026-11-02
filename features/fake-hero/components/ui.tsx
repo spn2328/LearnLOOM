@@ -2,6 +2,7 @@
 import React, {useEffect, useRef, useState, type ReactNode} from "react";
 import {getMedia} from "../media/registry";
 import type {Choice, Question} from "../content/episode01";
+import {useChoiceTools} from "./ChoiceTools";
 
 export const letters: Choice[] = ["A", "B", "C", "D"];
 
@@ -58,14 +59,21 @@ export function Popup({open, tone = "info", title, children, actions, onClose}: 
 }
 
 export function Choices({q, value, onChoose}: {q: Question; value?: string; onChoose: (a: Choice) => void}) {
+  const t = useChoiceTools(q);
   return (
-    <div className="fh-options">
-      {q.choices.map((v, i) => (
-        <button key={i} className={"fh-choice " + (value === letters[i] ? "active" : "")} aria-pressed={value === letters[i]} onClick={() => onChoose(letters[i])}>
-          <strong>{letters[i]}.</strong> {v}
-        </button>
-      ))}
-    </div>
+    <>
+      {t.bar}
+      <div className={`fh-options ${t.pref === "K" ? "gm-cutting" : ""}`}>
+        {q.choices.map((v, i) => (
+          <div key={i} className={`gm-opt ${t.out[i] ? "out" : ""}`}>
+            <button className={"fh-choice " + (value === letters[i] ? "active" : "")} aria-pressed={value === letters[i]} onClick={() => onChoose(letters[i])}>
+              <strong>{letters[i]}.</strong> {t.fmt(v)}
+            </button>
+            {t.cut(i)}
+          </div>
+        ))}
+      </div>
+    </>
   );
 }
 

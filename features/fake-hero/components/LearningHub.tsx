@@ -3,7 +3,7 @@
 // progress, notebook, certificate and settings. Everything is read from this browser's saves.
 import {useEffect, useState, type ReactNode} from "react";
 import SendResult from "./SendResult";
-import {GameHud, GameProgress} from "./GameHub";
+import {GameHud, GameProgress, GameQuests} from "./GameHub";
 import DevPanel from "./DevPanel";
 import {loomSrc} from "./ui";
 import {getMedia} from "../media/registry";
@@ -209,6 +209,7 @@ function Home({data, nickname, go, onStart}: {data: Data; nickname: string; go: 
       <img src={loomSrc("happy")} alt="ลูมโบกมือทักทาย"/>
     </div>
     <GameHud r={r}/>
+    <GameQuests r={r}/>
     <div className="fh-home-grid">
       <article className="fh-card fh-continue">
         <img src={hubImage("ep01-s02a")} alt=""/>

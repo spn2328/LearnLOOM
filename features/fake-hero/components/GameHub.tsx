@@ -3,7 +3,9 @@
 // (My Progress). Everything is derived from the saved result, so it always matches the teacher view.
 import {lessons} from "../content/episode01";
 import {adaptiveUnits} from "../content/adaptiveUnits";
-import {badgesOf, levelOf, starsOf, xpOf} from "../game";
+import {useEffect, useState} from "react";
+import {CARD_ICON, QUESTS, badgesOf, cardsOf, levelOf, readQuests, starsOf, xpOf, type QuestState} from "../game";
+import {loomSrc} from "./ui";
 import {VARK_INFO, VARK_ORDER, useVark} from "../vark";
 import type {StudentResult} from "../results";
 import "../styles/game.css";
@@ -15,7 +17,7 @@ export function GameHud({r}: {r: StudentResult}) {
   const {xp} = xpOf(r), lv = levelOf(xp);
   const stars = r.concepts.reduce((n, c) => n + starsOf(c), 0);
   const badges = badgesOf(r, vark.use).filter(b => b.got).length;
-  return <section className="gm-hud" aria-label="ระดับนักสืบ">
+  return <section className="gm-hud gm-wash" aria-label="ระดับนักสืบ">
     <div className="gm-lv" style={{["--p" as string]: lv.pct}}><b><span>Lv.</span><strong>{lv.level}</strong></b></div>
     <div className="gm-hud-main">
       <h3>{lv.name}</h3>
@@ -44,13 +46,50 @@ function routeSteps(c: StudentResult["concepts"][number]) {
   return steps;
 }
 
+// Today's quests (reset daily, reward stamps only). Re-reads every few seconds while the page is open.
+export function GameQuests({r}: {r: StudentResult}) {
+  const vark = useVark();
+  const [q, setQ] = useState<QuestState | null>(null);
+  useEffect(() => {
+    const read = () => setQ(readQuests(xpOf(r).xp, readVarkUse()));
+    read(); const t = setInterval(read, 3000); return () => clearInterval(t);
+  }, [r]);
+  if (!q) return null;
+  return <section className="gm-card gm-quests gm-wash" aria-label="ภารกิจวันนี้">
+    <img className="gm-quests-loom" src={loomSrc("clipboard")} alt=""/>
+    <h3>🎟️ ภารกิจวันนี้ <small>{q.done.length}/{QUESTS.length} · ตราประทับสะสม {q.stamps}</small></h3>
+    <ul>{QUESTS.map(x => <li key={x.id} className={q.done.includes(x.id) ? "done" : ""}><span aria-hidden>{q.done.includes(x.id) ? "✅" : x.icon}</span>{x.name}{x.id === "other" && vark.pref ? ` (ไม่ใช่ ${VARK_INFO[vark.pref].name})` : ""}</li>)}</ul>
+  </section>;
+}
+const readVarkUse = () => { try { return JSON.parse(localStorage.getItem("learnloom-vark-v1") || "{}").use ?? {}; } catch { return {}; } };
+
+// Collectible evidence cards: one per concept, flip to see how it was earned.
+function EvidenceCards({r}: {r: StudentResult}) {
+  const got = cardsOf(r);
+  const [flip, setFlip] = useState<string>();
+  return <article className="gm-card">
+    <h3>🃏 แฟ้มหลักฐาน ({got.length}/{r.concepts.length})</h3>
+    <p>ผ่านแนวคิดไหน จะได้การ์ดหลักฐานของแนวคิดนั้น แตะการ์ดเพื่อพลิกดูเส้นทางที่ใช้</p>
+    <div className="gm-cards">{r.concepts.map((c, i) => {
+      const on = got.includes(c.id);
+      return <button key={c.id} type="button" className={`gm-ecard ${on ? "got" : ""} ${flip === c.id ? "flip" : ""}`} disabled={!on} aria-pressed={flip === c.id}
+        aria-label={on ? `การ์ด ${c.id} ${lessons[i].title}` : `การ์ด ${c.id} ยังล็อกอยู่`} onClick={() => setFlip(f => f === c.id ? undefined : c.id)}>
+        <span className="gm-ecard-in">
+          <span className="gm-ecard-front"><i aria-hidden>{on ? CARD_ICON[c.id] : "🔒"}</i><b>{c.id}</b><small>{on ? lessons[i].title : "ผ่านแนวคิดนี้เพื่อปลดล็อก"}</small></span>
+          <span className="gm-ecard-back"><b>{c.id} · {c.outcome}</b><Stars n={starsOf(c)}/><small>{routeSteps(c).map(x => x.t).join(" → ")}</small></span>
+        </span>
+      </button>;
+    })}</div>
+  </article>;
+}
+
 export function GameProgress({r}: {r: StudentResult}) {
   const vark = useVark();
   const badges = badgesOf(r, vark.use);
   const {xp, parts} = xpOf(r);
   const total = VARK_ORDER.reduce((n, k) => n + (vark.use[k] ?? 0), 0);
   return <>
-    <article className="gm-card">
+    <article className="gm-card gm-wash">
       <h3>🗺️ แผนที่ภารกิจของฉัน (Adaptive Route)</h3>
       <p>ลูมปรับเส้นทางให้แต่ละคนตามคำตอบ ถ้าตอบถูกตั้งแต่ครั้งแรกจะไปต่อได้เลย ถ้ายังไม่ถูก ระบบจะวินิจฉัยแล้วพาไป Path ที่ตรงกับจุดที่สับสน และเปลี่ยนวิธีช่วยถ้าวิธีแรกยังไม่ได้ผล</p>
       <ol className="gm-map">{r.concepts.map((c, i) => {
@@ -65,6 +104,8 @@ export function GameProgress({r}: {r: StudentResult}) {
         </li>;
       })}</ol>
     </article>
+
+    <EvidenceCards r={r}/>
 
     <article className="gm-card">
       <h3>🏅 เหรียญรางวัล ({badges.filter(b => b.got).length}/{badges.length})</h3>

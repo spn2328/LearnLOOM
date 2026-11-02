@@ -53,3 +53,33 @@ export function badgesOf(r: StudentResult, use: VarkUse = {}): Badge[] {
     {id: "closed", icon: "🦸", name: "ปิดคดี EP.01", desc: "เรียนจบตอนแรก", got: r.finished},
   ];
 }
+
+// Evidence cards: one collectible per concept, unlocked once the concept is passed (with or without help).
+export const CARD_ICON: Record<string, string> = {C01: "🧪", C02: "⚛️", C03: "🔗", C04: "🧬", C05: "📐"};
+export const cardsOf = (r: StudentResult) => r.concepts.filter(c => starsOf(c) >= 2).map(c => c.id);
+
+// Daily quests: small goals that reset each day. They give stamps (a separate collection), never XP,
+// so XP keeps meaning "what was learned" for the teacher.
+export type QuestState = {date: string; xp0: number; use0: VarkUse; done: string[]; stamps: number};
+export const QUEST_KEY = "learnloom-quests-v1";
+const total = (u: VarkUse) => Object.values(u).reduce((n, x) => n + (x ?? 0), 0);
+export const QUESTS: {id: string; icon: string; name: string; check: (s: QuestState, xp: number, use: VarkUse, pref?: VarkKey) => boolean}[] = [
+  {id: "xp", icon: "📚", name: "เก็บ XP วันนี้อย่างน้อย 10 XP", check: (s, xp) => xp - s.xp0 >= 10},
+  {id: "help", icon: "🎨", name: "ใช้ตัวช่วยตามสไตล์เรียน 2 ครั้ง", check: (s, _, use) => total(use) - total(s.use0) >= 2},
+  {id: "other", icon: "🧭", name: "ลองสไตล์อื่นที่ไม่ใช่สไตล์หลัก 1 ครั้ง", check: (s, _, use, pref) => (["V", "A", "R", "K"] as const).some(k => k !== pref && (use[k] ?? 0) > (s.use0[k] ?? 0))},
+];
+const today = () => new Date().toLocaleDateString("sv");
+export function readQuests(xp: number, use: VarkUse): QuestState {
+  let s: QuestState | null = null;
+  try { s = JSON.parse(localStorage.getItem(QUEST_KEY) || "null"); } catch {}
+  if (!s || s.date !== today()) s = {date: today(), xp0: xp, use0: use, done: [], stamps: s?.stamps ?? 0};
+  return s;
+}
+// Returns the quests finished since the last call and saves the new state.
+export function questTick(xp: number, use: VarkUse, pref?: VarkKey) {
+  const s = readQuests(xp, use);
+  const newly = QUESTS.filter(q => !s.done.includes(q.id) && q.check(s, xp, use, pref));
+  const next = {...s, done: [...s.done, ...newly.map(q => q.id)], stamps: s.stamps + newly.length};
+  try { localStorage.setItem(QUEST_KEY, JSON.stringify(next)); } catch {}
+  return {state: next, newly};
+}

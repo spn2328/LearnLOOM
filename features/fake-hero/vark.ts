@@ -73,3 +73,17 @@ export function speak(text: string, onEnd?: () => void) {
   return true;
 }
 export function stopSpeak() { if (canSpeak()) speechSynthesis.cancel(); }
+// Voices load asynchronously; null = not known yet. Without a Thai voice, Thai text may be read badly or not at all.
+export function useThaiVoice(): boolean | null {
+  const [ok, setOk] = useState<boolean | null>(null);
+  useEffect(() => {
+    if (!canSpeak()) { setOk(false); return; }
+    const check = () => { if (speechSynthesis.getVoices().length) setOk(hasThaiVoice()); };
+    check(); speechSynthesis.addEventListener("voiceschanged", check);
+    const t = setTimeout(() => setOk(o => o ?? hasThaiVoice()), 2500);
+    return () => { speechSynthesis.removeEventListener("voiceschanged", check); clearTimeout(t); };
+  }, []);
+  return ok;
+}
+export const NO_THAI_VOICE = "เครื่องนี้ยังไม่มีเสียงอ่านภาษาไทย ถ้าฟังไม่ชัด ให้เพิ่มเสียงภาษาไทยในการตั้งค่าเครื่อง (Windows: เวลาและภาษา › คำพูด, Android/iOS: การอ่านออกเสียง) หรือเปิดข้อความอ่านแทน";
+export const NO_THAI_SHORT = "⚠️ เครื่องนี้ยังไม่มีเสียงไทย อาจฟังไม่ชัด (วิธีเพิ่มเสียงดูที่ปุ่มสไตล์เรียน)";

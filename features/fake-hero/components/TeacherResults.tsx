@@ -9,6 +9,16 @@ const VARK_NAME:Record<string,string>={V:"ภาพ",A:"ฟัง",R:"อ่า�
 const varkText=(r:StudentResult)=>r.vark?.pref?`${VARK_NAME[r.vark.pref]}${r.vark.how==="quiz"?" (แบบทดสอบ)":""}`:"—";
 const varkUse=(r:StudentResult)=>Object.entries(r.vark?.use??{}).map(([k,n])=>`${VARK_NAME[k]??k} ${n}`).join(", ");
 
+// Class view of VARK: for each preferred style, how often help led to a pass (descriptive only, small groups)
+function varkGroups(rows:StudentResult[]){
+  return [...Object.keys(VARK_NAME),"-"].map(k=>{
+    const g=rows.filter(r=>(r.vark?.pref??"-")===k);
+    const helped=g.flatMap(r=>r.concepts.filter(c=>!c.firstCorrect&&(c.recheck||c.recheckB)));
+    const passed=helped.filter(c=>c.outcome==="ผ่านหลังช่วยเหลือ").length;
+    const first=g.reduce((n,r)=>n+r.concepts.filter(c=>c.firstCorrect).length,0);
+    return {k,name:k==="-"?"ยังไม่เลือก":VARK_NAME[k],n:g.length,first:g.length?first/g.length:0,helped:helped.length,passed,rate:helped.length?Math.round(passed/helped.length*100):null};
+  }).filter(x=>x.n>0);
+}
 const conceptIds=lessons.map(l=>l.main.id.replace("Q","C"));
 const mark=(ok:boolean,a?:string)=>a?`${a}${ok?" ✓":" ✗"}`:"—";
 // Adaptive route with help switches, e.g. "Path B → A → C" (a switch = practice wrong, another activity tried)
@@ -34,7 +44,7 @@ export default function TeacherResults(){
       ...rows.flatMap(r=>r.concepts.map(c=>[r.nickname,c.id,c.firstMain??"",c.firstReason??"",c.firstCorrect?"ใช่":"ไม่",c.assisted?"ใช่":"ไม่",route(c),switchText(c),c.recheck??"",c.recheckB??"",c.recheckCorrect?"ใช่":"ไม่",c.transfer??"",c.outcome]))];
     const cp=[["ชื่อเล่น",...checkpoint.flatMap(q=>[q.id,q.id+"-E"])],
       ...rows.map(r=>[r.nickname,...checkpoint.flatMap((q,i)=>[mark(r.checkpoint.answers[q.id]===q.answer,r.checkpoint.answers[q.id]),mark(r.checkpoint.reasons[checkpointReasons[i].id]===checkpointReasons[i].answer,r.checkpoint.reasons[checkpointReasons[i].id])])])];
-    download(`LearnLOOM-EP01-ผลห้องเรียน-${new Date().toISOString().slice(0,10)}.xlsx`,xlsx([{name:"สรุป",rows:overview},{name:"รายแนวคิด",rows:detail},{name:"Checkpoint",rows:cp}]));
+    download(`LearnLOOM-EP01-ผลห้องเรียน-${new Date().toISOString().slice(0,10)}.xlsx`,xlsx([{name:"สรุป",rows:overview},{name:"รายแนวคิด",rows:detail},{name:"Checkpoint",rows:cp},{name:"VARK",rows:[["สไตล์หลัก","จำนวนคน","เฉลี่ยถูกครั้งแรก (แนวคิด/คน)","แนวคิดที่ได้รับความช่วยเหลือ","ผ่านหลังช่วยเหลือ","อัตราผ่านหลังช่วยเหลือ (%)"],...varkGroups(rows).map(g=>[g.name,g.n,g.first.toFixed(1),g.helped,g.passed,g.rate??"—"])]}]));
   }
   // Wrong first-attempt reasons per concept show which misconception is common in the class
   const weak=conceptIds.map((id,i)=>({id,miss:rows.filter(r=>r.concepts[i]?.firstMain&&!r.concepts[i].firstCorrect).length,switched:rows.filter(r=>r.concepts[i]?.helpSwitches?.length).length})).filter(x=>x.miss>0);
@@ -51,6 +61,7 @@ export default function TeacherResults(){
         <td><b>{r.checkpoint.score}</b> {r.checkpoint.score>=7?"ผ่าน":"ไม่ผ่าน"}<br/><small>คำตอบ {r.checkpoint.answerScore} · เหตุผล {r.checkpoint.reasonScore}</small></td>
         <td><b>{xpOf(r).xp}</b> XP · Lv.{levelOf(xpOf(r).xp).level}<br/><small title={varkUse(r)}>{varkText(r)}</small></td>
         <td style={{minWidth:220,whiteSpace:"pre-wrap"}}>{r.transfer||"—"}</td></tr>)}</tbody></table></div>}
+    {rows.length>0&&<div className="panel"><h2>สไตล์การเรียน (VARK) กับผลลัพธ์</h2><div className="table-wrap"><table><thead><tr><th>สไตล์หลัก</th><th>คน</th><th>ถูกครั้งแรกเฉลี่ย</th><th>ผ่านหลังได้รับความช่วยเหลือ</th></tr></thead><tbody>{varkGroups(rows).map(g=><tr key={g.k}><td>{g.name}</td><td>{g.n}</td><td>{g.first.toFixed(1)}/5</td><td>{g.rate===null?"—":`${g.passed}/${g.helped} แนวคิด (${g.rate}%)`}</td></tr>)}</tbody></table></div><p className="fine">ข้อมูลเชิงพรรณนาจากผู้เรียนที่นำเข้าเท่านั้น กลุ่มเล็กจึงยังสรุปไม่ได้ว่าสไตล์ใดได้ผลกว่า ใช้ประกอบการสังเกตของครู</p></div>}
     {weak.length>0&&<div className="panel"><h2>แนวคิดที่ควรทบทวนทั้งห้อง</h2>{weak.sort((a,b)=>b.miss-a.miss).map(w=><p key={w.id}>{w.id}: ตอบครั้งแรกยังไม่ถูกทั้งคำตอบและเหตุผล {w.miss}/{rows.length} คน{w.switched>0&&` · ต้องเปลี่ยนวิธีช่วย ${w.switched} คน`}</p>)}<p className="fine">Transfer เป็นคำตอบอิสระ ครูต้องตรวจเหตุผลเอง · "เปลี่ยนวิธีช่วย" = ตอบแบบฝึกผิดแล้วระบบเปลี่ยนไปใช้กิจกรรมของเส้นทางอื่น ถ้ามีหลายคน อาจต้องสอนแนวคิดนั้นด้วยวิธีอื่นในห้อง</p></div>}
   </section>;
 }

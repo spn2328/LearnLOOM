@@ -1,4 +1,4 @@
-const VERSION='learnloom-1.2-game';
+const VERSION='learnloom-1.3-watercolor';
 const CACHE='learnloom-assets-'+VERSION;
 self.addEventListener('install',event=>event.waitUntil(self.skipWaiting()));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{for(const key of await caches.keys())if(key.startsWith('learnloom-assets-')&&key!==CACHE)await caches.delete(key);await self.clients.claim()})()));

@@ -171,3 +171,55 @@ html[data-vark="A"] .fh-shell :is(h1, h2, h3, p, li, .fh-choice) { cursor: url("
 .gm-dev-url { flex-wrap: wrap }
 .gm-dev-url input { flex: 1 1 280px; min-height: 44px; padding: 0 12px; border-radius: 12px; border: 2px solid var(--gm-line); font: inherit; font-size: 14px; background: var(--gm-cream) }
 .gm-dev-url input[aria-invalid="true"] { border-color: var(--gm-coral) }
+
+/* ---- watercolor look (owner mockup: cream paper, soft green/peach washes, leaf sprigs, Loom art) */
+.gm-wash { position: relative; isolation: isolate; overflow: hidden; background: var(--gm-cream) url(/images/deco/wash.svg) center / 100% 100% no-repeat }
+.gm-wash::after { content: ""; position: absolute; z-index: -1; right: -18px; bottom: -22px; width: 120px; height: 120px; background: url(/images/deco/sprig.svg) center / contain no-repeat; opacity: .55; transform: rotate(8deg); pointer-events: none }
+/* Loom's art sits on cream paper: multiply melts its background into the wash instead of a white box */
+.fh-hello img, .gm-quests-loom, .gm-why img, .gm-modal-loom { mix-blend-mode: multiply }
+.fh-hello { background: url(/images/deco/wash.svg) center / 100% 100% no-repeat; border-radius: 28px; position: relative }
+.fh-hello::before { content: ""; position: absolute; right: 128px; bottom: -8px; width: 92px; height: 92px; background: url(/images/deco/sprig.svg) center / contain no-repeat; transform: scaleX(-1); opacity: .7; pointer-events: none; z-index: 0 }
+.fh-hello > * { position: relative; z-index: 1 }
+.gm-modal-card::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: url(/images/deco/wash.svg) center / 100% 100% no-repeat; opacity: .8; z-index: -1 }
+.gm-modal-card { isolation: isolate }
+
+/* ---- daily quests */
+.gm-quests { padding-right: 120px }
+.gm-quests h3 { margin: 0 0 8px; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline }
+.gm-quests h3 small { font-size: 13px; color: #5d6d63; font-weight: 400 }
+.gm-quests ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px }
+.gm-quests li { display: flex; gap: 10px; align-items: center; padding: 8px 12px; border-radius: 14px; background: rgba(255, 255, 255, .75); border: 1.5px dashed var(--gm-line); font-size: 15px }
+.gm-quests li.done { border-style: solid; border-color: var(--gm-leaf); background: #eef7ec; color: var(--gm-green) }
+.gm-quests-loom { position: absolute; right: 8px; bottom: 0; width: 110px; height: auto; pointer-events: none }
+@media (max-width: 560px) { .gm-quests { padding-right: 16px } .gm-quests-loom { width: 74px; top: 6px; bottom: auto; opacity: .9 } .gm-quests h3 { padding-right: 70px } }
+
+/* ---- evidence cards */
+.gm-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 12px }
+.gm-ecard { all: unset; box-sizing: border-box; cursor: pointer; perspective: 700px; min-height: 168px; display: block; border-radius: 18px }
+.gm-ecard:disabled { cursor: default }
+.gm-ecard:focus-visible { outline: 3px solid var(--gm-sun); outline-offset: 3px }
+.gm-ecard-in { position: relative; display: block; height: 100%; min-height: 168px; transition: transform .5s; transform-style: preserve-3d }
+.gm-ecard.flip .gm-ecard-in { transform: rotateY(180deg) }
+.gm-ecard-front, .gm-ecard-back { position: absolute; inset: 0; display: grid; align-content: center; justify-items: center; gap: 4px; padding: 12px 10px; text-align: center; border-radius: 18px; backface-visibility: hidden; border: 2px dashed var(--gm-line); background: #f4f1ea; color: #8a978f }
+.gm-ecard-front i { font-style: normal; font-size: 40px; filter: grayscale(1); opacity: .5 }
+.gm-ecard-front small, .gm-ecard-back small { font-size: 12.5px; line-height: 1.4 }
+.gm-ecard.got .gm-ecard-front { border: 2px solid #e2b04a; color: var(--gm-ink); background: #fffaf0 url(/images/deco/wash.svg) center / 160% 160%; box-shadow: 0 6px 16px rgba(80, 60, 20, .12) }
+.gm-ecard.got .gm-ecard-front i { filter: none; opacity: 1; animation: gm-bob 3s ease-in-out infinite }
+.gm-ecard-back { transform: rotateY(180deg); background: var(--gm-green); color: #fff; border: 2px solid var(--gm-green) }
+.gm-ecard-back .gm-stars span.off { color: rgba(255, 255, 255, .35) }
+
+/* ---- VARK tools on every question */
+.gm-qtools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 10px 0 0 }
+.gm-qtip { font-size: 13.5px; color: #4d5f55; background: var(--gm-sun-soft); border-radius: 999px; padding: 6px 12px; line-height: 1.5 }
+.gm-qbtn { min-height: 40px; border-radius: 999px; padding: 0 14px; border: 1.5px solid var(--gm-green); background: #fff; color: var(--gm-green); font: inherit; font-size: 14px; cursor: pointer }
+.gm-qbtn:hover { background: var(--gm-mint) }
+.gm-qnote { flex-basis: 100%; border-radius: 14px; border: 1.5px solid var(--gm-line); padding: 8px 12px; font: inherit; font-size: 15px; background: #fffdf7; color: var(--gm-ink) }
+.gm-atom { font-weight: 700 }
+.gm-atom-C { color: #2f7d4f } .gm-atom-H { color: #5b6b8c } .gm-atom-O { color: #c4462f } .gm-atom-N { color: #2e6fb0 } .gm-atom-Cl, .gm-atom-Br { color: #8a5a00 }
+.gm-opt { position: relative; display: grid }
+.gm-cutting .fh-choice { padding-right: 56px }
+.gm-opt .gm-cut { padding: 0; min-height: 0; min-width: 0; display: grid; place-items: center; line-height: 1; box-shadow: none; border-radius: 50% !important }
+.gm-cut { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid #c9b9a8; background: #fff; color: #9b4a34; font: inherit; font-size: 16px; cursor: pointer }
+.gm-cut[aria-pressed="true"] { color: var(--gm-green); border-color: var(--gm-green) }
+.gm-opt.out .fh-choice { opacity: .45; text-decoration: line-through; text-decoration-color: #c4462f }
+@media (prefers-reduced-motion: reduce) { .gm-ecard-in { transition: none } .gm-ecard.got .gm-ecard-front i { animation: none } }
