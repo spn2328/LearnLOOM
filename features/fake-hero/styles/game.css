@@ -1,0 +1,225 @@
+/* Game layer (XP, levels, badges, VARK dock). Same cream-green family as fake-hero.css,
+   brightened with sunny yellow / coral accents. All classes are gm- prefixed. */
+:root {
+  --gm-green: #316552; --gm-leaf: #3ea36b; --gm-mint: #eaf2e9; --gm-cream: #fcfaf6; --gm-ink: #27392f;
+  --gm-sun: #f4c44e; --gm-sun-soft: #fff4d4; --gm-coral: #ef7b5a; --gm-sky: #5fa8d3; --gm-line: #dce6da;
+}
+
+@keyframes gm-pop { 0% { transform: scale(.85) translateY(8px); opacity: 0 } 70% { transform: scale(1.03) } 100% { transform: none; opacity: 1 } }
+@keyframes gm-fall { 0% { transform: translateY(-10vh) rotate(0) } 100% { transform: translateY(110vh) rotate(720deg) } }
+@keyframes gm-shine { 0%, 100% { background-position: 0 0 } 50% { background-position: 100% 0 } }
+@keyframes gm-bob { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
+.gm-pop { animation: gm-pop .35s cubic-bezier(.2, .9, .3, 1.2) both }
+
+/* ---- VARK dock */
+.gm-dock { position: fixed; left: 16px; bottom: 16px; z-index: 60; display: grid; gap: 8px; justify-items: start; font-family: inherit }
+/* room under the last action so the floating dock never covers it */
+body:has(.gm-dock) { padding-bottom: 76px }
+@media (max-width: 760px) { body:has(.gm-dock) { padding-bottom: 140px } }
+.gm-dock-bar { display: flex; gap: 6px; flex-wrap: wrap }
+.gm-dock-main, .gm-dock-read {
+  min-height: 44px; padding: 0 16px; border-radius: 999px; border: 2px solid var(--gm-green); font: inherit; font-size: 15px;
+  display: inline-flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 6px 16px rgba(39, 57, 47, .18);
+}
+.gm-dock-main { background: var(--gm-sun); color: var(--gm-ink) }
+.gm-dock-main span { font-size: 18px }
+.gm-dock-read { background: var(--gm-green); color: #fff }
+.gm-dock-main:focus-visible, .gm-dock-read:focus-visible, .gm-dock-panel button:focus-visible, .gm-quiz button:focus-visible, .gm-btn:focus-visible, .gm-link:focus-visible { outline: 3px solid var(--gm-coral); outline-offset: 2px }
+.gm-dock-panel {
+  width: min(320px, calc(100vw - 32px)); background: var(--gm-cream); border: 2px solid var(--gm-line); border-radius: 20px; padding: 12px;
+  display: grid; gap: 6px; box-shadow: 0 14px 34px rgba(39, 57, 47, .22); color: var(--gm-ink);
+}
+.gm-dock-panel > b { font-size: 16px; padding: 2px 4px 4px }
+.gm-dock-panel > button:not(.gm-link) {
+  display: flex; gap: 10px; align-items: center; text-align: left; min-height: 52px; padding: 8px 10px; border-radius: 14px;
+  border: 2px solid transparent; background: #fff; color: var(--gm-ink); font: inherit; cursor: pointer;
+}
+.gm-dock-panel > button > span:first-child { font-size: 22px; width: 32px; text-align: center }
+.gm-dock-panel > button small { display: block; font-size: 12.5px; color: #5d6d63 }
+.gm-dock-panel > button:hover { background: var(--gm-mint) }
+.gm-dock-panel > button.on { border-color: var(--gm-leaf); background: var(--gm-mint) }
+.gm-link { background: none; border: 0; color: var(--gm-green); text-decoration: underline; font: inherit; font-size: 14px; cursor: pointer; padding: 8px; min-height: 40px }
+.gm-reading { background: var(--gm-sun-soft) !important; box-shadow: 0 0 0 3px var(--gm-sun); border-radius: 8px }
+html[data-vark="A"] .fh-shell :is(h1, h2, h3, p, li, .fh-choice) { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='26' height='26'><text y='20' font-size='20'>🔊</text></svg>") 4 4, pointer }
+@media (max-width: 760px) { .gm-dock { bottom: 84px; left: 10px } .gm-dock-main, .gm-dock-read { font-size: 14px; padding: 0 12px } }
+
+/* ---- toasts */
+.gm-toasts { position: fixed; top: 76px; right: 16px; z-index: 70; display: grid; gap: 8px; justify-items: end; pointer-events: none }
+.gm-toast {
+  display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; font-size: 15px; color: var(--gm-ink);
+  background: linear-gradient(90deg, var(--gm-sun-soft), #fff); border: 2px solid var(--gm-sun); box-shadow: 0 8px 20px rgba(39, 57, 47, .18);
+}
+.gm-toast span { font-size: 20px }
+
+/* ---- modals (quiz, level up) */
+.gm-modal { position: fixed; inset: 0; z-index: 80; background: rgba(39, 57, 47, .45); display: grid; place-items: center; padding: 16px; overflow: hidden }
+.gm-modal-card {
+  position: relative; width: min(480px, 100%); max-height: calc(100vh - 96px); overflow-y: auto; background: var(--gm-cream); color: var(--gm-ink);
+  border-radius: 28px; padding: 60px 24px 24px; margin-top: 48px; overflow: visible; text-align: center; border: 3px solid var(--gm-sun); box-shadow: 0 24px 60px rgba(0, 0, 0, .25);
+}
+.gm-modal-card h2 { margin: 6px 0 14px; font-size: 22px; line-height: 1.4 }
+.gm-modal-card p { line-height: 1.6 }
+.gm-modal-loom { position: absolute; top: -48px; left: 50%; width: 96px; height: 96px; object-fit: cover; border-radius: 50%; background: #fff; border: 3px solid var(--gm-sun); margin-left: -48px; animation: gm-bob 2.4s ease-in-out infinite }
+.gm-modal { padding-top: 24px }
+.gm-eyebrow { display: inline-block; padding: 4px 12px; border-radius: 999px; background: var(--gm-mint); color: var(--gm-green); font-size: 13px; font-weight: 600 }
+.gm-fine { font-size: 13.5px; color: #5d6d63 }
+.gm-quiz { display: grid; gap: 8px; margin-bottom: 8px }
+.gm-quiz button {
+  display: flex; align-items: center; gap: 10px; text-align: left; min-height: 52px; padding: 10px 14px; border-radius: 16px; font: inherit; font-size: 15.5px;
+  background: #fff; color: var(--gm-ink); border: 2px solid var(--gm-line); cursor: pointer; transition: transform .12s, border-color .12s;
+}
+.gm-quiz button span { font-size: 22px }
+.gm-quiz button:hover { border-color: var(--gm-leaf); transform: translateX(3px) }
+.gm-btn {
+  min-height: 48px; padding: 0 28px; border-radius: 999px; border: 0; font: inherit; font-size: 17px; cursor: pointer; color: #fff;
+  background: linear-gradient(135deg, var(--gm-leaf), var(--gm-green)); box-shadow: 0 6px 0 #234a3c; transition: transform .1s, box-shadow .1s;
+}
+.gm-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #234a3c }
+.gm-levelup { border-color: var(--gm-coral); background: radial-gradient(circle at 50% 0, var(--gm-sun-soft), var(--gm-cream) 60%) }
+.gm-levelup .gm-eyebrow { background: var(--gm-coral); color: #fff; letter-spacing: .12em }
+.gm-levelup h2 { font-size: 28px; color: var(--gm-green) }
+.gm-confetti { position: absolute; inset: 0; pointer-events: none }
+.gm-confetti i {
+  position: absolute; top: 0; left: calc(var(--k) * 4.2%); width: 10px; height: 16px; border-radius: 3px;
+  background: hsl(calc(var(--k) * 47), 80%, 62%); animation: gm-fall calc(2.2s + var(--k) * .07s) linear calc(var(--k) * -.13s) infinite;
+}
+
+/* ---- HUD on the home page */
+.gm-hud {
+  display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: center; padding: 16px 20px; border-radius: 24px; margin: 0 0 18px;
+  background: linear-gradient(120deg, #fff8e1 0%, #eaf6ec 55%, #e3f1f8 100%); border: 2px solid var(--gm-line); color: var(--gm-ink);
+}
+.gm-lv { width: 72px; height: 72px; border-radius: 50%; display: grid; place-items: center; text-align: center; line-height: 1.05; color: #fff;
+  background: conic-gradient(var(--gm-sun) calc(var(--p) * 1%), rgba(255, 255, 255, .6) 0); padding: 6px }
+.gm-lv b { width: 100%; height: 100%; border-radius: 50%; display: grid; place-content: center; background: var(--gm-green); font-size: 13px; font-weight: 500 }
+.gm-lv b strong { font-size: 24px }
+.gm-hud-main h3 { margin: 0 0 4px; font-size: 18px }
+.gm-xpbar { height: 14px; border-radius: 999px; background: #fff; border: 1.5px solid var(--gm-line); overflow: hidden }
+.gm-xpbar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--gm-sun), var(--gm-coral), var(--gm-sun)); background-size: 200% 100%; animation: gm-shine 3s ease-in-out infinite }
+.gm-hud-main small { display: block; margin-top: 4px; color: #5d6d63; font-size: 13px }
+.gm-hud-stats { display: flex; gap: 10px }
+.gm-stat { min-width: 64px; padding: 8px 10px; border-radius: 16px; background: #fff; text-align: center; border: 1.5px solid var(--gm-line) }
+.gm-stat b { display: block; font-size: 20px; color: var(--gm-green) }
+.gm-stat small { font-size: 12px; color: #5d6d63 }
+@media (max-width: 760px) { .gm-hud { grid-template-columns: auto 1fr; padding: 14px } .gm-hud-stats { grid-column: 1 / -1; justify-content: space-between } .gm-stat { flex: 1; min-width: 0 } }
+
+/* ---- mission map (adaptive route per concept) */
+.gm-card { background: #fff; border: 2px solid var(--gm-line); border-radius: 24px; padding: 18px 20px; margin: 0 0 18px; color: var(--gm-ink) }
+.gm-card > h3 { margin: 0 0 4px; font-size: 18px }
+.gm-card > p { margin: 0 0 12px; color: #5d6d63; font-size: 14px; line-height: 1.55 }
+.gm-map { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px }
+.gm-map li { display: grid; grid-template-columns: 44px 1fr auto; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 18px; background: var(--gm-cream); border: 1.5px solid var(--gm-line) }
+.gm-node { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; color: #fff; background: #b9c6bc }
+.gm-node.s3 { background: var(--gm-leaf) } .gm-node.s2 { background: var(--gm-sky) } .gm-node.s1 { background: var(--gm-coral) }
+.gm-map b { display: block; font-size: 15px }
+.gm-route { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; font-size: 12.5px }
+.gm-route span { padding: 2px 8px; border-radius: 999px; background: #fff; border: 1px solid var(--gm-line) }
+.gm-route span.sw { background: var(--gm-sun-soft); border-color: var(--gm-sun) }
+.gm-route span.ok { background: var(--gm-mint); border-color: var(--gm-leaf) }
+.gm-stars { font-size: 16px; letter-spacing: 1px; color: var(--gm-sun); white-space: nowrap }
+.gm-stars .off { color: #d8ded9 }
+
+/* ---- badges + VARK profile */
+.gm-badges { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px }
+.gm-badge { padding: 12px 10px; border-radius: 18px; text-align: center; background: var(--gm-cream); border: 2px dashed var(--gm-line); color: #8a978f }
+.gm-badge span { display: block; font-size: 30px; filter: grayscale(1); opacity: .45 }
+.gm-badge b { display: block; font-size: 14px; margin-top: 4px }
+.gm-badge small { font-size: 12px; line-height: 1.35; display: block }
+.gm-badge.got { border: 2px solid var(--gm-sun); background: linear-gradient(180deg, var(--gm-sun-soft), #fff); color: var(--gm-ink) }
+.gm-badge.got span { filter: none; opacity: 1 }
+.gm-vark { display: grid; gap: 8px }
+.gm-vark-row { display: grid; grid-template-columns: 110px 1fr 40px; gap: 10px; align-items: center; font-size: 14px }
+.gm-vark-row .gm-xpbar i { animation: none; background: var(--gm-leaf) }
+.gm-vark-row.pref { font-weight: 700 }
+.gm-vark-row.pref .gm-xpbar i { background: var(--gm-sun) }
+
+/* ---- VARK-aware adaptive help (AdaptiveUnit) */
+.gm-why { display: grid; grid-template-columns: 56px 1fr; gap: 12px; align-items: start; padding: 14px; border-radius: 20px; background: linear-gradient(120deg, #e3f1f8, #eaf6ec); border: 2px solid #cfe3ee; margin: 0 0 14px; color: var(--gm-ink) }
+.gm-why img { width: 56px; height: 56px; object-fit: contain }
+.gm-why b { display: block; margin-bottom: 4px }
+.gm-why ul { margin: 6px 0 0; padding-left: 18px; font-size: 14px; line-height: 1.55 }
+.gm-why .gm-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px }
+.gm-chip { padding: 3px 10px; border-radius: 999px; font-size: 12.5px; background: #fff; border: 1px solid var(--gm-line) }
+.gm-chip.on { background: var(--gm-sun-soft); border-color: var(--gm-sun) }
+.gm-modes { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px }
+.gm-modes button { min-height: 40px; padding: 0 14px; border-radius: 999px; border: 2px solid var(--gm-line); background: #fff; color: var(--gm-ink); font: inherit; font-size: 14px; cursor: pointer }
+.gm-modes button.on { border-color: var(--gm-leaf); background: var(--gm-mint) }
+.gm-modes button:focus-visible { outline: 3px solid var(--gm-coral); outline-offset: 2px }
+
+@media (prefers-reduced-motion: reduce) {
+  .gm-pop, .gm-modal-loom, .gm-xpbar i, .gm-confetti i { animation: none !important }
+  .gm-confetti { display: none }
+}
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap }
+
+/* ---- VARK help container: support block before the activity, except hands-on (activity first) */
+.gm-help { display: flex; flex-direction: column; gap: 12px; margin: 0 0 12px }
+.gm-help .gm-modes { order: 0; margin: 0 }
+.gm-help-support { order: 1 }
+.gm-help-act { order: 2 }
+.gm-help.mode-K .gm-help-support { order: 3 }
+.gm-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; counter-reset: gm }
+.gm-steps li { position: relative; display: grid; grid-template-columns: 44px 1fr; gap: 10px; align-items: center; padding: 10px 14px; border-radius: 18px; background: linear-gradient(120deg, #fff8e1, #eaf6ec); border: 2px solid var(--gm-line) }
+.gm-steps li + li::before { content: ""; position: absolute; left: 34px; top: -12px; width: 3px; height: 12px; background: var(--gm-sun) }
+.gm-steps li > span { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-size: 22px; background: #fff; border: 2px solid var(--gm-sun) }
+.gm-steps p { margin: 0; line-height: 1.55 }
+.gm-listen { display: grid; gap: 8px; justify-items: start; padding: 14px; border-radius: 18px; background: #e3f1f8; border: 2px solid #cfe3ee }
+.gm-read { padding: 14px 16px; border-radius: 18px; background: #fff; border: 2px solid var(--gm-line); border-left: 6px solid var(--gm-leaf) }
+.gm-read p { margin: 0 0 8px; line-height: 1.6 }
+.gm-read label { display: grid; gap: 6px; font-size: 14px; color: var(--gm-green) }
+.gm-read textarea { font: inherit; padding: 10px; border-radius: 12px; border: 2px solid var(--gm-line); resize: vertical; background: var(--gm-cream) }
+.gm-dev-url { flex-wrap: wrap }
+.gm-dev-url input { flex: 1 1 280px; min-height: 44px; padding: 0 12px; border-radius: 12px; border: 2px solid var(--gm-line); font: inherit; font-size: 14px; background: var(--gm-cream) }
+.gm-dev-url input[aria-invalid="true"] { border-color: var(--gm-coral) }
+
+/* ---- watercolor look (owner mockup: cream paper, soft green/peach washes, leaf sprigs, Loom art) */
+.gm-wash { position: relative; isolation: isolate; overflow: hidden; background: var(--gm-cream) url(/images/deco/wash.svg) center / 100% 100% no-repeat }
+.gm-wash::after { content: ""; position: absolute; z-index: -1; right: -18px; bottom: -22px; width: 120px; height: 120px; background: url(/images/deco/sprig.svg) center / contain no-repeat; opacity: .55; transform: rotate(8deg); pointer-events: none }
+/* Loom's art sits on cream paper: multiply melts its background into the wash instead of a white box */
+.fh-hello img, .gm-quests-loom, .gm-why img, .gm-modal-loom { mix-blend-mode: multiply }
+.fh-hello { background: url(/images/deco/wash.svg) center / 100% 100% no-repeat; border-radius: 28px; position: relative }
+.fh-hello::before { content: ""; position: absolute; right: 128px; bottom: -8px; width: 92px; height: 92px; background: url(/images/deco/sprig.svg) center / contain no-repeat; transform: scaleX(-1); opacity: .7; pointer-events: none; z-index: 0 }
+.fh-hello > * { position: relative; z-index: 1 }
+.gm-modal-card::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: url(/images/deco/wash.svg) center / 100% 100% no-repeat; opacity: .8; z-index: -1 }
+.gm-modal-card { isolation: isolate }
+
+/* ---- daily quests */
+.gm-quests { padding-right: 120px }
+.gm-quests h3 { margin: 0 0 8px; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline }
+.gm-quests h3 small { font-size: 13px; color: #5d6d63; font-weight: 400 }
+.gm-quests ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px }
+.gm-quests li { display: flex; gap: 10px; align-items: center; padding: 8px 12px; border-radius: 14px; background: rgba(255, 255, 255, .75); border: 1.5px dashed var(--gm-line); font-size: 15px }
+.gm-quests li.done { border-style: solid; border-color: var(--gm-leaf); background: #eef7ec; color: var(--gm-green) }
+.gm-quests-loom { position: absolute; right: 8px; bottom: 0; width: 110px; height: auto; pointer-events: none }
+@media (max-width: 560px) { .gm-quests { padding-right: 16px } .gm-quests-loom { width: 74px; top: 6px; bottom: auto; opacity: .9 } .gm-quests h3 { padding-right: 70px } }
+
+/* ---- evidence cards */
+.gm-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 12px }
+.gm-ecard { all: unset; box-sizing: border-box; cursor: pointer; perspective: 700px; min-height: 168px; display: block; border-radius: 18px }
+.gm-ecard:disabled { cursor: default }
+.gm-ecard:focus-visible { outline: 3px solid var(--gm-sun); outline-offset: 3px }
+.gm-ecard-in { position: relative; display: block; height: 100%; min-height: 168px; transition: transform .5s; transform-style: preserve-3d }
+.gm-ecard.flip .gm-ecard-in { transform: rotateY(180deg) }
+.gm-ecard-front, .gm-ecard-back { position: absolute; inset: 0; display: grid; align-content: center; justify-items: center; gap: 4px; padding: 12px 10px; text-align: center; border-radius: 18px; backface-visibility: hidden; border: 2px dashed var(--gm-line); background: #f4f1ea; color: #8a978f }
+.gm-ecard-front i { font-style: normal; font-size: 40px; filter: grayscale(1); opacity: .5 }
+.gm-ecard-front small, .gm-ecard-back small { font-size: 12.5px; line-height: 1.4 }
+.gm-ecard.got .gm-ecard-front { border: 2px solid #e2b04a; color: var(--gm-ink); background: #fffaf0 url(/images/deco/wash.svg) center / 160% 160%; box-shadow: 0 6px 16px rgba(80, 60, 20, .12) }
+.gm-ecard.got .gm-ecard-front i { filter: none; opacity: 1; animation: gm-bob 3s ease-in-out infinite }
+.gm-ecard-back { transform: rotateY(180deg); background: var(--gm-green); color: #fff; border: 2px solid var(--gm-green) }
+.gm-ecard-back .gm-stars span.off { color: rgba(255, 255, 255, .35) }
+
+/* ---- VARK tools on every question */
+.gm-qtools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 10px 0 0 }
+.gm-qtip { font-size: 13.5px; color: #4d5f55; background: var(--gm-sun-soft); border-radius: 999px; padding: 6px 12px; line-height: 1.5 }
+.gm-qbtn { min-height: 40px; border-radius: 999px; padding: 0 14px; border: 1.5px solid var(--gm-green); background: #fff; color: var(--gm-green); font: inherit; font-size: 14px; cursor: pointer }
+.gm-qbtn:hover { background: var(--gm-mint) }
+.gm-qnote { flex-basis: 100%; border-radius: 14px; border: 1.5px solid var(--gm-line); padding: 8px 12px; font: inherit; font-size: 15px; background: #fffdf7; color: var(--gm-ink) }
+.gm-atom { font-weight: 700 }
+.gm-atom-C { color: #2f7d4f } .gm-atom-H { color: #5b6b8c } .gm-atom-O { color: #c4462f } .gm-atom-N { color: #2e6fb0 } .gm-atom-Cl, .gm-atom-Br { color: #8a5a00 }
+.gm-opt { position: relative; display: grid }
+.gm-cutting .fh-choice { padding-right: 56px }
+.gm-opt .gm-cut { padding: 0; min-height: 0; min-width: 0; display: grid; place-items: center; line-height: 1; box-shadow: none; border-radius: 50% !important }
+.gm-cut { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid #c9b9a8; background: #fff; color: #9b4a34; font: inherit; font-size: 16px; cursor: pointer }
+.gm-cut[aria-pressed="true"] { color: var(--gm-green); border-color: var(--gm-green) }
+.gm-opt.out .fh-choice { opacity: .45; text-decoration: line-through; text-decoration-color: #c4462f }
+@media (prefers-reduced-motion: reduce) { .gm-ecard-in { transition: none } .gm-ecard.got .gm-ecard-front i { animation: none } }

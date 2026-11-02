@@ -1,31 +1,310 @@
 "use client";
-import {useEffect,useState} from "react";
+// Dashboard pages around the Fake Hero story: home, chapter library, episode list/intro,
+// progress, notebook, certificate and settings. Everything is read from this browser's saves.
+import {useEffect, useState, type ReactNode} from "react";
 import SendResult from "./SendResult";
-import {BookOpen,ArrowRight,NotebookPen,ChartNoAxesCombined,LockKeyhole,CheckCircle2} from "lucide-react";
+import {GameHud, GameProgress, GameQuests} from "./GameHub";
+import DevPanel from "./DevPanel";
+import {loomSrc} from "./ui";
+import {getMedia} from "../media/registry";
+import {lessons} from "../content/episode01";
+import {buildResult, type StudentResult} from "../results";
+import "../styles/hub.css";
+import {ArrowRight, CheckCircle2, Circle, LockKeyhole, Play, Plus, Trash2, Download, Award, NotebookPen, HelpCircle} from "lucide-react";
 
-type Snapshot={page?:string;first?:{answer:string;reason:string};assisted?:boolean;recheck?:string};
-type EpisodeSave={unit?:number;step?:string;records?:Record<string,{first?:{main:string;reason:string};recheck?:string;assisted?:boolean}>;cp?:Record<string,string>;cpReasons?:Record<string,string>};
-const names=["สารอินทรีย์และสารอนินทรีย์","พันธะเดี่ยว คู่ สาม","โซ่ตรง โซ่กิ่ง และวง","การตรวจอันดับพันธะ","สูตรโครงสร้างและสูตรโมเลกุล"];
-function getProgress(){
- let first:Snapshot={},extra:EpisodeSave={};
- try{first=JSON.parse(localStorage.getItem("learnloom-fake-hero-v1")||"{}");extra=JSON.parse(localStorage.getItem("learnloom-fake-hero-ep01-extension-v1")||"{}")}catch{}
- const done=extra.step==="ending";const active=!!first.page||!!extra.step;
- const states=names.map((_,i)=>{
- if(i===0)return first.first?.answer==="A"&&first.first.reason==="B"?"ผ่านด้วยตนเอง":first.recheck==="B"?"ผ่านหลังช่วย":"ยังไม่มีผลยืนยัน";
- const x=extra.records?.["C0"+(i+1)];
- return x?.first?.main===["","A","B","A","C","B"][i+1]&&x?.first?.reason===["","B","B","C","B","A"][i+1]?"ผ่านด้วยตนเอง":x?.recheck?"ผ่านการตรวจซ้ำ/ควรตรวจผล":"ยังไม่มีผลยืนยัน";
- });
- return {active,done,states,extra};
+export type HubMode = "home" | "library" | "episodes" | "intro" | "progress" | "notebook" | "certificates" | "settings";
+export type HubSettings = {
+  fontSize: number; setFontSize: (n: number) => void;
+  reduce: boolean; setReduce: (b: boolean) => void;
+  offlineReady: boolean; offlineBusy: boolean; prepareOffline: () => void;
+};
+
+const ACTIVITY_KEY = "learnloom-activity-v1";
+const NOTES_KEY = "learnloom-notes-v1";
+type Activity = {study: string[]; notebook: string[]; base: Record<string, number>};
+
+const today = () => new Date().toLocaleDateString("sv-SE");
+function readJSON<T>(key: string, fallback: T): T {
+  try { return {...fallback, ...JSON.parse(localStorage.getItem(key) || "{}")}; } catch { return fallback; }
 }
-const episodes=[["EP.01","คนในคลิป","พันธะของคาร์บอนและรูปแบบโครงสร้าง",true],["EP.02","ฮีโร่ของแม่น้ำ","สูตรโครงสร้างลิวอิส แบบย่อ และแบบเส้นพันธะ",false],["EP.03","ฉลากที่ซ่อนอยู่","หมู่ฟังก์ชัน",false],["EP.04","รหัสของสาร","ชื่อสารอินทรีย์และไอโซเมอร์",false],["EP.05","คราบที่หายไป","สมบัติการละลายของสารประกอบอินทรีย์",false],["EP.06","เปิดโปงฮีโร่","บูรณาการความรู้และประเมินผล",false]] as const;
-export default function LearningHub({mode,onStart}:{mode:"library"|"progress"|"notebook"|"certificates";onStart:()=>void}){
- const [data,setData]=useState<ReturnType<typeof getProgress>|null>(null);
- useEffect(()=>{setData(getProgress())},[mode]);
- return <section className="page-content">
- <div className="page-title"><span className="eyebrow">LEARNLOOM · เคมีอินทรีย์ ม.6</span><h1>{mode==="library"?"คลังบทเรียน":mode==="progress"?"ความก้าวหน้าของฉัน":mode==="notebook"?"สมุดบันทึกของฉัน":"เกียรติบัตร"}</h1><p>{mode==="library"?"หนึ่ง Chapter เท่ากับหนึ่งซีรีส์ และแบ่งเป็น Episode ตามลำดับการเรียนรู้":mode==="progress"?"เรียนรู้ตามจังหวะของตัวเอง ดูสิ่งที่เข้าใจและสิ่งที่ต้องทบทวน":mode==="notebook"?"สมุดหลักฐานและสาระสำคัญที่เปิดอ่านได้ตลอดการเรียน":"เกียรติบัตรจะเปิดให้รับเมื่อเรียนครบทั้งซีรีส์และผ่านเกณฑ์"}</p></div>
- {mode==="library"&&<><article className="chapter-card"><img src="/images/archive.webp" alt="ภาพประกอบ LearnLOOM ต้นฉบับ"/><div><span className="badge">CHAPTER 01 · THE FAKE HERO</span><h2>ซีรีส์สืบสวนเคมีอินทรีย์</h2><p>ร่วมกับลูมค้นหาความจริงเกี่ยวกับคราบปริศนาบนแม่น้ำปราจีนบุรี</p><button className="primary" onClick={onStart}>{data?.active?"เรียนต่อ EP.01":"เริ่ม EP.01"}<ArrowRight size={18}/></button></div></article><div className="ll-episode-list">{episodes.map(([id,title,desc,enabled])=><article className="ll-episode-card" key={id}><BookOpen size={22}/><div><strong>{id} — {title}</strong><p>{desc}</p><small>{enabled?(data?.done?"เรียนจบตอนแล้ว":data?.active?"กำลังเรียน":"พร้อมเรียน"):"ยังไม่เปิดให้เรียน"}</small></div>{enabled?<button className="secondary" onClick={onStart}>{data?.active?"เรียนต่อ":"เริ่มเรียน"}</button>:<LockKeyhole size={18} aria-label="ยังไม่เปิด"/>}</article>)}</div></>}
- {mode==="progress"&&<><div className="panel"><h2>ความก้าวหน้า EP.01</h2><p>{data?.done?"จบเนื้อหาต้นแบบแล้ว":data?.active?"กำลังเรียน · กลับมาเรียนต่อได้":"ยังไม่เริ่มเรียน"}</p><button className="primary" onClick={onStart}> {data?.active?"เรียนต่อจากจุดเดิม":"เริ่มเรียน"} <ArrowRight size={18}/></button>{data?.active&&<SendResult className="secondary"/>}</div><div className="ll-episode-list">{names.map((name,i)=><article key={name} className="ll-episode-card"><ChartNoAxesCombined size={20}/><div><strong>C0{i+1} — {name}</strong><p>{data?.states[i]??"ยังไม่ได้เริ่ม"}</p></div></article>)}</div><p className="fine">ข้อมูลนี้บันทึกเฉพาะเบราว์เซอร์นี้ ยังไม่ซิงก์ข้อมูลกับบัญชีครูหรือข้ามอุปกรณ์</p></>}
- {mode==="notebook"&&<><article className="panel"><h2><NotebookPen size={22}/> สมุดหลักฐานของคดี</h2><p><strong>สิ่งที่ทราบ:</strong> คลิปแสดงเจฟเทของเหลวลงท่อระบายน้ำ</p><p><strong>สิ่งที่ยังต้องตรวจ:</strong> ของเหลวในถังและต้นกำเนิดคราบบนแม่น้ำ</p><p>เจฟให้การว่าเป็นน้ำเชื่อมบูด แต่คำกล่าวอ้างยังไม่ใช่ผลตรวจสาร</p></article><div className="ll-episode-list">{names.map((name,i)=><article className="ll-episode-card" key={name}><NotebookPen size={20}/><div><strong>C0{i+1} — {name}</strong><p>{["การมีคาร์บอนไม่ใช่เกณฑ์เดียวสำหรับจำแนกสารอินทรีย์","พันธะเดี่ยว คู่ สาม ใช้อิเล็กตรอนร่วมกัน 1, 2, 3 คู่","ประเภทโครงสร้างพิจารณาจากการเชื่อมต่อของคาร์บอน","ผลรวมอันดับพันธะของคาร์บอนในสารอินทรีย์เป็นกลางทั่วไปมักเท่ากับ 4","สูตรโมเลกุลบอกจำนวนอะตอม สูตรโครงสร้างบอกการเชื่อมต่อ"][i]}</p></div><CheckCircle2 size={18}/></article>)}</div></>}
- {mode==="certificates"&&<article className="panel"><h2>เกียรติบัตรประจำซีรีส์</h2><p>ยังไม่เปิดรับเกียรติบัตร เพราะต้องเรียนครบทุก Episode ของ The Fake Hero และผ่านการประเมินปลายซีรีส์ก่อน</p><p className="fine">ไม่ใช่เอกสารรับรองคุณวุฒิทางการศึกษา</p></article>}
- </section>
+function readActivity(): Activity { return readJSON<Activity>(ACTIVITY_KEY, {study: [], notebook: [], base: {}}); }
+function writeActivity(a: Activity) { try { localStorage.setItem(ACTIVITY_KEY, JSON.stringify(a)); } catch {} }
+
+// Called when the student opens the story or the notebook (local activity log only).
+export function markActivity(kind: "study" | "notebook") {
+  const a = readActivity(), d = today();
+  if (!a[kind].includes(d)) { a[kind] = [...a[kind], d].slice(-60); writeActivity(a); }
+}
+
+export const hubImage = (slot: string) => getMedia(slot).find(m => m.kind === "image")?.url ?? "/images/archive.webp";
+
+export const episodes = [
+  ["EP.01", "คนในคลิป", "พันธะของคาร์บอนและรูปแบบโครงสร้าง", "ep01-s02a"],
+  ["EP.02", "ฮีโร่ของแม่น้ำ", "สูตรโครงสร้างลิวอิส แบบย่อ และแบบเส้นพันธะ", "ep01-s09-2"],
+  ["EP.03", "ฉลากที่ซ่อนอยู่", "หมู่ฟังก์ชัน", "ep01-s09-3"],
+  ["EP.04", "รหัสของสาร", "ชื่อสารอินทรีย์และไอโซเมอร์", "ep01-s08-2"],
+  ["EP.05", "คราบที่หายไป", "สมบัติการละลายของสารประกอบอินทรีย์", "ep01-s09-1"],
+  ["EP.06", "เปิดโปงฮีโร่", "บูรณาการความรู้และประเมินผล", "ep01-s02c"],
+] as const;
+
+const summaries = [
+  "การมีคาร์บอนไม่ใช่เกณฑ์เดียวสำหรับจำแนกสารอินทรีย์",
+  "พันธะเดี่ยว คู่ สาม ใช้อิเล็กตรอนร่วมกัน 1, 2, 3 คู่",
+  "ประเภทโครงสร้างพิจารณาจากการเชื่อมต่อของคาร์บอน",
+  "ผลรวมอันดับพันธะของคาร์บอนในสารอินทรีย์เป็นกลางทั่วไปมักเท่ากับ 4",
+  "สูตรโมเลกุลบอกจำนวนอะตอม สูตรโครงสร้างบอกการเชื่อมต่อ",
+];
+
+type Data = {r: StudentResult; started: number; active: boolean; pct: number; next: number; act: Activity};
+function load(): Data {
+  const r = buildResult();
+  const started = r.concepts.filter(c => c.outcome !== "ยังไม่ได้ทำ").length;
+  let active = false;
+  try { active = !!localStorage.getItem("learnloom-fake-hero-v1") || !!localStorage.getItem("learnloom-fake-hero-ep01-extension-v1"); } catch {}
+  // Six milestones: five concepts plus the episode ending.
+  const pct = Math.round((started + (r.finished ? 1 : 0)) / 6 * 100);
+  const next = r.concepts.findIndex(c => c.outcome === "ยังไม่ได้ทำ");
+  const act = readActivity();
+  if (act.base[today()] === undefined) { act.base = {[today()]: started}; writeActivity(act); }
+  return {r, started, active, pct, next, act};
+}
+
+function Bar({value, tone = "green", label}: {value: number; tone?: "green" | "amber" | "red"; label: string}) {
+  return <div className={`fh-bar ${tone}`} role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={value} aria-label={label}><span style={{width: value + "%"}}/></div>;
+}
+
+function Ring({value, children}: {value: number; children: ReactNode}) {
+  return <div className="fh-ring" style={{["--v" as string]: value}}><div>{children}</div></div>;
+}
+
+const outcomeTone = (o: string) => o === "ผ่านด้วยตนเอง" ? "green" : o === "ผ่านหลังช่วยเหลือ" ? "amber" : "red";
+const outcomeValue = (o: string) => o === "ยังไม่ได้ทำ" ? 0 : o === "ยังต้องทบทวน" ? 50 : 100;
+
+export default function LearningHub({mode, go, onStart, nickname = "", settings}: {mode: HubMode; go: (v: string) => void; onStart: () => void; nickname?: string; settings?: HubSettings}) {
+  const [data, setData] = useState<Data | null>(null);
+  useEffect(() => { if (mode === "notebook") markActivity("notebook"); setData(load()); }, [mode]);
+  if (!data) return <section className="page-content fh-hub"/>;
+  const {r, started, active, pct, next} = data;
+  const startLabel = r.finished ? "ทบทวน EP.01" : active ? "เรียนต่อ EP.01" : "เริ่ม EP.01";
+
+  return <section className={`page-content fh-hub fh-hub-${mode}`}>
+    {mode === "home" && <Home data={data} nickname={nickname} go={go} onStart={onStart}/>}
+
+    {mode === "library" && <>
+      <Title eyebrow="LEARNLOOM · เคมีอินทรีย์ ม.6" title="คลังบทเรียน" text="หนึ่ง Chapter เท่ากับหนึ่งซีรีส์ แบ่งเป็น Episode ตามลำดับการเรียนรู้"/>
+      <LibraryTabs finished={r.finished} active={active} go={go}/>
+    </>}
+
+    {mode === "episodes" && <>
+      <article className="fh-series-head">
+        <img src={hubImage("ep01-l01")} alt=""/>
+        <div><span className="fh-chip red">Chapter 1</span><h1>The Fake Hero</h1><p>เคมีอินทรีย์ ม.6 · ซีรีส์สืบสวน 6 ตอน</p></div>
+      </article>
+      <ol className="fh-timeline">
+        {episodes.map(([id, title, desc, slot], i) => <li key={id} className={i === 0 ? "open" : "locked"}>
+          <span className="fh-dot" aria-hidden/>
+          <img src={hubImage(slot)} alt=""/>
+          <div><b>{id} {title}</b><small>{i === 0 ? (r.finished ? "เรียนจบตอนแล้ว" : active ? `กำลังเรียน · ${pct}%` : desc) : "ยังไม่เปิดให้เรียน"}</small></div>
+          {i === 0
+            ? <button className="fh-play" aria-label={`เปิด ${id} ${title}`} onClick={() => go("intro")}><Play size={20} fill="currentColor"/></button>
+            : <LockKeyhole size={20} aria-label="ยังไม่เปิด"/>}
+        </li>)}
+      </ol>
+    </>}
+
+    {mode === "intro" && <article className="fh-intro">
+      <div className="fh-intro-art"><img src={hubImage("ep01-l01")} alt="เจฟกับลูมเปิดสมุดข้อมูลเคมีริมแม่น้ำ"/></div>
+      <div className="fh-intro-copy">
+        <span className="fh-chip red">Chapter 1 : The Fake Hero</span>
+        <h1>EP.01 คนในคลิป</h1>
+        <p>ตามหาความจริงจากคราบปริศนาในแม่น้ำปราจีนบุรี</p>
+        <ol className="fh-concepts">
+          {lessons.map((l, i) => <li key={l.main.id}>
+            {r.concepts[i].outcome === "ยังไม่ได้ทำ" ? <Circle size={18}/> : <CheckCircle2 size={18}/>}
+            <span><b>C0{i + 1}</b> {l.title}</span>
+          </li>)}
+        </ol>
+        <div className="fh-intro-progress"><Bar value={pct} label="ความคืบหน้า EP.01"/><small>{pct}%</small></div>
+        <div className="fh-row"><button className="primary" onClick={onStart}>{active ? "เรียนต่อ" : "เริ่มตอนนี้"}<ArrowRight size={18}/></button><button className="secondary" onClick={() => go("episodes")}>เลือกตอนอื่น</button></div>
+      </div>
+    </article>}
+
+    {mode === "progress" && <>
+      <Title eyebrow="ความก้าวหน้าของฉัน" title="ความก้าวหน้าของฉัน" text="เรียนรู้ตามจังหวะของตัวเอง ดูสิ่งที่เข้าใจแล้วและสิ่งที่ควรทบทวน"/>
+      <div className="fh-progress-grid">
+        <article className="fh-card fh-progress-ring">
+          <Ring value={pct}><b>{pct}%</b><small>EP.01</small></Ring>
+          <p>เรียนแล้ว {started}/5 แนวคิด<br/><small>ซีรีส์: จบ {r.finished ? 1 : 0}/6 ตอน</small></p>
+          <button className="primary" onClick={onStart}>{startLabel}<ArrowRight size={18}/></button>
+        </article>
+        <article className="fh-card">
+          <h2>ความเข้าใจแต่ละแนวคิด (EP.01)</h2>
+          <ul className="fh-concept-bars">
+            {r.concepts.map((c, i) => <li key={c.id}>
+              <b>{c.id}</b><span>{lessons[i].title}</span>
+              <Bar value={outcomeValue(c.outcome)} tone={outcomeTone(c.outcome)} label={`${c.id} ${c.outcome}`}/>
+              <small>{c.outcome}</small>
+            </li>)}
+          </ul>
+          <p className="fine">Checkpoint: {r.checkpoint.score}/10 · ข้อมูลบันทึกเฉพาะเบราว์เซอร์นี้</p>
+        </article>
+      </div>
+      <GameHud r={r}/>
+      <GameProgress r={r}/>
+      {active && <article className="fh-card"><h2>ส่งผลการเรียนให้ครู</h2><SendResult className="secondary"/></article>}
+    </>}
+
+    {mode === "notebook" && <Notebook r={r}/>}
+
+    {mode === "certificates" && <>
+      <Title eyebrow="เกียรติบัตร" title="เกียรติบัตร" text="เกียรติบัตรประจำซีรีส์ The Fake Hero"/>
+      <div className="fh-cert-grid">
+        <div className="fh-cert locked" aria-label="ตัวอย่างเกียรติบัตร ยังไม่เปิดรับ">
+          <img src={loomSrc("cheer")} alt=""/>
+          <small>LearnLOOM</small>
+          <b>เกียรติบัตร</b>
+          <span>ผ่านการเรียนรู้</span>
+          <h2>The Fake Hero</h2>
+          <span>เคมีอินทรีย์ ม.6</span>
+          <em><LockKeyhole size={16}/> ยังไม่เปิดรับ</em>
+        </div>
+        <article className="fh-card">
+          <h2><Award size={22}/> เงื่อนไขการรับเกียรติบัตร</h2>
+          <ul className="fh-checks">
+            <li className={r.finished ? "done" : ""}>{r.finished ? <CheckCircle2 size={18}/> : <Circle size={18}/>}เรียน EP.01 จบ</li>
+            <li><Circle size={18}/>เรียนครบทั้ง 6 ตอน ({r.finished ? 1 : 0}/6)</li>
+            <li><Circle size={18}/>ผ่านการประเมินปลายซีรีส์</li>
+          </ul>
+          <button className="primary" disabled><Download size={18}/>ดาวน์โหลดเกียรติบัตร</button>
+          <p className="fine">ไม่ใช่เอกสารรับรองคุณวุฒิทางการศึกษา</p>
+        </article>
+      </div>
+    </>}
+
+    {mode === "settings" && settings && <>
+      <Title eyebrow="ตั้งค่า" title="ตั้งค่า และอื่น ๆ" text="ปรับการอ่านให้สบายกับการเรียน"/>
+      <article className="fh-card fh-settings">
+        <div className="fh-setting"><span>ขนาดตัวอักษร</span><div className="fh-sizes" role="group" aria-label="ขนาดตัวอักษร">
+          {[16, 18, 22].map((n, i) => <button key={n} aria-pressed={settings.fontSize === n} style={{fontSize: 14 + i * 4}} onClick={() => settings.setFontSize(n)}>ก</button>)}
+        </div></div>
+        <label className="fh-setting"><span>ลดภาพเคลื่อนไหว</span><input type="checkbox" role="switch" className="fh-switch" checked={settings.reduce} onChange={e => settings.setReduce(e.target.checked)}/></label>
+        <div className="fh-setting"><span>ดาวน์โหลดไว้ใช้แบบออฟไลน์<small>{settings.offlineReady ? "มีชุดบทเรียนบนเครื่องนี้แล้ว" : "ดาวน์โหลดข้อความ ภาพ และกิจกรรมไว้ในเครื่อง"}</small></span>
+          <button className="secondary" disabled={settings.offlineBusy} onClick={settings.prepareOffline}><Download size={17}/>{settings.offlineBusy ? "กำลังเตรียม…" : settings.offlineReady ? "เตรียมใหม่" : "เตรียมบทเรียน"}</button></div>
+        <div className="fh-setting"><span>คู่มือ ไฟล์สำรอง และกู้คืนข้อมูล</span><button className="secondary" onClick={() => go("guide")}><HelpCircle size={17}/>เปิดคู่มือ</button></div>
+      </article>
+      <DevPanel/>
+    </>}
+  </section>;
+}
+
+function Title({eyebrow, title, text}: {eyebrow: string; title: string; text: string}) {
+  return <div className="page-title"><span className="eyebrow">{eyebrow}</span><h1>{title}</h1><p>{text}</p></div>;
+}
+
+function Home({data, nickname, go, onStart}: {data: Data; nickname: string; go: (v: string) => void; onStart: () => void}) {
+  const {r, active, pct} = data;
+  return <>
+    <div className="fh-hello">
+      <div><span className="eyebrow">ยินดีต้อนรับกลับมา</span><h1>สวัสดี{nickname ? ` ${nickname}` : ""}! 👋</h1><p>พร้อมสืบคดีใหม่แล้วหรือยัง?</p></div>
+      <img src={loomSrc("happy")} alt="ลูมโบกมือทักทาย"/>
+    </div>
+    <GameHud r={r}/>
+    <GameQuests r={r}/>
+    <div className="fh-home-grid">
+      <article className="fh-card fh-continue">
+        <img src={hubImage("ep01-s02a")} alt=""/>
+        <div>
+          <span className="fh-label">{r.finished ? "เรียนจบแล้ว" : active ? "กำลังเรียน" : "พร้อมเริ่ม"}</span>
+          <h2>The Fake Hero</h2>
+          <p>EP.01 คนในคลิป</p>
+          <Bar value={pct} label="ความคืบหน้า EP.01"/>
+          <small>ความคืบหน้า EP.01 {pct}% · ซีรีส์ {r.finished ? 1 : 0}/6 ตอน</small>
+        </div>
+        <button className="fh-play big" aria-label={active ? "เรียนต่อ EP.01" : "เริ่ม EP.01"} onClick={() => go("intro")}><Play size={24} fill="currentColor"/></button>
+      </article>
+      <aside className="fh-card fh-streak">
+        <h3>แนวคิดใน EP.01</h3>
+        <ul className="fh-checks">
+          {lessons.map((l, i) => { const done = r.concepts[i]?.outcome !== "ยังไม่ได้ทำ"; return <li key={i} className={done ? "done" : ""}>{done ? <CheckCircle2 size={18}/> : <Circle size={18}/>}C0{i + 1} {l.title}</li>; })}
+        </ul>
+      </aside>
+    </div>
+    <div className="section-heading"><h2>บทเรียนของฉัน</h2><button className="text-button" onClick={() => go("courses")}>ดูคลังบทเรียน<ArrowRight size={16}/></button></div>
+    <div className="fh-chapter-tiles">
+      <button className="fh-tile red" onClick={() => go("episodes")}><span>Chapter 1</span><b>The Fake Hero</b><img src={hubImage("ep01-l01")} alt=""/></button>
+      {[2, 3, 4].map(n => <div className="fh-tile locked" key={n}><span>Chapter {n}</span><LockKeyhole size={22} aria-label="ยังไม่เปิด"/></div>)}
+    </div>
+    <button className="fh-link-card" onClick={onStart}><NotebookPen size={20}/><span>{active ? "เรียนต่อจากจุดเดิมทันที" : "เริ่มเรียน EP.01 ทันที"}</span><ArrowRight size={18}/></button>
+  </>;
+}
+
+function LibraryTabs({finished, active, go}: {finished: boolean; active: boolean; go: (v: string) => void}) {
+  const [tab, setTab] = useState<"all" | "doing" | "done">("all");
+  const show = tab === "all" || (tab === "doing" ? active && !finished : finished);
+  return <>
+    <div className="fh-tabs" role="tablist">
+      {([["all", "ทั้งหมด"], ["doing", "กำลังเรียน"], ["done", "เรียนจบ"]] as const).map(([id, label]) =>
+        <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)}>{label}</button>)}
+    </div>
+    <div className="fh-chapters">
+      {show && <article className="fh-chapter open">
+        <img src={hubImage("ep01-l01")} alt=""/>
+        <div><b>Chapter 1</b><span>The Fake Hero</span><small>{finished ? "จบ" : active ? "กำลังเรียน" : "พร้อมเรียน"} · {finished ? 1 : 0}/6 ตอน</small></div>
+        <button className="fh-play" aria-label="เปิด Chapter 1 The Fake Hero" onClick={() => go("episodes")}><Play size={20} fill="currentColor"/></button>
+      </article>}
+      {tab === "all" && [2, 3, 4].map(n => <article className="fh-chapter locked" key={n}>
+        <img src={hubImage("ep01-s09-2")} alt=""/>
+        <div><b>Chapter {n}</b><small>เร็ว ๆ นี้</small></div>
+        <LockKeyhole size={20} aria-label="ยังไม่เปิด"/>
+      </article>)}
+      {!show && <p className="fh-empty">{tab === "doing" ? "ยังไม่มีบทเรียนที่กำลังเรียน" : "ยังไม่มีบทเรียนที่เรียนจบ"}</p>}
+    </div>
+  </>;
+}
+
+function Notebook({r}: {r: StudentResult}) {
+  const [tab, setTab] = useState<"summary" | "evidence" | "ideas">("summary");
+  const [notes, setNotes] = useState<{id: number; text: string}[]>([]);
+  const [draft, setDraft] = useState("");
+  useEffect(() => { try { setNotes(JSON.parse(localStorage.getItem(NOTES_KEY) || "[]")); } catch {} }, []);
+  function save(list: typeof notes) { setNotes(list); try { localStorage.setItem(NOTES_KEY, JSON.stringify(list)); } catch {} }
+  const started = r.concepts[0].outcome !== "ยังไม่ได้ทำ";
+  const evidence = [
+    ["ep01-s02a", "ชาวบ้านถามถึงคลิป", "คลิปแสดงเจฟเทของเหลวลงท่อระบายน้ำ", started],
+    ["ep01-s02b", "ข้อความจากแม่", "แม่ของเจฟส่งข้อความหาเจฟ", started],
+    ["ep01-s02c", "คำให้การของเจฟ", "เจฟให้การว่าเป็นน้ำเชื่อมบูด แต่คำกล่าวอ้างยังไม่ใช่ผลตรวจสาร", started],
+    ["ep01-s08-2", "ยังต้องตรวจ", "ของเหลวในถังและต้นกำเนิดคราบบนแม่น้ำ", r.finished],
+  ] as const;
+  return <>
+    <Title eyebrow="สมุดบันทึกของฉัน" title="สมุดบันทึกของฉัน" text="สรุปเนื้อหา หลักฐานคดี และความคิดของคุณ เปิดอ่านได้ตลอดการเรียน"/>
+    <div className="fh-tabs" role="tablist">
+      {([["summary", "สรุปเนื้อหา"], ["evidence", "หลักฐานคดี"], ["ideas", "ไอเดียของฉัน"]] as const).map(([id, label]) =>
+        <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)}>{label}</button>)}
+    </div>
+    {tab === "summary" && <ul className="fh-note-list">
+      {lessons.map((l, i) => { const open = r.concepts[i].outcome !== "ยังไม่ได้ทำ"; return <li key={l.main.id} className={open ? "" : "locked"}>
+        {open ? <CheckCircle2 size={20}/> : <LockKeyhole size={20}/>}
+        <div><b>C0{i + 1} — {l.title}</b><p>{open ? summaries[i] : "เปิดเมื่อเรียนแนวคิดนี้แล้ว"}</p></div>
+      </li>; })}
+    </ul>}
+    {tab === "evidence" && <div className="fh-evidence">
+      {evidence.map(([slot, title, text, open]) => <article key={slot} className={open ? "" : "locked"}>
+        {open ? <img src={hubImage(slot)} alt=""/> : <div className="fh-evidence-lock"><LockKeyhole size={26}/></div>}
+        <b>{open ? title : "ยังไม่พบหลักฐาน"}</b><p>{open ? text : "เรียนต่อเพื่อเก็บหลักฐานชิ้นนี้"}</p>
+      </article>)}
+    </div>}
+    {tab === "ideas" && <div className="fh-ideas">
+      <form className="fh-card" onSubmit={e => { e.preventDefault(); if (draft.trim()) { save([{id: Date.now(), text: draft.trim()}, ...notes]); setDraft(""); } }}>
+        <label htmlFor="fh-idea">จดสิ่งที่สงสัยหรือสิ่งที่ค้นพบ</label>
+        <textarea id="fh-idea" value={draft} maxLength={500} onChange={e => setDraft(e.target.value)} placeholder="เช่น คราบแวววาวบนน้ำน่าจะมาจากอะไร?"/>
+        <button className="primary" disabled={!draft.trim()}><Plus size={18}/>เพิ่มบันทึก</button>
+      </form>
+      {notes.map(n => <article className="fh-card fh-idea" key={n.id}>
+        <p>{n.text}</p>
+        <small>{new Date(n.id).toLocaleDateString("th-TH", {day: "numeric", month: "short"})}</small>
+        <button className="fh-icon" aria-label="ลบบันทึกนี้" onClick={() => save(notes.filter(x => x.id !== n.id))}><Trash2 size={17}/></button>
+      </article>)}
+      <p className="fine">บันทึกเก็บไว้ในเบราว์เซอร์นี้เท่านั้น</p>
+    </div>}
+  </>;
 }

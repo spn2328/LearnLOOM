@@ -170,3 +170,49 @@
 @media(max-width:720px){.fh-detail,.fh-shape,.fh-excards,.fh-compare{grid-template-columns:1fr}.fh-learn-top{flex-direction:column}.fh-learn-top>.fh-loom{max-width:none}}
 @media(max-width:520px){.fh-mcards,.fh-bondcards{grid-template-columns:1fr 1fr}.fh-loom img{width:64px;height:64px}.fh-excard-body{grid-template-columns:1fr}.fh-shell .fh-dcard{min-width:0;flex:1 1 40%}}
 .fh-shape-main,.fh-molview,.fh-mol3d{min-width:0}.fh-mol3d{overflow:hidden}.fh-mol3d canvas{display:block;max-width:100%}
+
+/* free-text answer in the adaptive transfer step */
+.fh-adaptive .fh-reason{display:block;width:100%;box-sizing:border-box;margin:10px 0;padding:12px 14px;border:2px solid #cfdccc;border-radius:14px;background:#fff;color:#27392f;font:inherit;font-size:17px;line-height:1.6;resize:vertical}
+.fh-adaptive .fh-reason:focus-visible{outline:3px solid #f4c44e;outline-offset:2px}
+.fh-adaptive .fh-formula{display:grid;gap:4px;justify-items:center;margin:10px 0;padding:16px;border-radius:12px;background:#f3f5ee;font-family:"Noto Sans Thai",Tahoma,sans-serif;font-size:28px;font-weight:700;color:#27392f}
+.fh-adaptive .fh-formula small{font-size:14px;font-weight:400;color:#5d6b62}
+
+/* Path activities (PathActivities.tsx): tap-to-sort, pair builder, atom counter... */
+.fh-act{display:grid;gap:10px;margin:12px 0;padding:16px;border:2px solid #dce6da;border-radius:18px;background:#fcfaf6;color:#27392f}
+.fh-act h3{margin:0;color:#316552}
+.fh-act p{margin:0}
+.fh-act-help{color:#5d6b62;font-size:15px}
+.fh-act-task{font-weight:700;color:#316552}
+.fh-act-read{font-family:"Noto Sans Thai",Tahoma,sans-serif;font-size:17px;padding:8px 12px;border-radius:10px;background:#eaf2e9}
+.fh-act-miss{background:#fff4dc;color:#7a4b00;border-radius:12px;padding:8px 12px}
+.fh-act-cards,.fh-act-groups,.fh-act-tabs{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.fh-act button{min-height:44px;font:inherit;cursor:pointer}
+.fh-act button:focus-visible,.fh-act [role=button]:focus-visible{outline:3px solid #f4c44e;outline-offset:2px}
+.fh-act .fh-act-card,.fh-act .fh-act-group,.fh-act .fh-act-tabs button{padding:8px 16px;border:2px solid #cfdccc;border-radius:14px;background:#fff;color:#27392f;font-family:"Noto Sans Thai",Tahoma,sans-serif;font-size:18px;transition:transform .15s,background .15s}
+.fh-act .fh-act-card.on,.fh-act .fh-act-group.on,.fh-act .fh-act-tabs button.on{border-color:#316552;background:#eaf2e9;transform:translateY(-2px);box-shadow:0 4px 0 #31655233}
+.fh-act .fh-act-card.ok,.fh-act .fh-act-group.ok{border-color:#3ea36b;background:#e6f3e7;color:#1f5a35}
+.fh-act .fh-act-card.bad{border-color:#d9792b;background:#fff4dc}
+.fh-act .fh-act-group{display:grid;justify-items:center;line-height:1.2}
+.fh-act .fh-act-group small{font-size:13px;color:#316552}
+.fh-act .fh-act-group:disabled{cursor:default;opacity:1}
+.fh-act-bond{font-size:22px;font-weight:700;color:#316552}
+.fh-act-bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.fh-act .fh-act-bin{display:grid;gap:6px;align-content:start;min-height:96px;padding:10px;border:2px dashed #3ea36b;border-radius:16px;background:#f3f8f1;color:#27392f;text-align:left}
+.fh-act .fh-act-bin:disabled{cursor:default;opacity:1}
+.fh-act .fh-act-bin:not(:disabled):hover{background:#e6f3e7}
+.fh-act-bin span{display:flex;flex-wrap:wrap;gap:6px}
+.fh-act-bin em{font-style:normal;font-family:"Noto Sans Thai",Tahoma,sans-serif;padding:4px 10px;border-radius:10px;background:#fff;border:1px solid #cfdccc}
+.fh-act-flip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.fh-act .fh-act-fcard{display:grid;gap:4px;justify-items:center;padding:16px;border:2px solid #cfdccc;border-radius:16px;background:#fff;color:#27392f}
+.fh-act .fh-act-fcard b{font-family:"Noto Sans Thai",Tahoma,sans-serif;font-size:28px}
+.fh-act .fh-act-fcard.open{border-color:#3ea36b;background:#f3f8f1}
+.fh-act .fh-act-fcard span{font-size:15px;color:#316552}
+.fh-act-mol{display:grid;gap:6px}
+.fh-act-mol>small{font-weight:700;color:#316552}
+.fh-act-ask{padding:10px 12px;border-radius:12px;background:#fff;border:2px solid #f4c44e}
+.fh-act-chain{width:100%;max-width:420px;height:auto;justify-self:center}
+.fh-act svg text{font-family:"Noto Sans Thai",Tahoma,sans-serif;pointer-events:none}
+.fh-act-notes{margin:6px 0;padding:8px 14px;border-radius:12px;background:#f3f5ee}
+.fh-act-notes summary{cursor:pointer;min-height:36px;display:flex;align-items:center;color:#316552;font-weight:700}
+.fh-act-notes p{margin:6px 0}
+@media(max-width:640px){.fh-act{padding:12px}.fh-act .fh-act-card,.fh-act .fh-act-group{font-size:16px;padding:8px 12px}}

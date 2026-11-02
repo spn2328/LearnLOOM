@@ -2,6 +2,7 @@
 import React, {useEffect, useRef, useState, type ReactNode} from "react";
 import {getMedia} from "../media/registry";
 import type {Choice, Question} from "../content/episode01";
+import {useChoiceTools} from "./ChoiceTools";
 
 export const letters: Choice[] = ["A", "B", "C", "D"];
 
@@ -10,11 +11,12 @@ export type LoomPose = "point" | "think" | "cheer" | "happy" | "clipboard";
 export function loomSrc(pose: LoomPose = "point") {
   return getMedia("loom-" + pose)[0]?.url ?? "/images/loom.webp";
 }
-export function Loom({pose = "point", children, side = "left", small = false}: {pose?: LoomPose; children: ReactNode; side?: "left" | "right"; small?: boolean}) {
+// voice = the full source line ("ลูม: …") so read-aloud finds its pre-rendered file
+export function Loom({pose = "point", children, side = "left", small = false, voice}: {pose?: LoomPose; children: ReactNode; side?: "left" | "right"; small?: boolean; voice?: string}) {
   return (
     <div className={`fh-loom ${side} ${small ? "small" : ""}`}>
       <img src={loomSrc(pose)} alt="ลูม" />
-      <div className="fh-bubble">{children}</div>
+      <div className="fh-bubble" data-voice={voice}>{children}</div>
     </div>
   );
 }
@@ -25,10 +27,10 @@ export function Dialogue({lines}: {lines: string[]}) {
     <div className="fh-dialogue">
       {lines.map((line, i) => {
         const m = /^(ลูม|ผู้เล่น|เจฟ|ชาวบ้าน|เฮียศักดิ์)\s*:\s*(.*)$/.exec(line);
-        if (!m) return <p key={i} className="fh-narration">{line}</p>;
+        if (!m) return <p key={i} className="fh-narration" data-voice={line}>{line}</p>;
         const [, who, text] = m;
-        if (who === "ลูม") return <Loom key={i} pose={i % 2 ? "think" : "point"} small><b>ลูม</b> {text}</Loom>;
-        return <div key={i} className={`fh-say ${who === "ผู้เล่น" ? "me" : ""}`}><b>{who}</b> {text}</div>;
+        if (who === "ลูม") return <Loom key={i} pose={i % 2 ? "think" : "point"} small voice={line}><b>ลูม</b> {text}</Loom>;
+        return <div key={i} className={`fh-say ${who === "ผู้เล่น" ? "me" : ""}`} data-voice={line}><b>{who}</b> {text}</div>;
       })}
     </div>
   );
@@ -58,14 +60,21 @@ export function Popup({open, tone = "info", title, children, actions, onClose}: 
 }
 
 export function Choices({q, value, onChoose}: {q: Question; value?: string; onChoose: (a: Choice) => void}) {
+  const t = useChoiceTools(q);
   return (
-    <div className="fh-options">
-      {q.choices.map((v, i) => (
-        <button key={i} className={"fh-choice " + (value === letters[i] ? "active" : "")} aria-pressed={value === letters[i]} onClick={() => onChoose(letters[i])}>
-          <strong>{letters[i]}.</strong> {v}
-        </button>
-      ))}
-    </div>
+    <>
+      {t.bar}
+      <div className={`fh-options ${t.pref === "K" ? "gm-cutting" : ""}`}>
+        {q.choices.map((v, i) => (
+          <div key={i} className={`gm-opt ${t.out[i] ? "out" : ""}`}>
+            <button className={"fh-choice " + (value === letters[i] ? "active" : "")} aria-pressed={value === letters[i]} onClick={() => onChoose(letters[i])}>
+              <strong>{letters[i]}.</strong> {t.fmt(v)}
+            </button>
+            {t.cut(i)}
+          </div>
+        ))}
+      </div>
+    </>
   );
 }
 

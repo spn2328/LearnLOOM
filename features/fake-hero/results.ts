@@ -2,6 +2,7 @@
 // Built from the two Fake Hero saves; the teacher view imports many of these files.
 import {lessons,checkpoint,checkpointReasons,type Choice} from "./content/episode01";
 import {recheckB} from "./content/adaptive04";
+import {adaptiveUnits} from "./content/adaptiveUnits";
 
 export const RESULT_FORMAT = "learnloom-fake-hero-result";
 const C01_KEY = "learnloom-fake-hero-v1";
@@ -16,9 +17,12 @@ export type ConceptResult = {
   assisted: boolean;
   recheck?: Choice;
   recheckCorrect: boolean;
-  path?: string; // Q04 adaptive: help path A–D
-  diagnosis?: Record<string, Choice>; // Q04 adaptive: D01–D04 answers
+  path?: string; // adaptive help path A–D
+  diagnosis?: Record<string, Choice>; // adaptive diagnostic answers (D0x-n; D01–D04 in older Q04 saves)
   recheckB?: Choice;
+  helpSwitches?: {at: string; from: string; to: string}[]; // help form changed after a wrong practice item
+  practiceRetry?: Record<string, Choice>; // answers after the switch (first practice answers are not overwritten)
+  transfer?: string; // free-text answer to the transfer / confirm-understanding item
   outcome: "ผ่านด้วยตนเอง" | "ผ่านหลังช่วยเหลือ" | "ยังต้องทบทวน" | "ยังไม่ได้ทำ";
 };
 export type StudentResult = {
@@ -31,21 +35,27 @@ export type StudentResult = {
   concepts: ConceptResult[];
   checkpoint: {answers: Record<string, Choice>; reasons: Record<string, Choice>; answerScore: number; reasonScore: number; score: number};
   transfer: string;
+  vark?: {pref?: string; how?: string; use: Record<string, number>}; // learning style chosen / used (vark.ts)
 };
 
 function read(key: string): any {
   try { return JSON.parse(localStorage.getItem(key) || "null") ?? {}; } catch { return {}; }
 }
 
-function concept(i: number, first?: {main?: string; reason?: Choice}, assisted = false, recheck?: Choice, adaptive?: any): ConceptResult {
+// unit: the PDF adaptive record (AdaptiveUnit); adaptive: the older Q04 prototype record.
+function concept(i: number, first?: {main?: string; reason?: Choice}, assisted = false, recheck?: Choice, adaptive?: any, unit?: any): ConceptResult {
   const l = lessons[i];
   const firstCorrect = first?.main === l.main.answer && first?.reason === l.reason.answer;
-  const recheckCorrect = recheck === l.recheck.answer || (!!adaptive?.recheckB && adaptive.recheckB === recheckB.answer);
+  const ud = adaptiveUnits[l.main.id.replace("Q", "C")];
+  if (unit?.path && ud) { recheck = unit.recheck; adaptive = unit; }
+  const recheckCorrect = unit?.path && ud
+    ? unit.recheck === ud.recheck.answer || unit.recheckB === ud.recheckB.answer
+    : recheck === l.recheck.answer || (!!adaptive?.recheckB && adaptive.recheckB === recheckB.answer);
   return {
     id: l.main.id.replace("Q", "C"),
     firstMain: first?.main, firstReason: first?.reason, firstCorrect,
     assisted, recheck, recheckCorrect,
-    ...(adaptive?.path ? {path: adaptive.path, diagnosis: adaptive.diagnosis, recheckB: adaptive.recheckB} : {}),
+    ...(adaptive?.path ? {path: adaptive.path, diagnosis: adaptive.diagnosis, recheckB: adaptive.recheckB, transfer: adaptive.transfer, ...(adaptive.switches?.length ? {helpSwitches: adaptive.switches, practiceRetry: adaptive.practiceRetry} : {})} : {}),
     outcome: !first?.main ? "ยังไม่ได้ทำ" : firstCorrect ? "ผ่านด้วยตนเอง" : recheckCorrect ? "ผ่านหลังช่วยเหลือ" : "ยังต้องทบทวน",
   };
 }
@@ -54,10 +64,10 @@ export function buildResult(): StudentResult {
   const c01 = read(C01_KEY), ext = read(EXT_KEY), demo = read(PROFILE_KEY);
   const records = ext.records ?? {};
   const concepts = [
-    concept(0, c01.first ? {main: c01.first.answer, reason: c01.first.reason} : undefined, !!c01.assisted, c01.recheck),
+    concept(0, c01.first ? {main: c01.first.answer, reason: c01.first.reason} : undefined, !!c01.assisted, c01.recheck, undefined, c01.unit),
     ...lessons.slice(1).map((l, k) => {
       const r = records[l.main.id.replace("Q", "C")] ?? {};
-      return concept(k + 1, r.first, !!r.assisted, r.adaptive?.recheck ?? r.recheck, r.adaptive);
+      return concept(k + 1, r.first, !!r.assisted, r.adaptive?.recheck ?? r.recheck, r.adaptive, r.unit);
     }),
   ];
   const answers = ext.cp ?? {}, reasons = ext.cpReasons ?? {};
@@ -71,6 +81,7 @@ export function buildResult(): StudentResult {
     concepts,
     checkpoint: {answers, reasons, answerScore, reasonScore, score: answerScore + reasonScore},
     transfer: typeof ext.transfer === "string" ? ext.transfer : "",
+    vark: (({pref, how, use}) => ({pref, how, use: use ?? {}}))(read("learnloom-vark-v1")),
   };
 }
 
