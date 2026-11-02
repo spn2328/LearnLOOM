@@ -6,7 +6,7 @@ export type {UserProfile,Classroom};
 const KEY='learnloom-demo-v1';
 type Boot={identity:{id:string;signed:boolean;display:string};profile:UserProfile|null;game:Game|null;revision:number;syncedAt:number|null;classroom:Classroom|null};
 const fresh=():Boot=>({identity:{id:'local-demo',signed:false,display:''},profile:null,game:null,revision:0,syncedAt:null,classroom:null});
-export async function api(_action:string,_data:Record<string,unknown>={}):Promise<{profile:UserProfile}>{throw new Error('เดโมยังไม่เปิดระบบห้องเรียนออนไลน์');}
+export async function api(_action:string,_data:Record<string,unknown>={}):Promise<{profile:UserProfile}>{throw new Error('ยังไม่เปิดระบบห้องเรียนออนไลน์ ใช้ปุ่มส่งผลให้ครูแทน');}
 export function useLearning(){
   const [boot,setBoot]=useState<Boot|null>(null);
   const [game,setGame]=useState<Game|null>(null);
@@ -16,8 +16,8 @@ export function useLearning(){
   const state=useRef({boot,game});state.current={boot,game};
   const load=useCallback(async()=>{
     let b=fresh();
-    try{const raw=localStorage.getItem(KEY);if(raw){const saved=JSON.parse(raw) as Boot;if(saved?.identity?.id==='local-demo'&&saved.profile?.role==='student'&&Array.isArray(saved.game?.answers))b=saved;}}
-    catch{setError('อ่านข้อมูลเดิมไม่ได้ เริ่มเดโมใหม่โดยไม่ส่งข้อมูลออกจากเครื่อง');}
+    try{const raw=localStorage.getItem(KEY);if(raw){const saved=JSON.parse(raw) as Boot;if(saved?.identity?.id==='local-demo'&&(saved.profile?.role==='student'||saved.profile?.role==='teacher')&&Array.isArray(saved.game?.answers))b=saved;}}
+    catch{setError('อ่านข้อมูลเดิมไม่ได้ จึงเริ่มใหม่โดยไม่ส่งข้อมูลออกจากเครื่อง');}
     setBoot(b);setGame(b.game??initialGame());setSyncedAt(b.syncedAt);
   },[]);
   useEffect(()=>{void load()},[load]);
@@ -31,7 +31,7 @@ export function useLearning(){
   const update=useCallback((fn:(g:Game)=>Game)=>setGame(g=>g?fn(g):g),[]);
   async function createProfile(input:{nickname:string;role:'student'|'teacher';grade:string;classCode?:string}){
     const nickname=input.nickname.trim();if(!nickname)throw new Error('กรุณากรอกชื่อเล่น');
-    const profile:UserProfile={id:'local-demo',nickname:nickname.slice(0,60),role:'student',grade:input.grade,classroom_id:null,signed:0};
+    const profile:UserProfile={id:'local-demo',nickname:nickname.slice(0,60),role:input.role,grade:input.grade,classroom_id:null,signed:0};
     setBoot(b=>({...b??fresh(),profile}));return profile;
   }
   return {boot,game,setGame,update,error,setError,status,syncedAt,online:true,load,sync:async()=>save(),createProfile,conflict:null,resolveConflict:(_useLocal:boolean)=>{}};
