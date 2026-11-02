@@ -4,9 +4,10 @@ import type {Choice, Question} from "../content/episode01";
 import type {PathId} from "../content/adaptive04";
 import {pickPath, pickTransfer, type AdaptiveUnitData} from "../content/adaptiveUnits";
 import {Choices, Loom, Popup} from "./ui";
+import {PathActivity} from "./PathActivities";
 
 // Generic adaptive flow for R01–R05 (เนื้อเรื่องและคำถามล่าสุด.pdf):
-// diagnose → path (PDF text) → practice R0x-1/R0x-2 → recheck RC0x → RC0x-B if wrong → transfer.
+// diagnose → path (hands-on activity + PDF text) → practice R0x-1/R0x-2 → recheck RC0x → RC0x-B if wrong → transfer.
 // The first attempt is stored by the parent and never touched here.
 export type UnitStage = "diagnose" | "path" | "practice" | "recheck" | "recheckB" | "transfer";
 export type UnitRecord = {
@@ -18,6 +19,7 @@ export default function AdaptiveUnit({unit, rec, onChange, onFinish}: {unit: Ada
   const [sel, setSel] = useState<Choice>();
   const [text, setText] = useState(rec.transfer ?? "");
   const [shown, setShown] = useState(false);
+  const [actDone, setActDone] = useState<Record<string, boolean>>({});
   const [pop, setPop] = useState<null | {tone: "good" | "warn"; title: string; text: string; next: () => void}>(null);
   const stage = rec.stage ?? "diagnose";
   const set = (r: UnitRecord) => { setSel(undefined); onChange({...rec, ...r}); };
@@ -60,11 +62,16 @@ export default function AdaptiveUnit({unit, rec, onChange, onFinish}: {unit: Ada
         <p className="fh-hint">เส้นทางนี้เลือกจากคำตอบวินิจฉัย เป็นเบาะแสว่าควรช่วยตรงไหน ไม่ใช่การตัดสินผู้เรียนแบบถาวร</p>
         {path === "D" && <div className="fh-flow small">{pathSteps.map((p, i) => <span key={p} className={i === step ? "on" : ""}>{unit.paths[p].level}</span>)}</div>}
         {path === "D" && <h3>{unit.paths[pathSteps[step]].name}</h3>}
-        {(path === "D" && step === 0 ? unit.paths.D.lines : []).map(l => <p key={l} className="fh-hint">{l}</p>)}
-        {unit.paths[pathSteps[step]].lines.map(l => <p key={l}>{l}</p>)}
+        <PathActivity key={`${pathSteps[step]}-${step}`} unit={unit.id} path={pathSteps[step]} onDone={() => setActDone(a => ({...a, [`${pathSteps[step]}-${step}`]: true}))} />
+        <details className="fh-act-notes">
+          <summary>เกี่ยวกับเส้นทางนี้</summary>
+          {(path === "D" && step === 0 ? unit.paths.D.lines : []).map(l => <p key={l} className="fh-hint">{l}</p>)}
+          {unit.paths[pathSteps[step]].lines.map(l => <p key={l}>{l}</p>)}
+        </details>
+        {!actDone[`${pathSteps[step]}-${step}`] && <p className="fh-hint">ทำกิจกรรมด้านบนให้สำเร็จก่อน แล้วปุ่มจะกดได้</p>}
         {step < pathSteps.length - 1
-          ? <button className="fh-primary" onClick={() => set({pathStep: step + 1})}>ขั้นถัดไป</button>
-          : <button className="fh-primary" onClick={() => set({stage: "practice"})}>ทำแบบฝึกก่อนตรวจซ้ำ</button>}
+          ? <button className="fh-primary" disabled={!actDone[`${pathSteps[step]}-${step}`]} onClick={() => set({pathStep: step + 1})}>ขั้นถัดไป</button>
+          : <button className="fh-primary" disabled={!actDone[`${pathSteps[step]}-${step}`]} onClick={() => set({stage: "practice"})}>ทำแบบฝึกก่อนตรวจซ้ำ</button>}
       </>}
 
       {stage === "practice" && pIndex >= 0 && ask(unit.practice[pIndex], `แบบฝึก ${pIndex + 1}/${unit.practice.length}`, v => {
