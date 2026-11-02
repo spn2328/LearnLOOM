@@ -9,8 +9,8 @@ class DemoBoundary extends React.Component<React.PropsWithChildren, {failed:bool
   state = {failed:false};
   static getDerivedStateFromError() { return {failed:true}; }
   render() {
-    if(this.state.failed) return <main className="panel"><h1>เปิดเดโมไม่สำเร็จ</h1><p>ลองรีเฟรชหน้าอีกครั้ง ข้อมูลที่บันทึกไว้ยังอยู่ในเบราว์เซอร์นี้</p><button onClick={()=>location.reload()}>ลองใหม่</button></main>;
+    if(this.state.failed) return <main className="panel"><h1>เปิด LearnLOOM ไม่สำเร็จ</h1><p>ลองรีเฟรชหน้าอีกครั้ง ข้อมูลที่บันทึกไว้ยังอยู่ในเบราว์เซอร์นี้</p><button onClick={()=>location.reload()}>ลองใหม่</button></main>;
     return this.props.children;
   }
 }
-createRoot(document.getElementById('root')!).render(<DemoBoundary><aside className="demo-notice" role="note"><strong>LearnLOOM · THE FAKE HERO (EP.01 EXCERPT)</strong><span>เคมีอินทรีย์ ม.6 · The Fake Hero · บันทึกเฉพาะเบราว์เซอร์นี้</span></aside>{new URLSearchParams(location.search).has('standalone')?<FakeHero/>:<LearnloomApp/>}</DemoBoundary>);
+createRoot(document.getElementById('root')!).render(<DemoBoundary><aside className="demo-notice" role="note"><strong>LearnLOOM · THE FAKE HERO · EP.01</strong><span>เคมีอินทรีย์ ม.6 · ความคืบหน้าบันทึกในเบราว์เซอร์นี้</span></aside>{new URLSearchParams(location.search).has('standalone')?<FakeHero/>:<LearnloomApp/>}</DemoBoundary>);

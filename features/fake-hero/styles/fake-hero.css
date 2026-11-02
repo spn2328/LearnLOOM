@@ -28,3 +28,7 @@
 .fh-story-media img,.fh-story-media video{display:block;width:100%;height:auto;max-height:min(68vh,650px);object-fit:contain;background:#f4f3ed}
 .fh-story-media figcaption{font-size:14px;line-height:1.6;padding:9px 14px;color:#607565}
 @media(prefers-reduced-motion:reduce){.fh-story-media video{scroll-behavior:auto}}
+
+/* Media slot outline shown only with ?slots in the URL. */
+.fh-slot-hint{margin:14px 0;padding:12px 14px;border:2px dashed #9bb59f;border-radius:14px;background:#f6f4ed;color:#4f6b55;font-size:14px}
+.fh-story-media video{max-height:min(68vh,650px)}

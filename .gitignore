@@ -50,6 +50,8 @@ next-env.d.ts
 
 # Owner's source PDFs and their text extracts stay local (not published)
 /docs/sources/
+# Raw, not-yet-renamed media; renamed files go in /media
+/Pic_Video/
 # Per-user Claude Code settings; shared settings live in .claude/settings.json
 .claude/settings.local.json
 # Playwright

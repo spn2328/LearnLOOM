@@ -14,7 +14,7 @@ Unless the owner explicitly asked for a visual change in chat, change content/be
 - Scope it: prefer `features/fake-hero/styles/fake-hero.css` with `fh-` prefixed classes. Touch `app/globals.css` only for narrowly scoped selectors, never global tokens/fonts/sidebar.
 - `app/globals.css` is 57KB on few lines: Grep the selector, Read only that range.
 - Check desktop, 768×1024 tablet and 375×812 mobile; Thai text must not clip.
-- Images/animation: put files in `public/fake-hero/`, use WebP, provide a static fallback, honour `prefers-reduced-motion`, never hide question text. Bump the cache version in `public/sw.js` if new assets must be offline.
+- Images/animation: drop files in `/media` named by slot id (see `media/README.md`, slots in `features/fake-hero/media/slots.ts`, rendered by `<MediaSlot id>`); WebP/MP4, `.loop.` for muted autoplay that honours `prefers-reduced-motion`; never hide question text. New files need a dev-server restart. Bump the cache version in `public/sw.js` if new assets must be offline.
 - Accessibility: buttons must be real `<button>`s, visible focus, contrast ≥ 4.5:1, touch targets ≥ 44px.
 
 ## Never

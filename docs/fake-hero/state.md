@@ -178,3 +178,11 @@ User clarified the appearance to preserve is the **original cream-and-green dash
 - Testing needed: upload asset files, check scene order, verify first video and river clip play, mobile performance, Thai captions, accessible controls. Until done Phase 3 is still in progress. No merge main in this change.
 
 - GitHub Actions run #56: CI checks (source, EP01 question bank, TypeScript, demo build) succeeded: https://github.com/spn2328/LearnLOOM/actions/runs/41328891941. This verifies the code only; image/video playback still awaits binary upload.
+
+### พร้อมทดลองเล่น: ระบบสื่อ + ส่งผลให้ครู — 2 พฤศจิกายน 2569 (branch `feat/playtest-ready`)
+- ระบบสื่อใหม่: วางไฟล์ใน `media/` ตั้งชื่อตามรหัสตำแหน่ง (`ep01-s01.mp4`, `ep01-s08-2.webp`, `.loop.` = วนเล่นเอง) → ขึ้นหน้าเว็บเอง; ดู `media/README.md`; `?slots` แสดงตำแหน่งว่าง; ลบ `StoryMedia.tsx`
+- นักเรียน: ปุ่ม **ส่งผลให้ครู** (หน้าสรุป EP.01 และหน้าความก้าวหน้า) → ไฟล์ .json (ชื่อเล่น, คำตอบ/เหตุผลครั้งแรก C01–C05, บทช่วย, recheck, CP /10, Transfer)
+- ครู: แท็บ "สำหรับครู" เปิดได้โดยไม่ต้องล็อกอิน → พื้นที่ครู นำเข้าไฟล์หลายไฟล์, ตาราง, แนวคิดที่ควรทบทวน, ส่งออก Excel 3 แผ่น
+- ซ่อนแชทห้องเรียน/ล็อกอิน/รหัสห้อง (ต้องใช้ server); ลบคำว่า "เดโม" ใน UI; ระดับชั้นเป็น ม.4–ม.6; ไฟล์สำรองรวมความคืบหน้า Fake Hero แล้ว
+- ตรวจแล้ว: test, test-fake-hero, typecheck, build:demo ผ่าน; เล่นใน browser (localhost) ส่งผล→นำเข้า→Excel ทำงาน, สื่อ png/loop mp4 แสดงได้
+- ยังไม่ได้ตรวจ: iPad/มือถือจริง, เปิดไฟล์ Excel ใน Excel จริง, ไฟล์สื่อจริงยังไม่ได้ตั้งชื่อ/ใส่
