@@ -3,6 +3,8 @@
 // progress, notebook, certificate and settings. Everything is read from this browser's saves.
 import {useEffect, useState, type ReactNode} from "react";
 import SendResult from "./SendResult";
+import {GameHud, GameProgress} from "./GameHub";
+import DevPanel from "./DevPanel";
 import {loomSrc} from "./ui";
 import {getMedia} from "../media/registry";
 import {lessons} from "../content/episode01";
@@ -147,6 +149,8 @@ export default function LearningHub({mode, go, onStart, nickname = "", settings}
           <p className="fine">Checkpoint: {r.checkpoint.score}/10 · ข้อมูลบันทึกเฉพาะเบราว์เซอร์นี้</p>
         </article>
       </div>
+      <GameHud r={r}/>
+      <GameProgress r={r}/>
       {active && <article className="fh-card"><h2>ส่งผลการเรียนให้ครู</h2><SendResult className="secondary"/></article>}
     </>}
 
@@ -188,6 +192,7 @@ export default function LearningHub({mode, go, onStart, nickname = "", settings}
           <button className="secondary" disabled={settings.offlineBusy} onClick={settings.prepareOffline}><Download size={17}/>{settings.offlineBusy ? "กำลังเตรียม…" : settings.offlineReady ? "เตรียมใหม่" : "เตรียมบทเรียน"}</button></div>
         <div className="fh-setting"><span>คู่มือ ไฟล์สำรอง และกู้คืนข้อมูล</span><button className="secondary" onClick={() => go("guide")}><HelpCircle size={17}/>เปิดคู่มือ</button></div>
       </article>
+      <DevPanel/>
     </>}
   </section>;
 }
@@ -203,6 +208,7 @@ function Home({data, nickname, go, onStart}: {data: Data; nickname: string; go: 
       <div><span className="eyebrow">ยินดีต้อนรับกลับมา</span><h1>สวัสดี{nickname ? ` ${nickname}` : ""}! 👋</h1><p>พร้อมสืบคดีใหม่แล้วหรือยัง?</p></div>
       <img src={loomSrc("happy")} alt="ลูมโบกมือทักทาย"/>
     </div>
+    <GameHud r={r}/>
     <div className="fh-home-grid">
       <article className="fh-card fh-continue">
         <img src={hubImage("ep01-s02a")} alt=""/>

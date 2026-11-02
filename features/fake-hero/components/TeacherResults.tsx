@@ -4,6 +4,10 @@ import {Download,FileUp,Trash2} from "lucide-react";
 import {download,xlsx} from "../../../lib/export";
 import {lessons,checkpoint,checkpointReasons} from "../content/episode01";
 import {parseResult,type StudentResult} from "../results";
+import {levelOf,xpOf} from "../game";
+const VARK_NAME:Record<string,string>={V:"ภาพ",A:"ฟัง",R:"อ่าน-เขียน",K:"ลงมือทำ"};
+const varkText=(r:StudentResult)=>r.vark?.pref?`${VARK_NAME[r.vark.pref]}${r.vark.how==="quiz"?" (แบบทดสอบ)":""}`:"—";
+const varkUse=(r:StudentResult)=>Object.entries(r.vark?.use??{}).map(([k,n])=>`${VARK_NAME[k]??k} ${n}`).join(", ");
 
 const conceptIds=lessons.map(l=>l.main.id.replace("Q","C"));
 const mark=(ok:boolean,a?:string)=>a?`${a}${ok?" ✓":" ✗"}`:"—";
@@ -24,8 +28,8 @@ export default function TeacherResults(){
     setErrors(bad);
   }
   function exportExcel(){
-    const overview=[["ชื่อเล่น","ส่งเมื่อ","จบ EP.01",...conceptIds,"ผ่านด้วยตนเอง (แนวคิด)","CP คำตอบ /5","CP เหตุผล /5","CP รวม /10","ผ่าน 70%","Transfer (ให้ครูตรวจ)"],
-      ...rows.map(r=>[r.nickname,new Date(r.exportedAt).toLocaleString("th-TH"),r.finished?"จบ":"ยังไม่จบ",...r.concepts.map(c=>c.outcome),r.concepts.filter(c=>c.firstCorrect).length,r.checkpoint.answerScore,r.checkpoint.reasonScore,r.checkpoint.score,r.checkpoint.score>=7?"ผ่าน":"ไม่ผ่าน",r.transfer])];
+    const overview=[["ชื่อเล่น","ส่งเมื่อ","จบ EP.01",...conceptIds,"ผ่านด้วยตนเอง (แนวคิด)","CP คำตอบ /5","CP เหตุผล /5","CP รวม /10","ผ่าน 70%","Transfer (ให้ครูตรวจ)","XP","เลเวล","สไตล์ VARK","ใช้สไตล์ (ครั้ง)"],
+      ...rows.map(r=>[r.nickname,new Date(r.exportedAt).toLocaleString("th-TH"),r.finished?"จบ":"ยังไม่จบ",...r.concepts.map(c=>c.outcome),r.concepts.filter(c=>c.firstCorrect).length,r.checkpoint.answerScore,r.checkpoint.reasonScore,r.checkpoint.score,r.checkpoint.score>=7?"ผ่าน":"ไม่ผ่าน",r.transfer,xpOf(r).xp,levelOf(xpOf(r).xp).level,varkText(r),varkUse(r)])];
     const detail=[["ชื่อเล่น","แนวคิด","คำตอบครั้งแรก","เหตุผลครั้งแรก","ครั้งแรกถูกทั้งคู่","ได้รับบทช่วย","เส้นทาง Adaptive","เปลี่ยนวิธีช่วย (ข้อ: จาก→เป็น)","ตอบซ้ำ (Recheck)","Recheck-B","Recheck ถูก","ยืนยันความเข้าใจ","ผล"],
       ...rows.flatMap(r=>r.concepts.map(c=>[r.nickname,c.id,c.firstMain??"",c.firstReason??"",c.firstCorrect?"ใช่":"ไม่",c.assisted?"ใช่":"ไม่",route(c),switchText(c),c.recheck??"",c.recheckB??"",c.recheckCorrect?"ใช่":"ไม่",c.transfer??"",c.outcome]))];
     const cp=[["ชื่อเล่น",...checkpoint.flatMap(q=>[q.id,q.id+"-E"])],
@@ -41,10 +45,11 @@ export default function TeacherResults(){
       {errors.length>0&&<p className="fine">อ่านไม่ได้ {errors.length} ไฟล์: {errors.join(", ")}</p>}
     </div>
     <div className="table-toolbar"><b>นักเรียน {rows.length} คน</b><div style={{display:"flex",gap:8}}>{rows.length>0&&<button className="secondary" onClick={()=>setRows([])}><Trash2 size={18}/>ล้างตาราง</button>}<button className="primary" disabled={!rows.length} onClick={exportExcel}><Download size={18}/>ส่งออก Excel</button></div></div>
-    {rows.length>0&&<div className="table-scroll"><table><thead><tr><th>ชื่อเล่น</th><th>จบตอน</th>{conceptIds.map(id=><th key={id}>{id}<br/><small>คำตอบ/เหตุผลครั้งแรก</small></th>)}<th>CP /10</th><th>Transfer</th></tr></thead>
+    {rows.length>0&&<div className="table-scroll"><table><thead><tr><th>ชื่อเล่น</th><th>จบตอน</th>{conceptIds.map(id=><th key={id}>{id}<br/><small>คำตอบ/เหตุผลครั้งแรก</small></th>)}<th>CP /10</th><th>XP · สไตล์</th><th>Transfer</th></tr></thead>
       <tbody>{rows.map(r=><tr key={r.nickname}><td><b>{r.nickname}</b><br/><small>{new Date(r.exportedAt).toLocaleString("th-TH")}</small></td><td>{r.finished?"จบ":"ยังไม่จบ"}</td>
         {r.concepts.map(c=><td key={c.id} title={c.outcome}>{c.firstMain?`${c.firstMain}/${c.firstReason??"—"} ${c.firstCorrect?"✓":"✗"}`:"—"}<br/><small>{c.outcome}{c.assisted?" · ได้บทช่วย":""}</small>{c.path&&<><br/><small title={switchText(c)||undefined}>{route(c)}{c.helpSwitches?.length?` (เปลี่ยนวิธี ${c.helpSwitches.length})`:""}</small></>}</td>)}
         <td><b>{r.checkpoint.score}</b> {r.checkpoint.score>=7?"ผ่าน":"ไม่ผ่าน"}<br/><small>คำตอบ {r.checkpoint.answerScore} · เหตุผล {r.checkpoint.reasonScore}</small></td>
+        <td><b>{xpOf(r).xp}</b> XP · Lv.{levelOf(xpOf(r).xp).level}<br/><small title={varkUse(r)}>{varkText(r)}</small></td>
         <td style={{minWidth:220,whiteSpace:"pre-wrap"}}>{r.transfer||"—"}</td></tr>)}</tbody></table></div>}
     {weak.length>0&&<div className="panel"><h2>แนวคิดที่ควรทบทวนทั้งห้อง</h2>{weak.sort((a,b)=>b.miss-a.miss).map(w=><p key={w.id}>{w.id}: ตอบครั้งแรกยังไม่ถูกทั้งคำตอบและเหตุผล {w.miss}/{rows.length} คน{w.switched>0&&` · ต้องเปลี่ยนวิธีช่วย ${w.switched} คน`}</p>)}<p className="fine">Transfer เป็นคำตอบอิสระ ครูต้องตรวจเหตุผลเอง · "เปลี่ยนวิธีช่วย" = ตอบแบบฝึกผิดแล้วระบบเปลี่ยนไปใช้กิจกรรมของเส้นทางอื่น ถ้ามีหลายคน อาจต้องสอนแนวคิดนั้นด้วยวิธีอื่นในห้อง</p></div>}
   </section>;

@@ -35,6 +35,7 @@ export type StudentResult = {
   concepts: ConceptResult[];
   checkpoint: {answers: Record<string, Choice>; reasons: Record<string, Choice>; answerScore: number; reasonScore: number; score: number};
   transfer: string;
+  vark?: {pref?: string; how?: string; use: Record<string, number>}; // learning style chosen / used (vark.ts)
 };
 
 function read(key: string): any {
@@ -80,6 +81,7 @@ export function buildResult(): StudentResult {
     concepts,
     checkpoint: {answers, reasons, answerScore, reasonScore, score: answerScore + reasonScore},
     transfer: typeof ext.transfer === "string" ? ext.transfer : "",
+    vark: (({pref, how, use}) => ({pref, how, use: use ?? {}}))(read("learnloom-vark-v1")),
   };
 }
 

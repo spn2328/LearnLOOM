@@ -5,6 +5,7 @@ import type {PathId} from "../content/adaptive04";
 import {nextSwitch, pickPath, pickTransfer, type AdaptiveUnitData} from "../content/adaptiveUnits";
 import {Choices, Loom, Popup} from "./ui";
 import {PathActivity} from "./PathActivities";
+import {VarkHelp, WhyPath} from "./VarkHelp";
 
 // Generic adaptive flow for R01–R05 (เนื้อเรื่องและคำถามล่าสุด.pdf):
 // diagnose → path (hands-on activity + PDF text) → practice R0x-1/R0x-2 (a wrong item switches to
@@ -72,14 +73,12 @@ export default function AdaptiveUnit({unit, rec, onChange, onFinish}: {unit: Ada
       {stage === "path" && <>
         <span className="fh-eyebrow">{unit.paths[path].name} · {unit.paths[path].level}</span>
         <p className="fh-hint">เส้นทางนี้เลือกจากคำตอบวินิจฉัย เป็นเบาะแสว่าควรช่วยตรงไหน ไม่ใช่การตัดสินผู้เรียนแบบถาวร</p>
+        {step === 0 && <WhyPath unit={unit} d={d} path={path} />}
         {path === "D" && <div className="fh-flow small">{pathSteps.map((p, i) => <span key={p} className={i === step ? "on" : ""}>{unit.paths[p].level}</span>)}</div>}
         {path === "D" && <h3>{unit.paths[pathSteps[step]].name}</h3>}
-        <PathActivity key={`${pathSteps[step]}-${step}`} unit={unit.id} path={pathSteps[step]} onDone={() => setActDone(a => ({...a, [`${pathSteps[step]}-${step}`]: true}))} />
-        <details className="fh-act-notes">
-          <summary>เกี่ยวกับเส้นทางนี้</summary>
-          {(path === "D" && step === 0 ? unit.paths.D.lines : []).map(l => <p key={l} className="fh-hint">{l}</p>)}
-          {unit.paths[pathSteps[step]].lines.map(l => <p key={l}>{l}</p>)}
-        </details>
+        <VarkHelp key={`${pathSteps[step]}-${step}`} id={`${unit.id}-${pathSteps[step]}`} title={unit.paths[pathSteps[step]].name} pre={path === "D" && step === 0 ? unit.paths.D.lines : []} lines={unit.paths[pathSteps[step]].lines}>
+          <PathActivity unit={unit.id} path={pathSteps[step]} onDone={() => setActDone(a => ({...a, [`${pathSteps[step]}-${step}`]: true}))} />
+        </VarkHelp>
         {!actDone[`${pathSteps[step]}-${step}`] && <p className="fh-hint">ทำกิจกรรมด้านบนให้สำเร็จก่อน แล้วปุ่มจะกดได้</p>}
         {step < pathSteps.length - 1
           ? <button className="fh-primary" disabled={!actDone[`${pathSteps[step]}-${step}`]} onClick={() => set({pathStep: step + 1})}>ขั้นถัดไป</button>
@@ -103,7 +102,9 @@ export default function AdaptiveUnit({unit, rec, onChange, onFinish}: {unit: Ada
       {stage === "switch" && lastSwitch && <>
         <span className="fh-eyebrow">เปลี่ยนวิธีช่วย · {unit.paths[lastSwitch.to].name}</span>
         <Loom pose="point" small>วิธีแรกอาจยังไม่ช่วย ลองมองอีกแบบนะ ทำกิจกรรมนี้ให้สำเร็จ แล้วกลับไปลองข้อ {lastSwitch.at} อีกครั้ง</Loom>
-        <PathActivity key={`sw-${switches.length}`} unit={unit.id} path={lastSwitch.to} onDone={() => setActDone(a => ({...a, [`sw-${switches.length}`]: true}))} />
+        <VarkHelp key={`sw-${switches.length}`} id={`${unit.id}-${lastSwitch.to}`} title={unit.paths[lastSwitch.to].name} lines={unit.paths[lastSwitch.to].lines}>
+          <PathActivity unit={unit.id} path={lastSwitch.to} onDone={() => setActDone(a => ({...a, [`sw-${switches.length}`]: true}))} />
+        </VarkHelp>
         {!actDone[`sw-${switches.length}`] && <p className="fh-hint">ทำกิจกรรมด้านบนให้สำเร็จก่อน แล้วปุ่มจะกดได้</p>}
         <button className="fh-primary" disabled={!actDone[`sw-${switches.length}`]} onClick={() => set({stage: "practice"})}>ลองข้อเดิมอีกครั้ง</button>
       </>}

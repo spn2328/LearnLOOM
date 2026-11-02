@@ -1,5 +1,6 @@
 "use client";
 import {useEffect, useMemo, useRef, useState, type ReactNode} from "react";
+import {speak, stopSpeak, useVark} from "../vark";
 import {getMedia, type MediaFile} from "../media/registry";
 import {mediaSlots, type MediaSlotId} from "../media/slots";
 import {loomSrc} from "./ui";
@@ -37,6 +38,10 @@ export default function StoryPlayer({script, end, label = "ฉาก"}: {script:
   const [i, setI] = useState(0);
   const [all, setAll] = useState(false);
   const [muted, setMuted] = useState(true);
+  // VARK: listen mode reads each beat aloud, read-write mode opens the full script
+  const vark = useVark();
+  const [voice, setVoice] = useState(false);
+  useEffect(() => { setVoice(vark.pref === "A"); if (vark.pref === "R") setAll(true); }, [vark.pref]);
   const video = useRef<HTMLVideoElement>(null);
   const beat = beats[i];
   const done = i >= beats.length - 1;
@@ -49,6 +54,12 @@ export default function StoryPlayer({script, end, label = "ฉาก"}: {script:
     const v = video.current;
     if (v && !reducedMotion()) v.play().catch(() => {});
   }, [file?.url]);
+
+  useEffect(() => {
+    if (!voice || !beat) return;
+    speak(beat.text);
+    return () => stopSpeak();
+  }, [voice, i, beat?.text]);
 
   if (!beat) return null;
   const m = SPEAKER.exec(beat.text);
@@ -81,6 +92,7 @@ export default function StoryPlayer({script, end, label = "ฉาก"}: {script:
         </button>
 
         <div className="fh-sp-tools">
+          <button type="button" onClick={() => setVoice((v) => !v)} aria-pressed={voice} aria-label={voice ? "หยุดให้ลูมอ่านบท" : "ให้ลูมอ่านบทให้ฟัง"}>{voice ? "🗣️" : "🔈"}</button>
           {file?.kind === "video" && (
             <>
               <button type="button" onClick={() => setMuted((v) => !v)} aria-label={muted ? "เปิดเสียงคลิป" : "ปิดเสียงคลิป"}>{muted ? "🔇" : "🔊"}</button>
