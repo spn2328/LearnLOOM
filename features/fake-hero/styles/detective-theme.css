@@ -1,0 +1,115 @@
+/* Cute detective storybook skin. Loaded last; changes only background, colors, borders and shadows —
+   never sizes or positions (rings and bottom edges are box-shadows, so nothing reflows). */
+:root {
+  --dt-paper: #FBF3E4;
+  --dt-card: #FFFCF5;
+  --dt-line: #E6D5B8;
+  --dt-edge: #C9B28C;
+  --dt-ink: #1A2238;
+  --dt-lift: 0 0 0 1px var(--dt-line), 0 4px 0 var(--dt-line), 0 10px 22px rgba(92, 64, 28, .10);
+  --dt-ballpoint: #7285C1; --dt-ballpoint-d: #3E4F8C; --dt-ballpoint-l: #EEF0F9;
+  --dt-green: #3A8F5D; --dt-green-d: #23683F; --dt-green-l: #DDEFE3;
+  --dt-coral: #DB7C56; --dt-coral-d: #A84A26; --dt-coral-l: #FDEEE7;
+  --dt-yellow: #F1D64A; --dt-yellow-d: #6B5800; --dt-yellow-l: #FCF4CC;
+  --background: var(--dt-paper);
+  --card: var(--dt-card);
+  --popover: var(--dt-card);
+  --primary: var(--dt-green-d);
+  --secondary: var(--dt-ballpoint-l);
+  --accent: var(--dt-yellow-l);
+  --muted: #F6EEDD;
+  --border: var(--dt-line);
+  --sidebar: var(--dt-card);
+  --sidebar-accent: var(--dt-ballpoint-l);
+  --sidebar-accent-foreground: var(--dt-ballpoint-d);
+  --sidebar-border: var(--dt-line);
+  --fh-cream: var(--dt-card);
+  --gm-cream: var(--dt-card);
+}
+
+/* Paper background with case-file decorations in the corners. 9-slice border-image keeps the lamp,
+   evidence board, books and clipboard whole at any screen ratio; fixed layer so it also works on iOS. */
+html body { background: var(--dt-paper) }
+html body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  border-style: solid; border-color: transparent;
+  border-image: url(/images/bg-detective.webp) 330 420 430 340 fill / clamp(110px, 21vw, 300px) clamp(120px, 26vw, 360px) clamp(130px, 27vw, 370px) clamp(110px, 22vw, 290px) stretch;
+}
+@media (min-width: 768px) { html body:has([data-slot=sidebar-wrapper])::before { left: var(--sidebar-width, 15rem) } }
+[data-slot=sidebar-inset], .fh-shell, .fh-hub { background: transparent !important }
+.fh-entry { background: transparent }
+.fh-entry-brand { background: var(--dt-card); box-shadow: var(--dt-lift) }
+.fh-role { box-shadow: 0 0 0 2px var(--dt-role-edge), 0 5px 0 2px var(--dt-role-edge), 0 12px 22px rgba(92, 64, 28, .12) }
+.fh-role.student { --dt-role-edge: #8CC3A0 } .fh-role.teacher { --dt-role-edge: #DDBF3A } .fh-role.general { --dt-role-edge: #9AA8D6 }
+.fh-role-icon { box-shadow: inset 0 -4px 0 rgba(26, 34, 56, .10), inset 0 3px 0 #FFFFFF, 0 3px 0 rgba(26, 34, 56, .12) }
+.gm-quests li { background: var(--dt-card) !important; border-color: var(--dt-line) }
+.topbar { background: var(--dt-card); border-bottom: 2px solid var(--dt-line); box-shadow: 0 3px 0 rgba(201, 178, 140, .35) }
+
+/* Sidebar: cream panel, current page = light ballpoint pill with a raised edge. */
+[data-slot=sidebar-inner], [data-slot=sidebar] .bg-sidebar { background: var(--dt-card); border-right: 2px solid var(--dt-line) }
+[data-slot=sidebar-menu-button][data-active=true] {
+  background: var(--dt-ballpoint-l) !important; color: var(--dt-ballpoint-d) !important;
+  box-shadow: inset 0 0 0 2px var(--dt-ballpoint), 0 3px 0 var(--dt-ballpoint-d);
+}
+
+/* Cards: solid cream-white, warm border ring and a soft bottom edge so they lift off the paper. */
+:is(.fh-card, .gm-card, .gm-hud, .gm-stat, .gm-badge, .fh-chapter, .fh-cert, [data-slot=card], .panel, .fh-panel, .fh-scene, .fh-question) {
+  background-color: var(--dt-card);
+  border-color: var(--dt-line);
+  box-shadow: var(--dt-lift);
+}
+.fh-tile.locked, .fh-chapter.locked, .fh-cert.locked { background-color: #F3ECDD }
+/* Locked items stay solid (no see-through); greyscale media + muted text still read as "not open yet". */
+.fh-chapter.locked { opacity: 1; color: #5A6275 }
+.fh-cert.locked > *:not(em) { opacity: 1; filter: grayscale(1); color: #5A6275 }
+
+/* Mobile bottom bar: cream bar, current tab = ballpoint pill, icons on small raised tiles. */
+.fh-bottom-nav { background: var(--dt-card); border-top: 2px solid var(--dt-line); box-shadow: 0 -4px 0 rgba(201, 178, 140, .25) }
+.fh-bottom-nav button[aria-current="page"] { color: var(--dt-ballpoint-d); background: var(--dt-ballpoint-l); box-shadow: inset 0 0 0 2px var(--dt-ballpoint), 0 3px 0 var(--dt-ballpoint-d) }
+.fh-bottom-nav .lucide { background: var(--dt-yellow-l); color: var(--dt-ink); box-shadow: 0 0 0 3px var(--dt-yellow-l), 0 2px 0 3px #EBD878 }
+.fh-bottom-nav button[aria-current="page"] .lucide { background: #FFFFFF; color: var(--dt-ballpoint-d); box-shadow: 0 0 0 3px #FFFFFF, 0 2px 0 3px #C9D1EC }
+
+/* Game buttons: darker rim + bottom edge, light sheen, press-down on click. */
+:is(.primary, .fh-primary) {
+  background: linear-gradient(180deg, #E8977A 0%, var(--dt-coral) 60%) !important;
+  color: var(--dt-ink) !important;
+  box-shadow: 0 0 0 2px var(--dt-coral-d), 0 4px 0 2px var(--dt-coral-d), inset 0 2px 0 rgba(255, 255, 255, .45);
+}
+.secondary, .round-button {
+  background: linear-gradient(180deg, #FFFFFF 0%, var(--dt-ballpoint-l) 75%);
+  border-color: var(--dt-ballpoint); color: var(--dt-ballpoint-d);
+  box-shadow: 0 3px 0 var(--dt-ballpoint-d);
+}
+.fh-play {
+  background: linear-gradient(180deg, #E8977A 0%, var(--dt-coral) 60%); color: var(--dt-ink);
+  box-shadow: 0 0 0 2px var(--dt-coral-d), 0 4px 0 2px var(--dt-coral-d), inset 0 2px 0 rgba(255, 255, 255, .45);
+}
+.gm-dock-main { box-shadow: 0 0 0 2px #C9AE2A, 0 4px 0 2px #8F7A12, inset 0 2px 0 rgba(255, 255, 255, .5) }
+.gm-dock-read { box-shadow: 0 0 0 2px var(--dt-green-d), 0 4px 0 2px #174A2C }
+.fh-tile.red { background: linear-gradient(180deg, #E8977A 0%, var(--dt-coral) 55%); color: var(--dt-ink); box-shadow: 0 0 0 2px var(--dt-coral-d), 0 5px 0 2px var(--dt-coral-d) }
+.fh-tile.red * { color: var(--dt-ink) }
+.fh-link-card { background: var(--dt-ballpoint-l); border-color: var(--dt-ballpoint); color: var(--dt-ballpoint-d); box-shadow: 0 3px 0 var(--dt-ballpoint) }
+.fh-choice { box-shadow: 0 3px 0 var(--dt-line) }
+:is(.primary, .fh-primary, .secondary, .round-button, .fh-play, .gm-dock-main, .gm-dock-read, .fh-tile, .fh-link-card, .fh-choice, .gm-btn) { transition: transform .08s ease, box-shadow .08s ease }
+:is(.primary, .fh-primary, .secondary, .round-button, .fh-play, .gm-dock-main, .gm-dock-read, .fh-tile, .fh-link-card, .fh-choice):active:not(:disabled) { transform: translateY(3px) }
+
+/* Progress bars: inset track, green fill with a raised top light. */
+.fh-bar { background: #EDE3CF; box-shadow: inset 0 2px 0 rgba(92, 64, 28, .14) }
+.fh-bar > * { background: var(--dt-green); box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .18), inset 0 2px 0 rgba(255, 255, 255, .35) }
+
+/* Cute 2.5D icons: bolder strokes, soft fill, on a raised colored tile drawn with box-shadow (no reflow). */
+.lucide { stroke-width: 2.5; fill: color-mix(in srgb, currentColor 18%, transparent); border-radius: 7px }
+[data-slot=sidebar-menu-button] > .lucide {
+  color: var(--dt-ico-fg, var(--dt-ballpoint-d));
+  background: var(--dt-ico-bg, var(--dt-ballpoint-l));
+  box-shadow: 0 0 0 4px var(--dt-ico-bg, var(--dt-ballpoint-l)), 0 3px 0 4px var(--dt-ico-edge, #C9D1EC), inset 0 1px 0 rgba(255, 255, 255, .8);
+}
+[data-slot=sidebar-menu-item]:nth-child(2) .lucide { --dt-ico-fg: #A84A26; --dt-ico-bg: #FDEEE7; --dt-ico-edge: #F3C2AE }
+[data-slot=sidebar-menu-item]:nth-child(3) .lucide { --dt-ico-fg: #23683F; --dt-ico-bg: #DDEFE3; --dt-ico-edge: #B5DAC2 }
+[data-slot=sidebar-menu-item]:nth-child(4) .lucide { --dt-ico-fg: #6B5800; --dt-ico-bg: #FCF4CC; --dt-ico-edge: #EBD878 }
+[data-slot=sidebar-menu-item]:nth-child(5) .lucide { --dt-ico-fg: #6B5800; --dt-ico-bg: #F1D64A; --dt-ico-edge: #C9AE2A }
+[data-slot=sidebar-menu-item]:nth-child(6) .lucide { --dt-ico-fg: #A84A26; --dt-ico-bg: #FDEEE7; --dt-ico-edge: #F3C2AE }
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.primary, .fh-primary, .secondary, .round-button, .fh-play, .gm-dock-main, .gm-dock-read, .fh-tile, .fh-link-card, .fh-choice, .gm-btn) { transition: none }
+}

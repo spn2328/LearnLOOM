@@ -327,3 +327,10 @@ User clarified the appearance to preserve is the **original cream-and-green dash
 - คู่มือ `docs/fake-hero/google-sheets-auto.md`
 - ตรวจแล้ว: สูตรคะแนนของสคริปต์เทียบกับ `dashboard.ts` ด้วยข้อมูลจำลองใน Node
 - **ยังไม่ได้ทดสอบ**: รัน SQL บน Supabase จริง, รัน Apps Script ใน Google Sheets จริง (เจ้าของต้องทำตามคู่มือ)
+
+
+## 3 พ.ย. 2569 — ธีม "นักสืบสมุดภาพน่ารัก" (branch `feat/detective-theme`)
+- สิ่งที่ทำ: เจ้าของขอเปลี่ยนหน้าตาในแชต → พื้นกระดาษครีมมีของตกแต่งนักสืบเฉพาะขอบ (`public/images/bg-detective.webp` ภาพจากเจ้าของ), สีหลัก 4 สี #7285C1 #3A8F5D #DB7C56 #F1D64A แทนค่าสีใน `app/globals.css`, `demo/style.css`, `features/fake-hero/styles/{fake-hero,game,hub,story}.css`; ไฟล์ใหม่ `features/fake-hero/styles/detective-theme.css` (การ์ดครีมทึบ, ปุ่มมีขอบล่าง, ไอคอน 2.5D, แถบความก้าวหน้า) โหลดใน `demo/main.tsx`
+- ไม่แตะ: ข้อความ คำถาม ตัวเลือก เฉลย ภาพ/วิดีโอเนื้อเรื่อง ขนาด/ตำแหน่ง layout, การบันทึกข้อมูล
+- ตรวจแล้ว (localhost): test-fake-hero, typecheck, build:demo ผ่าน; check-source ผ่านใน worktree สะอาด; 6 หน้าใน dashboard + EP.01 ที่ 1280/834/390 ไม่มีล้นแนวนอน/ปุ่มหลุดจอ
+- ยังไม่ได้ตรวจ: หน้า welcome หลังแก้ครั้งสุดท้าย, dashboard ครู, อุปกรณ์จริง; เจ้าของต้องอนุมัติการเปลี่ยน look ก่อน merge

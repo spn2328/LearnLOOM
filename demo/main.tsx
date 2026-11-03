@@ -7,6 +7,7 @@ import CloudAccount from '../features/fake-hero/cloud/CloudAccount';
 import '../app/globals.css';
 import './style.css';
 import '../features/fake-hero/styles/bright.css';
+import '../features/fake-hero/styles/detective-theme.css';
 
 class DemoBoundary extends React.Component<React.PropsWithChildren, {failed:boolean}> {
   state = {failed:false};
