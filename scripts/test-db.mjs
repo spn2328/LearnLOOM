@@ -171,4 +171,38 @@ await ok("route splits answer+reason / answer only / wrong, with a reason", asyn
   assert.equal(routeOf({...base, outcome: "ยังไม่ได้ทำ"}, keys), null);
   assert.equal(conceptsFrom(sample, keys, a1, ids.s1, "t")[0].detail.route, "reason");
 });
+
+// Dashboard numbers (features/fake-hero/cloud/dashboard.ts) from rows a teacher actually reads.
+const {summarizeStudent, misconceptions, attemptWeight} = await import("../features/fake-hero/cloud/dashboard.ts");
+await ok("dashboard summary from teacher-visible rows", async () => {
+  const read = async t => (await as("t1", `select * from ${t} where user_id = $1`, [ids.s1]));
+  const rows = {attempts: await read("attempts"), concepts: await read("concept_results"), events: await read("answer_events")};
+  const s = summarizeStudent(ids.s1, "ฟ้า", rows);
+  assert.equal(s.attempts.length, rows.attempts.length);
+  assert.equal(s.first.attempt.number, 1);
+  assert.ok(s.attempts.length >= 2, "retake kept as its own attempt");
+});
+await ok("checkpoint score, weighting, progress and status", async () => {
+  const at = {id: "x", user_id: "u", number: 2, started_at: "t", finished_at: "t2"};
+  const ev = (kind, item, value, correct, t) => ({attempt_id: "x", user_id: "u", concept: null, item_id: item, kind, value, correct, recorded_at: t});
+  const events = [ev("checkpoint", "CP01", "B", false, "1"), ev("checkpoint", "CP01", "A", true, "2"), ev("checkpoint_reason", "CP01-E", "A", true, "3"),
+    ev("checkpoint", "CP02", "A", true, "4"), ev("checkpoint_reason", "CP02-E", "C", false, "5")];
+  const s = summarizeStudent("u", "u", {attempts: [at], concepts: [], events});
+  assert.equal(s.latest.checkpointScore, 3, "latest choice per item counts");
+  assert.equal(s.latest.weighted, 2.7);
+  assert.equal(s.latest.progress, 100);
+  assert.equal(s.status, "ต้องติดตาม", "finished below 7/10 needs follow-up");
+  assert.deepEqual([1, 2, 3, 4, 9].map(attemptWeight), [1, 0.9, 0.8, 0.7, 0.7]);
+  assert.equal(summarizeStudent("v", "v", {attempts: [], concepts: [], events: []}).status, "ยังไม่เริ่ม");
+});
+await ok("shared misconceptions count first attempts by route", async () => {
+  const mk = (u, n, route, value) => ({
+    attempts: [{id: u + n, user_id: u, number: n, started_at: "t", finished_at: null}],
+    concepts: [{attempt_id: u + n, user_id: u, concept: "C01", outcome: route === "both" ? "ผ่านด้วยตนเอง" : "ยังต้องทบทวน", path: null, detail: {route}}],
+    events: [{attempt_id: u + n, user_id: u, concept: "C01", item_id: "Q01", kind: "main", value, correct: value === "A", recorded_at: "t"}]});
+  const studs = [mk("a", 1, "answer", "B"), mk("b", 1, "answer", "B"), mk("c", 1, "reason", "A"), mk("d", 1, "both", "A")].map((r, i) => summarizeStudent("abcd"[i], "n", r));
+  const [c1m] = misconceptions(studs, [{id: "C01", title: "t", main: {choices: ["w", "x", "y", "z"]}, reason: {choices: []}}]);
+  assert.deepEqual([c1m.tried, c1m.both, c1m.reasonOnly, c1m.wrong, c1m.review], [4, 1, 1, 2, 3]);
+  assert.deepEqual(c1m.wrongChoices[0], {item: "Q01", value: "B", text: "x", count: 2});
+});
 console.log(`${passed} checks passed in total`);

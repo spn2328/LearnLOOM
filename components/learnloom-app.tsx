@@ -49,6 +49,8 @@ useEffect(()=>{if(!breakActivity)return;const t=setInterval(()=>setBreakLeft(v=>
 useEffect(()=>{if(breakActivity&&breakLeft===0)finishBreak()},[breakLeft]);
 function startStory(){markActivity('study');go('fakehero')}
 function go(v:string){setView(v);window.scrollTo({top:0,behavior:'instant'});window.speechSynthesis?.cancel();setSpeaking(false)}
+  // Account dialog (features/fake-hero/cloud) opens a view without importing this shell.
+  useEffect(()=>{const f=(e:Event)=>go(String((e as CustomEvent).detail));window.addEventListener('learnloom:go',f);return()=>window.removeEventListener('learnloom:go',f)},[]);
 function setStage(stage:string){update(g=>({...g,stage,beat:0,pause:false,visited:Array.from(new Set([...g.visited,stage]))}));}
 function start(){update(g=>({...g,startedAt:g.startedAt||Date.now(),pause:false}));go('learn')}
 function openItem(id:string,returnTo=''){itemAt.current=Date.now();update(g=>({...g,mainCheckpoint:returnTo==='notebook'&&!g.mainCheckpoint?{stage:g.stage,beat:g.beat,itemId:g.itemId,returnTo:g.returnTo,retryCount:g.retryCount}:g.mainCheckpoint,retryCount:id.startsWith('D')?0:g.retryCount,stage:'question',itemId:id,beat:0,pause:false,returnTo:returnTo||g.returnTo}));go('learn');}

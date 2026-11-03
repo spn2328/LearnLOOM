@@ -1,10 +1,13 @@
 "use client";
-// Account chip for the top notice bar + account dialog (sign in / sign up, classes, sync status).
+// Account chip for the top notice bar + account dialog (sign in, consent, dashboards, sync status).
 // Renders the original local-only notice when Supabase is not configured.
-import React, {useCallback, useEffect, useState, useSyncExternalStore} from "react";
+import React, {useEffect, useState, useSyncExternalStore} from "react";
+import {createPortal} from "react-dom";
 import type {Session} from "@supabase/supabase-js";
-import {cloudEnabled, supabase, thaiError, type Classroom, type CloudProfile} from "./client";
+import {cloudEnabled, supabase, thaiError, type CloudProfile} from "./client";
 import {adoptDevice, flush, installSync, signOutDevice, syncStore, type SyncStatus} from "./sync";
+import {stableId} from "./records";
+import {StudentProgress, TeacherDashboard} from "./Dashboards";
 import "./cloud.css";
 
 const STATUS: Record<SyncStatus, string> = {offline: "ออฟไลน์", pending: "รอซิงก์", syncing: "กำลังซิงก์…", synced: "ซิงก์แล้ว", error: "รอซิงก์"};
@@ -19,6 +22,14 @@ async function loadProfile(session: Session): Promise<CloudProfile> {
   if (e2) throw e2;
   return created as CloudProfile;
 }
+
+// Students sign in with class code + nickname + PIN. Supabase Auth still needs an email/password pair, so
+// both are derived: the same code + nickname always maps to the same hidden address, which also keeps
+// nicknames unique within a class. No real email is collected or contacted ("Confirm email" must be off).
+const cleanCode = (code: string) => code.trim().toUpperCase();
+const cleanNick = (nick: string) => nick.trim().replace(/\s+/g, " ").slice(0, 40);
+const studentEmail = (code: string, nick: string) => `s${stableId(`${cleanCode(code)}|${cleanNick(nick).toLowerCase()}`).slice(1)}@student.learnloom.app`;
+const studentPassword = (code: string, pin: string) => `ll-${pin}-${cleanCode(code)}`;
 
 export default function CloudAccount() {
   if (!cloudEnabled) return <span>เคมีอินทรีย์ ม.6 · ความคืบหน้าบันทึกในเบราว์เซอร์นี้</span>;
@@ -53,25 +64,28 @@ function Account() {
       } catch (e) { if (live) setError(thaiError(e)); }
     })();
     return () => { live = false; };
-  }, [session]);
+    // Keyed on the user, not the session object, so token refreshes do not re-run device adoption.
+  }, [session?.user.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (session === undefined) return <span>กำลังตรวจบัญชี…</span>;
+  const wide = !conflict && profile?.role === "teacher";
   return <>
     {session && profile
       ? <span className="ll-cloud-chip">
-          <button type="button" onClick={() => setOpen(true)} aria-haspopup="dialog">👤 {profile.nickname}{profile.role === "teacher" ? " (ครู)" : ""}</button>
+          <button type="button" onClick={() => setOpen(true)} aria-haspopup="dialog">{profile.role === "teacher" ? "📊 แดชบอร์ดครู" : "👤 " + profile.nickname}</button>
           <b className={`ll-cloud-badge is-${sync.status}`} role="status">{STATUS[sync.status]}{sync.pending && sync.status !== "synced" ? ` · ${sync.pending}` : ""}</b>
         </span>
-      : <span className="ll-cloud-chip">ความคืบหน้าบันทึกในเบราว์เซอร์นี้ <button type="button" onClick={() => setOpen(true)}>เข้าสู่ระบบ / สมัคร</button></span>}
+      : <span className="ll-cloud-chip">ความคืบหน้าบันทึกในเบราว์เซอร์นี้ <button type="button" onClick={() => setOpen(true)}>เข้าสู่ระบบ</button></span>}
     {error && !open && <span className="ll-cloud-error" role="alert">{error}</span>}
-    {open && <div className="ll-cloud-backdrop" onClick={e => { if (e.target === e.currentTarget && !conflict) setOpen(false); }}>
-      <section className="ll-cloud-dialog" role="dialog" aria-modal="true" aria-label="บัญชี LearnLOOM">
+    {/* Portal: the notice bar is its own stacking context, so a dialog inside it sits under the floating dock. */}
+    {open && createPortal(<div className="ll-cloud-backdrop" onClick={e => { if (e.target === e.currentTarget && !conflict) setOpen(false); }}>
+      <section className={`ll-cloud-dialog${wide ? " is-wide" : ""}`} role="dialog" aria-modal="true" aria-label="บัญชี LearnLOOM">
         {!conflict && <button type="button" className="ll-cloud-close" onClick={() => setOpen(false)} aria-label="ปิด">✕</button>}
         {conflict && profile ? <Conflict profile={profile}/>
-          : session && profile ? <Signed profile={profile} setProfile={setProfile}/>
+          : session && profile ? <Signed profile={profile} close={() => setOpen(false)}/>
           : <SignIn/>}
       </section>
-    </div>}
+    </div>, document.body)}
   </>;
 }
 
@@ -94,26 +108,89 @@ function Conflict({profile}: {profile: CloudProfile}) {
 }
 
 function SignIn() {
-  const [mode, setMode] = useState<"in" | "up">("in");
-  const [email, setEmail] = useState(""), [password, setPassword] = useState(""), [nickname, setNickname] = useState("");
-  const [teacher, setTeacher] = useState(false), [code, setCode] = useState("");
-  const [busy, setBusy] = useState(false), [msg, setMsg] = useState(""), [error, setError] = useState("");
+  const [who, setWho] = useState<"student" | "teacher">("student");
+  return <>
+    <h2>เข้าสู่ระบบ LearnLOOM</h2>
+    <div className="ll-cloud-tabs" role="tablist">
+      <button type="button" role="tab" aria-selected={who === "student"} className={who === "student" ? "ll-cloud-primary" : ""} onClick={() => setWho("student")}>นักเรียน</button>
+      <button type="button" role="tab" aria-selected={who === "teacher"} className={who === "teacher" ? "ll-cloud-primary" : ""} onClick={() => setWho("teacher")}>ครู</button>
+    </div>
+    {who === "student" ? <StudentSignIn/> : <TeacherSignIn/>}
+  </>;
+}
+
+function Consent({checked, set}: {checked: boolean; set: (v: boolean) => void}) {
+  return <div className="ll-cloud-consent">
+    <b>ก่อนเริ่มทดลองใช้</b>
+    <ul>
+      <li>เว็บนี้อยู่ในช่วงทดลองใช้ (pilot) เพื่อพัฒนาบทเรียน</li>
+      <li>ระบบเก็บ: ชื่อเล่น คำตอบ เหตุผลที่เลือก เส้นทางการเรียน และเวลาที่ทำ <b>ไม่เก็บชื่อจริง อีเมล หรือเบอร์โทร</b></li>
+      <li>ผู้ที่เห็นข้อมูล: ตัวนักเรียนเอง และครูของห้องที่เข้าร่วมเท่านั้น เพื่อนในห้องไม่เห็น</li>
+      <li>ไม่มีผลต่อคะแนนเก็บของรายวิชา ถ้าไม่สะดวกใจ ใช้แบบไม่เข้าสู่ระบบได้ (บันทึกในเครื่องเท่านั้น) หรือแจ้งครูเพื่อขอลบข้อมูลได้</li>
+    </ul>
+    <label className="ll-cloud-check"><input type="checkbox" checked={checked} onChange={e => set(e.target.checked)} required/> รับทราบและยินยอม</label>
+  </div>;
+}
+
+function StudentSignIn() {
+  const [code, setCode] = useState(""), [nick, setNick] = useState(""), [pin, setPin] = useState(""), [ok, setOk] = useState(false);
+  const [busy, setBusy] = useState(false), [error, setError] = useState("");
   const submit = async (e: React.FormEvent) => {
-    e.preventDefault(); setBusy(true); setError(""); setMsg("");
+    e.preventDefault(); setBusy(true); setError("");
+    try {
+      const sb = supabase!;
+      if (!/^\d{4,6}$/.test(pin)) throw new Error("PIN ต้องเป็นตัวเลข 4–6 หลัก");
+      if (!cleanNick(nick)) throw new Error("กรุณากรอกชื่อเล่น");
+      const {data: className, error: e0} = await sb.rpc("class_name", {code: cleanCode(code)});
+      if (e0) throw e0;
+      if (!className) throw new Error("ไม่พบห้องเรียนรหัสนี้ ตรวจรหัสจากครูอีกครั้ง");
+      const email = studentEmail(code, nick), password = studentPassword(code, pin);
+      const signIn = await sb.auth.signInWithPassword({email, password});
+      if (signIn.error && !/Invalid login credentials/i.test(signIn.error.message)) throw signIn.error;
+      if (signIn.error) {
+        // Unknown pair: either a new student or a wrong PIN for an existing nickname.
+        const up = await sb.auth.signUp({email, password, options: {data: {nickname: cleanNick(nick), consent_at: new Date().toISOString()}}});
+        if (up.error && /already registered|already been registered|already exists/i.test(up.error.message))
+          throw new Error(`ชื่อเล่น "${cleanNick(nick)}" มีในห้องนี้แล้ว แต่ PIN ไม่ตรง ถ้าเป็นคนละคน ให้ใช้ชื่อเล่นอื่น ถ้าลืม PIN แจ้งครู`);
+        if (up.error) throw up.error;
+        if (!up.data.session) throw new Error("ระบบยังเปิดการยืนยันอีเมลอยู่ ให้ครู/ผู้ดูแลปิด Confirm email ใน Supabase ก่อน");
+        await loadProfile(up.data.session);
+      }
+      const {error: e2} = await sb.rpc("join_class", {code: cleanCode(code)});
+      if (e2) throw e2;
+      location.reload();
+    } catch (e) { setError(e instanceof Error && /^[ก-๙"]/.test(e.message) ? e.message : thaiError(e)); }
+    finally { setBusy(false); }
+  };
+  return <form onSubmit={submit}>
+    <p className="ll-cloud-note">ครั้งแรกระบบจะสร้างบัญชีให้อัตโนมัติ ครั้งต่อไปใช้รหัสห้อง ชื่อเล่น และ PIN เดิม เพื่อเรียนต่อได้ทุกเครื่อง</p>
+    <label>รหัสห้อง (ขอจากครู)<input value={code} onChange={e => setCode(e.target.value.toUpperCase())} maxLength={12} required autoComplete="off" autoCapitalize="characters" placeholder="เช่น 3FA9C1"/></label>
+    <label>ชื่อเล่น (ห้ามใช้ชื่อจริง-นามสกุล)<input value={nick} onChange={e => setNick(e.target.value)} maxLength={40} required autoComplete="nickname"/></label>
+    <label>PIN ตัวเลข 4–6 หลัก (ตั้งเองครั้งแรก และจำไว้)<input value={pin} onChange={e => setPin(e.target.value.replace(/\D/g, ""))} inputMode="numeric" type="password" maxLength={6} required autoComplete="current-password"/></label>
+    <Consent checked={ok} set={setOk}/>
+    <button type="submit" className="ll-cloud-primary" disabled={busy || !ok}>{busy ? "กำลังเข้าสู่ระบบ…" : "เข้าสู่ระบบ"}</button>
+    {error && <p className="ll-cloud-error" role="alert">{error}</p>}
+  </form>;
+}
+
+function TeacherSignIn() {
+  const [mode, setMode] = useState<"in" | "up">("in");
+  const [email, setEmail] = useState(""), [password, setPassword] = useState(""), [nickname, setNickname] = useState(""), [code, setCode] = useState("");
+  const [busy, setBusy] = useState(false), [error, setError] = useState("");
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault(); setBusy(true); setError("");
     try {
       const sb = supabase!;
       if (mode === "up") {
-        if (!nickname.trim()) throw new Error("กรุณากรอกชื่อเล่น");
+        if (!nickname.trim()) throw new Error("กรุณากรอกชื่อที่จะแสดง");
+        if (code.trim().length < 6) throw new Error("รหัสครูต้องยาวอย่างน้อย 6 ตัวอักษร");
         const {data, error} = await sb.auth.signUp({email: email.trim(), password, options: {data: {nickname: nickname.trim().slice(0, 40)}}});
         if (error) throw error;
-        if (!data.session) { setMsg("สมัครแล้ว กรุณายืนยันอีเมลจากลิงก์ที่ส่งไป แล้วกลับมาเข้าสู่ระบบ"); setMode("in"); return; }
-        const p = await loadProfile(data.session);
-        if (teacher) {
-          const {data: okRole, error: e2} = await sb.rpc("claim_teacher", {code: code.trim()});
-          if (e2) throw e2;
-          if (!okRole) throw new Error("รหัสครูไม่ถูกต้อง บัญชีถูกสร้างเป็นนักเรียน เปลี่ยนเป็นครูได้ในหน้าบัญชี");
-        }
-        void p;
+        if (!data.session) throw new Error("ระบบยังเปิดการยืนยันอีเมลอยู่ ให้ปิด Confirm email ใน Supabase ก่อน (ดูคู่มือ)");
+        await loadProfile(data.session);
+        const {data: okRole, error: e2} = await sb.rpc("claim_teacher", {code: code.trim()});
+        if (e2) throw e2;
+        if (!okRole) throw new Error("รหัสครูไม่ถูกต้อง บัญชีถูกสร้างแล้วแต่ยังเป็นนักเรียน เข้าสู่ระบบแล้วใส่รหัสครูที่ถูกต้องในหน้าบัญชี");
       } else {
         const {error} = await sb.auth.signInWithPassword({email: email.trim(), password});
         if (error) throw error;
@@ -123,21 +200,18 @@ function SignIn() {
     finally { setBusy(false); }
   };
   return <form onSubmit={submit}>
-    <h2>{mode === "in" ? "เข้าสู่ระบบ" : "สมัครบัญชีใหม่"}</h2>
-    <p className="ll-cloud-note">ครั้งแรกต้องใช้อินเทอร์เน็ต หลังจากนั้นความคืบหน้าจะเก็บในบัญชีและเรียนต่อได้ทุกเครื่อง</p>
-    {mode === "up" && <label>ชื่อเล่น (ไม่ต้องใช้ชื่อจริง)<input value={nickname} onChange={e => setNickname(e.target.value)} maxLength={40} required autoComplete="nickname"/></label>}
+    {mode === "up" && <label>ชื่อที่จะแสดง (เช่น ครูเอ)<input value={nickname} onChange={e => setNickname(e.target.value)} maxLength={40} required/></label>}
     <label>อีเมล<input type="email" value={email} onChange={e => setEmail(e.target.value)} required autoComplete="email"/></label>
-    <label>รหัสผ่าน<input type="password" value={password} onChange={e => setPassword(e.target.value)} minLength={6} required autoComplete={mode === "in" ? "current-password" : "new-password"}/></label>
-    {mode === "up" && <label className="ll-cloud-check"><input type="checkbox" checked={teacher} onChange={e => setTeacher(e.target.checked)}/> ฉันเป็นครู</label>}
-    {mode === "up" && teacher && <label>รหัสสำหรับครู (ขอจากผู้ดูแลระบบ)<input value={code} onChange={e => setCode(e.target.value)} required autoComplete="off"/></label>}
-    <button type="submit" className="ll-cloud-primary" disabled={busy}>{busy ? "กำลังดำเนินการ…" : mode === "in" ? "เข้าสู่ระบบ" : "สมัคร"}</button>
-    <button type="button" className="ll-cloud-link" onClick={() => { setMode(mode === "in" ? "up" : "in"); setError(""); }}>{mode === "in" ? "ยังไม่มีบัญชี? สมัครใหม่" : "มีบัญชีแล้ว? เข้าสู่ระบบ"}</button>
-    {msg && <p className="ll-cloud-ok" role="status">{msg}</p>}
+    <label>รหัสผ่าน (อย่างน้อย 6 ตัว)<input type="password" value={password} onChange={e => setPassword(e.target.value)} minLength={6} required autoComplete={mode === "in" ? "current-password" : "new-password"}/></label>
+    {mode === "up" && <label>รหัสครู (อย่างน้อย 6 ตัว)<input value={code} onChange={e => setCode(e.target.value)} minLength={6} required autoComplete="off"/>
+      <span className="ll-cloud-note">ครูคนแรกของระบบ: ตั้งรหัสใหม่ได้เลย ระบบจะจำไว้ · ครูคนต่อไป: ขอรหัสจากครูคนแรก</span></label>}
+    <button type="submit" className="ll-cloud-primary" disabled={busy}>{busy ? "กำลังดำเนินการ…" : mode === "in" ? "เข้าสู่ระบบ" : "สมัครบัญชีครู"}</button>
+    <button type="button" className="ll-cloud-link" onClick={() => { setMode(mode === "in" ? "up" : "in"); setError(""); }}>{mode === "in" ? "ยังไม่มีบัญชีครู? สมัคร" : "มีบัญชีแล้ว? เข้าสู่ระบบ"}</button>
     {error && <p className="ll-cloud-error" role="alert">{error}</p>}
   </form>;
 }
 
-function Signed({profile, setProfile}: {profile: CloudProfile; setProfile: (p: CloudProfile) => void}) {
+function Signed({profile, close}: {profile: CloudProfile; close: () => void}) {
   const sync = useSyncExternalStore(syncStore.subscribe, syncStore.get, syncStore.get);
   const [busy, setBusy] = useState(false), [error, setError] = useState("");
   const logout = async () => {
@@ -160,90 +234,35 @@ function Signed({profile, setProfile}: {profile: CloudProfile; setProfile: (p: C
       <button type="button" onClick={() => void flush()} disabled={sync.status === "syncing"}>ซิงก์ตอนนี้</button>
       <button type="button" onClick={logout} disabled={busy}>{busy ? "กำลังออก…" : "ออกจากระบบ"}</button>
     </div>
-    {profile.role === "teacher" ? <TeacherClasses profile={profile}/> : <StudentClasses profile={profile} setProfile={setProfile}/>}
+    {profile.role === "teacher" ? <TeacherDashboard profile={profile}/> : <StudentHome profile={profile} close={close}/>}
     {error && <p className="ll-cloud-error" role="alert">{error}</p>}
   </>;
 }
 
-function StudentClasses({profile, setProfile}: {profile: CloudProfile; setProfile: (p: CloudProfile) => void}) {
-  const [classes, setClasses] = useState<Classroom[]>([]);
-  const [code, setCode] = useState(""), [teacherCode, setTeacherCode] = useState("");
-  const [msg, setMsg] = useState(""), [error, setError] = useState("");
-  const load = useCallback(async () => {
-    const {data, error} = await supabase!.from("classrooms").select("id, name, join_code, teacher_id").order("created_at");
-    if (error) setError(thaiError(error)); else setClasses(data as Classroom[]);
+function StudentHome({profile, close}: {profile: CloudProfile; close: () => void}) {
+  const [classes, setClasses] = useState<string[]>([]);
+  const [teacherCode, setTeacherCode] = useState(""), [error, setError] = useState("");
+  useEffect(() => {
+    supabase!.from("classrooms").select("name").order("created_at").then(({data, error}) => {
+      if (error) setError(thaiError(error)); else setClasses((data ?? []).map(c => c.name as string));
+    });
   }, []);
-  useEffect(() => { void load(); }, [load]);
-  const join = async (e: React.FormEvent) => {
-    e.preventDefault(); setError(""); setMsg("");
-    const {data, error} = await supabase!.rpc("join_class", {code: code.trim()});
-    if (error) return setError(thaiError(error));
-    if (!data) return setError("ไม่พบห้องเรียนรหัสนี้ ตรวจรหัสจากครูอีกครั้ง");
-    setCode(""); setMsg("เข้าห้องเรียนแล้ว"); void load();
-  };
   const claim = async (e: React.FormEvent) => {
     e.preventDefault(); setError("");
     const {data, error} = await supabase!.rpc("claim_teacher", {code: teacherCode.trim()});
     if (error) return setError(thaiError(error));
     if (!data) return setError("รหัสครูไม่ถูกต้อง");
-    setProfile({...profile, role: "teacher"});
     location.reload();
   };
   return <>
-    <h3>ห้องเรียนของฉัน</h3>
-    {classes.length ? <ul className="ll-cloud-list">{classes.map(c => <li key={c.id}>{c.name}</li>)}</ul> : <p className="ll-cloud-note">ยังไม่ได้เข้าห้องเรียน ใส่รหัสห้องที่ได้จากครู</p>}
-    <form className="ll-cloud-row" onSubmit={join}>
-      <input aria-label="รหัสห้องเรียน" placeholder="รหัสห้อง 6 ตัว" value={code} onChange={e => setCode(e.target.value)} maxLength={12} required/>
-      <button type="submit">เข้าห้อง</button>
-    </form>
-    <p className="ll-cloud-note">ครูเห็นเฉพาะความคืบหน้าและคำตอบของคนในห้องที่ครูสอน เพื่อนในห้องไม่เห็นข้อมูลของกันและกัน</p>
+    <p className="ll-cloud-note">ห้องเรียน: {classes.join(", ") || "-"} · ครูเห็นเฉพาะข้อมูลของคนในห้องที่ครูสอน เพื่อนไม่เห็นข้อมูลของกันและกัน</p>
+    <StudentProgress profile={profile} onContinue={close}/>
     <details className="ll-cloud-details"><summary>สำหรับครู: เปลี่ยนบัญชีนี้เป็นบัญชีครู</summary>
       <form className="ll-cloud-row" onSubmit={claim}>
         <input aria-label="รหัสสำหรับครู" placeholder="รหัสสำหรับครู" value={teacherCode} onChange={e => setTeacherCode(e.target.value)} required autoComplete="off"/>
         <button type="submit">ยืนยัน</button>
       </form>
     </details>
-    {msg && <p className="ll-cloud-ok" role="status">{msg}</p>}
-    {error && <p className="ll-cloud-error" role="alert">{error}</p>}
-  </>;
-}
-
-type Roster = {student_id: string; joined_at: string; profiles: {nickname: string} | null};
-function TeacherClasses({profile}: {profile: CloudProfile}) {
-  const [classes, setClasses] = useState<(Classroom & {roster: Roster[]})[]>([]);
-  const [attempts, setAttempts] = useState<Record<string, {count: number; finished: number}>>({});
-  const [name, setName] = useState(""), [error, setError] = useState("");
-  const load = useCallback(async () => {
-    const sb = supabase!;
-    const {data, error} = await sb.from("classrooms").select("id, name, join_code, teacher_id, enrollments(student_id, joined_at, profiles(nickname))").eq("teacher_id", profile.id).order("created_at");
-    if (error) return setError(thaiError(error));
-    setClasses((data ?? []).map((c: any) => ({...c, roster: c.enrollments ?? []})));
-    const {data: rows, error: e2} = await sb.from("attempts").select("user_id, finished_at");
-    if (e2) return setError(thaiError(e2));
-    const by: Record<string, {count: number; finished: number}> = {};
-    for (const r of rows ?? []) { const x = by[r.user_id] ??= {count: 0, finished: 0}; x.count++; if (r.finished_at) x.finished++; }
-    setAttempts(by);
-  }, [profile.id]);
-  useEffect(() => { void load(); }, [load]);
-  const create = async (e: React.FormEvent) => {
-    e.preventDefault(); setError("");
-    const {error} = await supabase!.from("classrooms").insert({teacher_id: profile.id, name: name.trim()});
-    if (error) return setError(thaiError(error));
-    setName(""); void load();
-  };
-  return <>
-    <h3>ห้องเรียนที่สอน</h3>
-    <form className="ll-cloud-row" onSubmit={create}>
-      <input aria-label="ชื่อห้องเรียน" placeholder="เช่น ม.6/1 เคมี" value={name} onChange={e => setName(e.target.value)} maxLength={80} required/>
-      <button type="submit">สร้างห้อง</button>
-    </form>
-    {classes.map(c => <div key={c.id} className="ll-cloud-class">
-      <p><b>{c.name}</b> · รหัสให้นักเรียน: <code>{c.join_code}</code> · {c.roster.length} คน</p>
-      {c.roster.length ? <table><thead><tr><th>ชื่อเล่น</th><th>เข้าห้องเมื่อ</th><th>ครั้งที่เริ่มเรียน</th><th>เรียนจบ</th></tr></thead>
-        <tbody>{c.roster.map(s => <tr key={s.student_id}><td>{s.profiles?.nickname ?? "-"}</td><td>{new Date(s.joined_at).toLocaleDateString("th-TH")}</td><td>{attempts[s.student_id]?.count ?? 0}</td><td>{attempts[s.student_id]?.finished ?? 0}</td></tr>)}</tbody></table>
-        : <p className="ll-cloud-note">ยังไม่มีนักเรียนเข้าห้อง</p>}
-    </div>)}
-    <p className="ll-cloud-note">แดชบอร์ดครูแบบละเอียด (คำตอบ เหตุผล เส้นทาง) จะมาใน Phase ถัดไป</p>
     {error && <p className="ll-cloud-error" role="alert">{error}</p>}
   </>;
 }
