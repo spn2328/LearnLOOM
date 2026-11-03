@@ -10,7 +10,7 @@ import {getMedia} from "../media/registry";
 import {lessons} from "../content/episode01";
 import {buildResult, type StudentResult} from "../results";
 import "../styles/hub.css";
-import {ArrowRight, CheckCircle2, Circle, LockKeyhole, Play, Plus, Trash2, Download, Award, NotebookPen, HelpCircle} from "lucide-react";
+import {ArrowRight, CheckCircle2, Circle, LockKeyhole, Play, Plus, Trash2, Download, Award, NotebookPen, HelpCircle, BookOpen, ChartNoAxesCombined} from "lucide-react";
 
 export type HubMode = "home" | "library" | "episodes" | "intro" | "progress" | "notebook" | "certificates" | "settings";
 export type HubSettings = {
@@ -203,32 +203,42 @@ function Title({eyebrow, title, text}: {eyebrow: string; title: string; text: st
 
 function Home({data, nickname, go, onStart}: {data: Data; nickname: string; go: (v: string) => void; onStart: () => void}) {
   const {r, active, pct} = data;
+  const startLabel = r.finished ? "ทบทวน EP.01" : active ? "เรียนต่อจากจุดเดิม" : "เริ่มสืบคดี";
   return <>
-    <div className="fh-hello">
-      <div><span className="eyebrow">ยินดีต้อนรับกลับมา</span><h1>สวัสดี{nickname ? ` ${nickname}` : ""}! 👋</h1><p>พร้อมสืบคดีใหม่แล้วหรือยัง?</p></div>
-      <img src={loomSrc("happy")} alt="ลูมโบกมือทักทาย"/>
+    <div className="ll-welcome-line"><span><i aria-hidden="true"/>สวัสดี{nickname ? ` ${nickname}` : ""} พร้อมเรียนรู้ไปด้วยกันไหม?</span><small>พื้นที่เรียนรู้ของคุณ</small></div>
+    <section className="ll-hero" aria-label="เรียนเคมีผ่านการสืบคดี">
+      <div className="ll-hero-copy">
+        <span className="ll-kicker">LEARNLOOM · เคมีอินทรีย์ ม.6</span>
+        <h1>เรียนเคมีให้เข้าใจ<br/><span className="ll-highlight">ทีละเบาะแส</span></h1>
+        <p>ร่วมไขคดีกับลูม สำรวจหลักฐาน ทดลองด้วยตัวเอง แล้วใช้ความเข้าใจค้นหาความจริง</p>
+        <div className="ll-hero-actions"><button className="primary" onClick={onStart}>{startLabel}<ArrowRight size={19}/></button><button className="text-button" onClick={() => go("episodes")}>ดูทุกตอน<ArrowRight size={17}/></button></div>
+        <p className="ll-fine">ดู ฟัง อ่าน หรือลงมือทำ เลือกได้ตามที่ถนัด<br/>พักได้ แล้วกลับมาเรียนต่อในจังหวะของตัวเอง</p>
+      </div>
+      <div className="ll-browser">
+        <div className="ll-browser-top" aria-hidden="true"><i/><i/><i/><span>LearnLOOM / ห้องเรียนของคุณ</span></div>
+        <div className="ll-browser-body">
+          <div className="ll-preview-heading"><b>{r.finished ? "คดีที่เรียนจบแล้ว" : active ? "เรียนต่อจากตรงนี้" : "คดีแรกของคุณ"}</b><span>Chapter 01</span></div>
+          <article className="ll-case-card">
+            <img src={hubImage("ep01-s02a")} alt="ภาพเดิมจากเรื่อง The Fake Hero เจฟกับลูมสืบหาความจริง"/>
+            <div className="ll-case-copy"><div><small>THE CHEMISTRY CASE FILE</small><h2>The Fake Hero</h2><p>EP.01 คนในคลิป</p></div><button className="fh-play" aria-label={active ? "เรียนต่อ EP.01" : "เริ่ม EP.01"} onClick={() => go("intro")}><Play size={21} fill="currentColor"/></button></div>
+          </article>
+          <div className="ll-mini-progress"><span>ความคืบหน้า EP.01</span><b>{pct}%</b><Bar value={pct} label="ความคืบหน้า EP.01"/></div>
+          <div className="ll-preview-foot"><img src={loomSrc("happy")} alt="ลูมแพนด้าแดง"/><span>ลูมพร้อมช่วย เมื่อมีเรื่องที่ยังสงสัย<br/>ซีรีส์ The Fake Hero · จบ {r.finished ? 1 : 0}/6 ตอน</span></div>
+        </div>
+      </div>
+    </section>
+    <div className="ll-shortcuts" aria-label="ทางลัดการเรียนรู้">
+      <button className="ll-shortcut" onClick={() => go("courses")}><BookOpen/><span><b>คลังบทเรียน</b><small>เลือกเรื่องที่อยากเรียน</small></span><ArrowRight/></button>
+      <button className="ll-shortcut" onClick={() => go("skills")}><ChartNoAxesCombined/><span><b>ความก้าวหน้า</b><small>ดูสิ่งที่เข้าใจมากขึ้น</small></span><ArrowRight/></button>
+      <button className="ll-shortcut" onClick={() => go("notebook")}><NotebookPen/><span><b>สมุดของฉัน</b><small>เก็บหลักฐานและข้อสงสัย</small></span><ArrowRight/></button>
     </div>
+    <div className="ll-section-title"><h2>ทุกก้าวของการเรียนรู้</h2><span>ค่อย ๆ ไปต่อ ในแบบของคุณ</span></div>
     <GameHud r={r}/>
     <GameQuests r={r}/>
-    <div className="fh-home-grid">
-      <article className="fh-card fh-continue">
-        <img src={hubImage("ep01-s02a")} alt=""/>
-        <div>
-          <span className="fh-label">{r.finished ? "เรียนจบแล้ว" : active ? "กำลังเรียน" : "พร้อมเริ่ม"}</span>
-          <h2>The Fake Hero</h2>
-          <p>EP.01 คนในคลิป</p>
-          <Bar value={pct} label="ความคืบหน้า EP.01"/>
-          <small>ความคืบหน้า EP.01 {pct}% · ซีรีส์ {r.finished ? 1 : 0}/6 ตอน</small>
-        </div>
-        <button className="fh-play big" aria-label={active ? "เรียนต่อ EP.01" : "เริ่ม EP.01"} onClick={() => go("intro")}><Play size={24} fill="currentColor"/></button>
-      </article>
-      <aside className="fh-card fh-streak">
-        <h3>แนวคิดใน EP.01</h3>
-        <ul className="fh-checks">
-          {lessons.map((l, i) => { const done = r.concepts[i]?.outcome !== "ยังไม่ได้ทำ"; return <li key={i} className={done ? "done" : ""}>{done ? <CheckCircle2 size={18}/> : <Circle size={18}/>}C0{i + 1} {l.title}</li>; })}
-        </ul>
-      </aside>
-    </div>
+    <aside className="fh-card ll-home-concepts">
+      <h3>แนวคิดใน EP.01</h3>
+      <ul className="fh-checks">{lessons.map((l, i) => { const done = r.concepts[i]?.outcome !== "ยังไม่ได้ทำ"; return <li key={i} className={done ? "done" : ""}>{done ? <CheckCircle2 size={18}/> : <Circle size={18}/>}C0{i + 1} {l.title}</li>; })}</ul>
+    </aside>
     <div className="section-heading"><h2>บทเรียนของฉัน</h2><button className="text-button" onClick={() => go("courses")}>ดูคลังบทเรียน<ArrowRight size={16}/></button></div>
     <div className="fh-chapter-tiles">
       <button className="fh-tile red" onClick={() => go("episodes")}><span>Chapter 1</span><b>The Fake Hero</b><img src={hubImage("ep01-l01")} alt=""/></button>
