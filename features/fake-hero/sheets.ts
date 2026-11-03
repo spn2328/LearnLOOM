@@ -8,18 +8,35 @@ import {levelOf, xpOf, starsOf} from "./game";
 const KEY = "learnloom-dev-sheet-v1";
 export type SheetCfg = {url: string; auto: boolean; lastSent?: string; lastError?: string; pending?: boolean; sentXp?: number};
 
+// Site-wide sheet set at build time (Vercel env VITE_SHEET_URL): every device sends to it automatically,
+// learners never see or press anything. A URL saved in the developer panel still wins on that device.
+export const BUILT_IN_SHEET = ((import.meta as {env?: Record<string, string | undefined>}).env?.VITE_SHEET_URL ?? "").trim();
+
 export function readSheet(): SheetCfg {
-  try { return {url: "", auto: false, ...JSON.parse(localStorage.getItem(KEY) || "{}")}; } catch { return {url: "", auto: false}; }
+  let c: SheetCfg = {url: "", auto: false};
+  try { c = {...c, ...JSON.parse(localStorage.getItem(KEY) || "{}")}; } catch {}
+  if (!c.url && validSheetUrl(BUILT_IN_SHEET)) c = {...c, url: BUILT_IN_SHEET, auto: true};
+  return c;
 }
 export function saveSheet(c: SheetCfg) { try { localStorage.setItem(KEY, JSON.stringify(c)); } catch {} }
 
 // Apps Script web apps or a local test receiver; anything else is refused so data never goes elsewhere by typo
 export const validSheetUrl = (u: string) => /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(u) || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?\//.test(u);
 
+// Random id per browser so learners with the same (or no) nickname never overwrite each other in the sheet
+const DEVICE_KEY = "learnloom-device-id";
+export function deviceId() {
+  try {
+    let id = localStorage.getItem(DEVICE_KEY);
+    if (!id) { id = Math.random().toString(36).slice(2, 10); localStorage.setItem(DEVICE_KEY, id); }
+    return id;
+  } catch { return ""; }
+}
+
 export function flatRow(r: StudentResult) {
   const {xp} = xpOf(r), lv = levelOf(xp);
   const row: Record<string, string | number> = {
-    nickname: r.nickname, exportedAt: r.exportedAt, finished: r.finished ? "จบ" : "ยังไม่จบ", xp, level: lv.level, levelName: lv.name,
+    device: deviceId(), nickname: r.nickname, exportedAt: r.exportedAt, finished: r.finished ? "จบ" : "ยังไม่จบ", xp, level: lv.level, levelName: lv.name,
     stars: r.concepts.reduce((n, c) => n + starsOf(c), 0), vark: r.vark?.pref ?? "", varkHow: r.vark?.how ?? "",
     varkUse: Object.entries(r.vark?.use ?? {}).map(([k, n]) => `${k}${n}`).join(" "),
     cpAnswer: r.checkpoint.answerScore, cpReason: r.checkpoint.reasonScore, cpTotal: r.checkpoint.score,
