@@ -1,5 +1,7 @@
 # Link learner data to Google Sheets / Excel (for developers)
 
+> For an auto-updating sheet of every student from the Supabase database, see `google-sheets-auto.md`. This page covers the older per-device options.
+
 LearnLOOM is browser-only, so data stays on each device until someone exports or sends it. There are three ways to get it out:
 
 | Who | How | Output |
