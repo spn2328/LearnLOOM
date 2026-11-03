@@ -319,3 +319,11 @@ User clarified the appearance to preserve is the **original cream-and-green dash
 - เพิ่มตำแหน่งภาพ: `ep01-s01b`, `ep01-s01c`, `ep01-a01` (การ์ด 3 ใบเรียงแถว), `ep01-s02d`, `ep01-a02b`, `ep01-l01b`, `ep01-s09b`, `ep01-end`; ย้ายตัวสลับภาพ `{media}` ใน Scene 01/02/09 ให้ภาพเปลี่ยนตรงบรรทัดตาม PDF (ไม่แก้ถ้อยคำบทพูด); ตารางตำแหน่งใน `media/README.md`
 - ตรวจแล้ว (localhost dev): typecheck, test, test-fake-hero, build:demo ผ่าน; เดินทุกบรรทัด Scene 01, 02, 08, 09 ภาพตรงลำดับ PDF; A01 การ์ด 3 ใบ, A02 ภาพ ⑩ บน + ⑪ ก่อนบทพูดลูม, Scene 03 ภาพ ⑫ บน + ⑬ ก่อนบทพูด, Scene 04–07 / L02–L03 ภาพ ⑭–⑲, TO BE CONTINUED ㉓; 375px ไม่ล้นจอ
 - ยังไม่ได้ตรวจ: มือถือจริง/iPad; บน production หลัง merge
+
+## 4 พฤศจิกายน 2569 — Google Sheets อัปเดตอัตโนมัติจาก Supabase (branch `feat/sheets-auto-export`)
+
+- SQL ใหม่ `supabase/migrations/20261104000000_sheet_export.sql`: ฟังก์ชันอ่านอย่างเดียว `sheet_export(token)` ใช้คีย์ส่งออกแยกต่างหาก (เก็บแค่ SHA-256) ไม่ต้องใช้ service_role; รันซ้ำ = เปลี่ยนคีย์
+- สคริปต์ `scripts/google-sheets/learnloom-sync.gs` (Apps Script): ดึงข้อมูลทุก 10 นาที เขียนแท็บ สรุปรายคน / รายครั้ง / ผลรายแนวคิด / คำตอบทั้งหมด / สถานะ; สูตรคะแนนเหมือน `cloud/dashboard.ts`; กันข้อความนักเรียนกลายเป็นสูตร
+- คู่มือ `docs/fake-hero/google-sheets-auto.md`
+- ตรวจแล้ว: สูตรคะแนนของสคริปต์เทียบกับ `dashboard.ts` ด้วยข้อมูลจำลองใน Node
+- **ยังไม่ได้ทดสอบ**: รัน SQL บน Supabase จริง, รัน Apps Script ใน Google Sheets จริง (เจ้าของต้องทำตามคู่มือ)
