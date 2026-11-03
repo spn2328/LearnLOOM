@@ -37,13 +37,14 @@ const exceptions: (Info & {rows: [string, string][]; note: string})[] = [
     rows: [["องค์ประกอบ", "โซเดียม 2 · คาร์บอน 1 · ออกซิเจน 3 อะตอม"], ["ประเภท", "สารอนินทรีย์"], ["ลักษณะ", "ของแข็งสีขาว"], ["ตัวอย่างการพบ", "ผงซักฟอก การทำแก้ว"]]},
 ];
 
-export function LearnL01({story}: {story: string[]}) {
+export function LearnL01({story, media}: {story: string[]; media?: React.ReactNode}) {
   const [pick, setPick] = useState(0);
   const [tab, setTab] = useState(0);
   const m = organic[pick];
   return (
     <div className="fh-learn">
       <h2 className="fh-title">สารประกอบอินทรีย์คืออะไร?</h2>
+      {media}
       <Dialogue lines={story} />
       <Section mark="A" title="รู้จักสารประกอบอินทรีย์" sub={lessons[0].concept[0]} tone="green">
         <div className="fh-mcards">
