@@ -3,6 +3,7 @@ import React, {useEffect, useRef, useState, type ReactNode} from "react";
 import {getMedia} from "../media/registry";
 import type {Choice, Question} from "../content/episode01";
 import {useChoiceTools} from "./ChoiceTools";
+import {cloudLinked} from "../cloud/client";
 
 export const letters: Choice[] = ["A", "B", "C", "D"];
 
@@ -179,7 +180,7 @@ export function SummaryCard({episode, id, title, progress, outcome, first, route
         <Loom pose={tone === "warn" ? "think" : "cheer"} small side="right">{loom}</Loom>
       </div>
       <div className="fh-summary-grid">
-        <section className="fh-scard"><h3>📁 แฟ้มหลักฐาน</h3><p>{id} · {title}</p><p className="fh-muted">บันทึกในเบราว์เซอร์นี้แล้ว</p></section>
+        <section className="fh-scard"><h3>📁 แฟ้มหลักฐาน</h3><p>{id} · {title}</p><p className="fh-muted">{cloudLinked() ? "บันทึกแล้ว · ซิงก์ขึ้นบัญชีอัตโนมัติ" : "บันทึกในเบราว์เซอร์นี้แล้ว"}</p></section>
         <section className="fh-scard"><h3>📈 ความคืบหน้า</h3><div className="fh-big">{progress}/5</div><div className="fh-bar"><i style={{width: `${progress * 20}%`}} /></div></section>
         <section className={`fh-scard ${tone}`}><h3>🎯 ผลการเรียนรู้</h3><p className="fh-outcome">{outcome}</p><p>คำตอบครั้งแรก {first}</p><p className="fh-muted">เส้นทาง: {route}</p>{extra}</section>
         {next && <section className="fh-scard"><h3>➡️ หัวข้อถัดไป</h3><p>{next}</p></section>}

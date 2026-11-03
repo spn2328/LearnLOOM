@@ -58,10 +58,12 @@ function Account() {
         if (!live) return;
         setProfile(p);
         installSync();
+        // the landing page reads the local profile once at load, so a first sign-in on this device reloads after adoption
+        const fresh = !JSON.parse(localStorage.getItem("learnloom-demo-v1") ?? "null")?.profile;
         const r = await adoptDevice(p);
         if (r === "conflict") { setConflict(true); setOpen(true); }
         // restored keys only reach the lesson screens on a fresh load; writes are held back until then
-        else if (r === "restored") location.reload();
+        else if (r === "restored" || fresh) location.reload();
         else void flush();
       } catch (e) { if (live) setError(thaiError(e)); }
     })();
@@ -121,6 +123,11 @@ function SignIn() {
   </>;
 }
 
+/** Sign-in form shown directly on the landing page (role card นักเรียน / ครู) when Supabase is configured. */
+export function CloudSignIn({who}: {who: "student" | "teacher"}) {
+  return who === "student" ? <StudentSignIn embedded/> : <TeacherSignIn embedded/>;
+}
+
 function Consent({checked, set}: {checked: boolean; set: (v: boolean) => void}) {
   return <div className="ll-cloud-consent">
     <b>ก่อนเริ่มทดลองใช้</b>
@@ -134,7 +141,7 @@ function Consent({checked, set}: {checked: boolean; set: (v: boolean) => void}) 
   </div>;
 }
 
-function StudentSignIn() {
+function StudentSignIn({embedded = false}: {embedded?: boolean}) {
   const [code, setCode] = useState(""), [nick, setNick] = useState(""), [pin, setPin] = useState(""), [ok, setOk] = useState(false);
   const [busy, setBusy] = useState(false), [error, setError] = useState("");
   const submit = async (e: React.FormEvent) => {
@@ -170,12 +177,12 @@ function StudentSignIn() {
     <label>ชื่อเล่น (ห้ามใช้ชื่อจริง-นามสกุล)<input value={nick} onChange={e => setNick(e.target.value)} maxLength={40} required autoComplete="nickname"/></label>
     <label>PIN ตัวเลข 4–6 หลัก (ตั้งเองครั้งแรก และจำไว้)<input value={pin} onChange={e => setPin(e.target.value.replace(/\D/g, ""))} inputMode="numeric" type="password" maxLength={6} required autoComplete="current-password"/></label>
     <Consent checked={ok} set={setOk}/>
-    <button type="submit" className="ll-cloud-primary" disabled={busy || !ok}>{busy ? "กำลังเข้าสู่ระบบ…" : "เข้าสู่ระบบ"}</button>
+    <button type="submit" className={embedded ? "primary full" : "ll-cloud-primary"} disabled={busy || !ok}>{busy ? "กำลังเข้าสู่ระบบ…" : "เข้าสู่ระบบ"}</button>
     {error && <p className="ll-cloud-error" role="alert">{error}</p>}
   </form>;
 }
 
-function TeacherSignIn() {
+function TeacherSignIn({embedded = false}: {embedded?: boolean}) {
   const [mode, setMode] = useState<"in" | "up">("in");
   const [email, setEmail] = useState(""), [password, setPassword] = useState(""), [nickname, setNickname] = useState(""), [code, setCode] = useState("");
   const [busy, setBusy] = useState(false), [error, setError] = useState("");
@@ -207,8 +214,8 @@ function TeacherSignIn() {
     <label>รหัสผ่าน (อย่างน้อย 6 ตัว)<input type="password" value={password} onChange={e => setPassword(e.target.value)} minLength={6} required autoComplete={mode === "in" ? "current-password" : "new-password"}/></label>
     {mode === "up" && <label>รหัสครู (อย่างน้อย 6 ตัว)<input value={code} onChange={e => setCode(e.target.value)} minLength={6} required autoComplete="off"/>
       <span className="ll-cloud-note">ครูคนแรกของระบบ: ตั้งรหัสใหม่ได้เลย ระบบจะจำไว้ · ครูคนต่อไป: ขอรหัสจากครูคนแรก</span></label>}
-    <button type="submit" className="ll-cloud-primary" disabled={busy}>{busy ? "กำลังดำเนินการ…" : mode === "in" ? "เข้าสู่ระบบ" : "สมัครบัญชีครู"}</button>
-    <button type="button" className="ll-cloud-link" onClick={() => { setMode(mode === "in" ? "up" : "in"); setError(""); }}>{mode === "in" ? "ยังไม่มีบัญชีครู? สมัคร" : "มีบัญชีแล้ว? เข้าสู่ระบบ"}</button>
+    <button type="submit" className={embedded ? "primary full" : "ll-cloud-primary"} disabled={busy}>{busy ? "กำลังดำเนินการ…" : mode === "in" ? "เข้าสู่ระบบ" : "สมัครบัญชีครู"}</button>
+    <button type="button" className={embedded ? "text-button" : "ll-cloud-link"} onClick={() => { setMode(mode === "in" ? "up" : "in"); setError(""); }}>{mode === "in" ? "ยังไม่มีบัญชีครู? สมัคร" : "มีบัญชีแล้ว? เข้าสู่ระบบ"}</button>
     {error && <p className="ll-cloud-error" role="alert">{error}</p>}
   </form>;
 }

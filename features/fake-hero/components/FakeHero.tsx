@@ -7,6 +7,7 @@ import {adaptiveUnits} from "../content/adaptiveUnits";
 import MediaSlot from "./MediaSlot";
 import PauseControl from "./PauseControl";
 import {clearDrafts} from "../pause";
+import {cloudEnabled,savedWhere} from "../cloud/client";
 import StoryPlayer from "./StoryPlayer";
 import {LearnL01} from "./LearnPages";
 import {Molecule2D} from "./Molecule3D";
@@ -61,5 +62,5 @@ export default function FakeHero(){
  {p.page==="recheck"&&<><span className="fh-eyebrow">RC01 · ตรวจซ้ำหลังช่วย</span><SelectQuestion question={questions.recheck} limit={3} selected={p.recheck} onSelect={recheck=>update({recheck})}/><button className="fh-primary" disabled={!p.recheck} onClick={()=>go("summary")}>ดูผลการเรียนรู้</button></>}
  {p.page==="summary"&&<SummaryCard episode="EP.01 — คนในคลิป" id="C01" title="สารประกอบอินทรีย์คืออะไร?" progress={1} outcome={result} first={`${p.first?.answer??"—"} · เหตุผล ${p.first?.reason??"—"}`} route={p.unit?.path?unitRoute(adaptiveUnits.C01,p.unit):p.assisted?"ได้รับบทช่วย R01":"ผ่านโดยไม่ใช้บทช่วย"} extra={p.assisted?<p>RC01: {p.recheck??"—"} {p.recheck==="B"?"(ถูกต้อง)":"(ควรทบทวน)"}{p.unit?.recheckB&&` · RC01-B: ${p.unit.recheckB} ${p.unit.recheckB===adaptiveUnits.C01.recheckB.answer?"(ถูกต้อง)":"(ควรทบทวน)"}`}</p>:undefined} next="C02 — พันธะของคาร์บอน" conclusion="ยังไม่สามารถสรุปว่าเจฟเป็นต้นเหตุของคราบบนแม่น้ำได้จากหลักฐานที่มี" loom={result==="ยังต้องทบทวน"?"ไม่เป็นไร ไปต่อแล้วค่อย ๆ ทบทวนกันนะ":"เก่งมาก! ไปต่ออีกนิดนะ"} actions={<><button onClick={restart}>เริ่มคดีอีกครั้ง</button><button className="fh-primary" onClick={()=>go("continued")}>เรียนต่อ C02</button></>}/>}
  <Popup open={!!warn} tone={warn?.tone??"warn"} title={warn?.title??""} onClose={()=>{const n=warn?.next;setWarn(null);n?.()}}><p>{warn?.text}</p></Popup>
- </article><PauseControl/><footer className="fh-footer">เรียนรู้ด้วยหลักฐาน · ฝึกจำแนกสาร · บันทึกเฉพาะเบราว์เซอร์นี้ · ไม่มีบัญชีหรือฐานข้อมูลกลาง</footer></main>;
+ </article><PauseControl/><footer className="fh-footer">เรียนรู้ด้วยหลักฐาน · ฝึกจำแนกสาร · {cloudEnabled?savedWhere():"บันทึกเฉพาะเบราว์เซอร์นี้ · ไม่มีบัญชีหรือฐานข้อมูลกลาง"}</footer></main>;
 }

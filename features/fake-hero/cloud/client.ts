@@ -10,6 +10,15 @@ export const supabase: SupabaseClient | null = cloudEnabled
   ? createClient(url!, anonKey!, {auth: {persistSession: true, autoRefreshToken: true, storageKey: "learnloom-auth"}})
   : null;
 
+/** This device is attached to an account (sync.ts keeps the account id under learnloom-cloud-v1). */
+export function cloudLinked(): boolean {
+  try { return !!JSON.parse(localStorage.getItem("learnloom-cloud-v1") ?? "null")?.userId; } catch { return false; }
+}
+/** Short, true description of where progress is saved right now. */
+export function savedWhere(): string {
+  return cloudLinked() ? "บันทึกในเครื่องนี้และซิงก์ขึ้นบัญชี" : cloudEnabled ? "บันทึกในเบราว์เซอร์นี้ · เข้าสู่ระบบเพื่อเก็บไว้ในบัญชี" : "บันทึกเฉพาะเบราว์เซอร์นี้";
+}
+
 export type CloudProfile = {id: string; nickname: string; role: "student" | "teacher"};
 export type Classroom = {id: string; name: string; join_code: string; teacher_id: string};
 
