@@ -60,6 +60,8 @@ function Account() {
         installSync();
         const r = await adoptDevice(p);
         if (r === "conflict") { setConflict(true); setOpen(true); }
+        // restored keys only reach the lesson screens on a fresh load; writes are held back until then
+        else if (r === "restored") location.reload();
         else void flush();
       } catch (e) { if (live) setError(thaiError(e)); }
     })();
