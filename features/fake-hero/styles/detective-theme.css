@@ -1,12 +1,13 @@
 /* Cute detective storybook skin. Loaded last; changes only background, colors, borders and shadows —
    never sizes or positions (rings and bottom edges are box-shadows, so nothing reflows). */
 :root {
-  --dt-paper: #FBF3E4;
-  --dt-card: #FFFCF5;
+  --dt-paper: #FFF4E4;
+  --dt-card: #FFFDF9;
   --dt-line: #E6D5B8;
   --dt-edge: #C9B28C;
   --dt-ink: #1A2238;
-  --dt-lift: 0 0 0 1px var(--dt-line), 0 4px 0 var(--dt-line), 0 10px 22px rgba(92, 64, 28, .10);
+  --dt-lift: 0 0 0 1.5px var(--dt-edge-soft), 0 4px 0 var(--dt-edge-soft), 0 10px 22px rgba(92, 64, 28, .12);
+  --dt-edge-soft: #DCC6A0;
   --dt-ballpoint: #7285C1; --dt-ballpoint-d: #3E4F8C; --dt-ballpoint-l: #EEF0F9;
   --dt-green: #3A8F5D; --dt-green-d: #23683F; --dt-green-l: #DDEFE3;
   --dt-coral: #DB7C56; --dt-coral-d: #A84A26; --dt-coral-l: #FDEEE7;
@@ -27,18 +28,23 @@
   --gm-cream: var(--dt-card);
 }
 
-/* Paper background with case-file decorations in the corners. 9-slice border-image keeps the lamp,
-   evidence board, books and clipboard whole at any screen ratio; fixed layer so it also works on iOS. */
-html body { background: var(--dt-paper) }
+/* Cream detective pattern background (all-over wallpaper, one cut per screen shape). It is not a seamless tile,
+   so instead of repeating it sits on a fixed layer with background-size: cover: never stretched, and long pages
+   scroll over it with no seams (background-attachment: fixed is ignored on iOS, a fixed layer is not).
+   The cream fill shows if an image fails to load. */
+html body { background: #FFF4E4 }
 html body::before {
   content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
-  border-style: solid; border-color: transparent;
-  border-image: url(/images/bg-detective.webp) 330 420 430 340 fill / clamp(110px, 21vw, 300px) clamp(120px, 26vw, 360px) clamp(130px, 27vw, 370px) clamp(110px, 22vw, 290px) stretch;
+  background: #FFF4E4 url(/images/backgrounds/desktop-1920x1080.webp) center / cover no-repeat;
 }
-/* Dashboard: smaller corner pieces so the scrolling page copy rarely sits on them; text that does gets a paper halo. */
-html body:has([data-slot=sidebar-wrapper])::before { border-image-width: clamp(90px, 14vw, 200px) clamp(100px, 17vw, 250px) clamp(100px, 18vw, 250px) clamp(90px, 13vw, 190px) }
-@media (min-width: 768px) { html body:has([data-slot=sidebar-wrapper])::before { left: var(--sidebar-width, 15rem) } }
-:is(.ll-hero-copy, .ll-welcome-line, .ll-section-title, .fh-entry-copy) :is(h1, h2, p, small, span:not(.ll-highlight)), .ll-hero-copy .ll-fine, .ll-welcome-line, .ll-section-title { text-shadow: 0 0 2px var(--dt-paper), 0 0 6px var(--dt-paper), 0 0 12px var(--dt-paper) }
+@media (max-width: 1599px) { html body::before { background-image: url(/images/backgrounds/laptop-1440x900.webp) } }
+@media (max-width: 1023px) and (orientation: landscape) { html body::before { background-image: url(/images/backgrounds/tablet-landscape-1180x820.webp) } }
+@media (max-width: 1023px) and (orientation: portrait) { html body::before { background-image: url(/images/backgrounds/tablet-portrait-820x1180.webp) } }
+@media (max-width: 767px) and (orientation: portrait) { html body::before { background-image: url(/images/backgrounds/mobile-430x932.webp) } }
+@media (max-width: 410px) and (orientation: portrait) { html body::before { background-image: url(/images/backgrounds/mobile-390x844.webp) } }
+@media (max-width: 375px) and (orientation: portrait) { html body::before { background-image: url(/images/backgrounds/mobile-360x800.webp) } }
+/* Copy that sits straight on the pattern gets a soft paper halo. */
+:is(.ll-hero-copy, .ll-welcome-line, .ll-section-title, .fh-entry-copy, .page-title, .section-heading) :is(h1, h2, h3, p, small, span:not(.ll-highlight)), .ll-hero-copy .ll-fine, .ll-welcome-line, .ll-section-title { text-shadow: 0 0 2px var(--dt-paper), 0 0 6px var(--dt-paper), 0 0 12px var(--dt-paper) }
 [data-slot=sidebar-inset], .fh-shell, .fh-hub { background: transparent !important }
 .fh-entry, .fh-entry.login-page { background: transparent }
 /* bright.css (loaded before) paints the shell and page solid; let the paper show through. */
@@ -63,6 +69,7 @@ html body:has([data-slot=sidebar-wrapper])::before { border-image-width: clamp(9
   border-color: var(--dt-line);
   box-shadow: var(--dt-lift);
 }
+.fh-note-list li, .ll-bright-shell .fh-note-list li { background: var(--dt-card); border-color: var(--dt-line); box-shadow: var(--dt-lift) }
 .fh-tile.locked, .fh-chapter.locked, .fh-cert.locked { background-color: #F3ECDD }
 /* Locked items stay solid (no see-through); greyscale media + muted text still read as "not open yet". */
 .fh-chapter.locked { opacity: 1; color: #5A6275 }
