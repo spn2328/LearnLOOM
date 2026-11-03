@@ -276,8 +276,10 @@ User clarified the appearance to preserve is the **original cream-and-green dash
 - ตามคำขอเจ้าของ: ใช้ BeBetter เป็นแนวจัดหน้า ปุ่มเหลืองสด การ์ดฟ้า/เขียว/ชมพู และหัวข้อใหญ่
 - ปรับหน้าเลือกบทบาทและหน้าหลัก เพิ่มทางลัดคลังบทเรียน ความก้าวหน้า สมุดบันทึก พร้อมใช้ผลความคืบหน้าจริง
 - ไฟล์: demo/main.tsx, components/learnloom-app.tsx, features/fake-hero/components/LearningHub.tsx, features/fake-hero/styles/bright.css
-- แยกธีมไว้ใน .ll-bright-shell และ .fh-entry; Story Player ใช้ .ll-focus-mode เดิม ไม่แตะเนื้อเรื่อง คำถาม เฉลย เสียง ภาพ แอนิเมชัน หรือกฎ Adaptive
-- ✅ Local: node scripts/test-fake-hero.mjs; GitHub Actions run 41581326419: source checks, EP.01 keys, TypeScript, build:demo ผ่านทุกขั้น (commit 6a9c579a)
-- ✅ Vercel Preview READY: https://learnloom-mcnfbtb1x-manifest23.vercel.app/
-- ⏳ Browser QA desktop/768×1024/375×812: ยังไม่ได้ตรวจ เพราะ Preview ต้องลงชื่อเข้าใช้ Vercel; การสร้างลิงก์แชร์ถูกระบบอนุมัติอัตโนมัติปฏิเสธ
-- ⏳ ยังไม่ทดสอบกับอุปกรณ์จริง/นักเรียนจริง; ยังไม่ merge หรือแทนที่ production ตามกติกา lf-ship
+- แยกธีมใน .ll-bright-shell และ .fh-entry; .ll-focus-mode ไม่รับธีมใหม่ ไม่แก้เรื่อง คำถาม เฉลย เสียง ภาพ แอนิเมชัน กฎ Adaptive หรือ storage key
+- ✅ Local: node scripts/test-fake-hero.mjs; GitHub Actions 41581326419 และ 41581612944: source checks, EP.01 keys, TypeScript, build:demo ผ่าน
+- ✅ Browser QA: desktop 1280×720, tablet 768×1024, mobile 375×812 ไม่มีหน้าหลักล้นแนวนอน; ภาพเดิมโหลดครบ
+- ✅ เลือกผู้เรียน → หน้าหลัก → คลังบทเรียน → Chapter 1 → EP.01 → Scene 01 → A01; กลับหน้าหลัก/รีเฟรชแล้วเรียนต่อที่ A01 ได้
+- ✅ สมุดบันทึกเพิ่มข้อความในโปรไฟล์ Preview และยังอยู่หลังรีเฟรช; ไม่ใช้ข้อมูลเรียนจริงในการทดสอบ
+- ⚠️ เบราว์เซอร์ทดสอบเล่น MP4 ไม่ได้ทั้ง Preview และ asset เดียวกันบน production เดิม; ยังไม่ยืนยันการเล่น/คุณภาพเสียงด้วยอุปกรณ์จริง (ไฟล์และตัวเล่นไม่เปลี่ยน)
+- เจ้าของตอบ “ทำต่อ” ให้ตรวจ Preview และ merge/deploy; Preview READY e6241ce0 ก่อนบันทึกผล QA นี้
