@@ -17,10 +17,35 @@ const KIND_LABEL = {
 
 function onOpen() {
   SpreadsheetApp.getUi().createMenu('LearnLOOM')
+    .addItem('ตั้งค่าการเชื่อมต่อ', 'setupConnection')
     .addItem('ดึงข้อมูลตอนนี้', 'syncNow')
     .addItem(`เปิดอัปเดตอัตโนมัติ (ทุก ${EVERY_MINUTES} นาที)`, 'startAutoSync')
     .addItem('หยุดอัปเดตอัตโนมัติ', 'stopAutoSync')
     .addToUi();
+}
+
+// Asks for the three values in dialogs and saves them to Script properties (empty answer keeps the saved value).
+const SETTINGS = [
+  {name: 'SUPABASE_URL', ask: 'Project URL ของ Supabase (เช่น https://xxxx.supabase.co)', ok: v => /^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(v.replace(/\/+$/, ''))},
+  {name: 'SUPABASE_ANON_KEY', ask: 'คีย์ anon public (ขึ้นต้นด้วย eyJ) — ห้ามใช้ secret / service_role', ok: v => /^eyJ[\w-]+\.[\w-]+\.[\w-]+$/.test(v) || /^sb_publishable_[\w-]+$/.test(v)},
+  {name: 'EXPORT_KEY', ask: 'export_key 64 ตัวที่ได้จากการรัน SQL', ok: v => /^[0-9a-f]{64}$/.test(v)},
+];
+function setupConnection() {
+  const ui = SpreadsheetApp.getUi();
+  const props = PropertiesService.getScriptProperties();
+  for (const s of SETTINGS) {
+    const saved = props.getProperty(s.name);
+    for (;;) {
+      const r = ui.prompt(`ตั้งค่า ${s.name}`, s.ask + (saved ? '\n\n(มีค่าเดิมอยู่แล้ว เว้นว่างไว้ = ใช้ค่าเดิม)' : ''), ui.ButtonSet.OK_CANCEL);
+      if (r.getSelectedButton() !== ui.Button.OK) return;
+      const v = r.getResponseText().trim();
+      if (!v && saved) break;
+      if (/^sb_secret_|service_role/.test(v)) { ui.alert('นี่คือคีย์ลับ ห้ามใช้กับชีตนี้ ให้ใช้คีย์ anon public แทน'); continue; }
+      if (s.ok(v)) { props.setProperty(s.name, s.name === 'SUPABASE_URL' ? v.replace(/\/+$/, '') : v); break; }
+      ui.alert('รูปแบบไม่ถูกต้อง ลองวางใหม่อีกครั้ง');
+    }
+  }
+  ui.alert('บันทึกแล้ว ต่อไปกด LearnLOOM → เปิดอัปเดตอัตโนมัติ');
 }
 
 function startAutoSync() {
@@ -47,15 +72,18 @@ function syncNow() {
 
 function fetchExport_() {
   const p = PropertiesService.getScriptProperties();
-  const url = (p.getProperty('SUPABASE_URL') || '').replace(/\/+$/, '');
-  const anon = p.getProperty('SUPABASE_ANON_KEY');
-  const key = p.getProperty('EXPORT_KEY');
-  if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(url) || !anon || !key) {
-    throw new Error('ยังตั้ง Script properties ไม่ครบ (SUPABASE_URL, SUPABASE_ANON_KEY, EXPORT_KEY)');
+  const url = (p.getProperty('SUPABASE_URL') || '').trim().replace(/\/+$/, '');
+  const anon = (p.getProperty('SUPABASE_ANON_KEY') || '').trim();
+  const key = (p.getProperty('EXPORT_KEY') || '').trim();
+  const missing = SETTINGS.filter(s => !s.ok({SUPABASE_URL: url, SUPABASE_ANON_KEY: anon, EXPORT_KEY: key}[s.name])).map(s => s.name);
+  if (missing.length) {
+    throw new Error(`ยังตั้งค่าไม่ครบหรือรูปแบบผิด: ${missing.join(', ')} — กด LearnLOOM → ตั้งค่าการเชื่อมต่อ`);
   }
+  // A JWT anon key also goes in Authorization; the newer sb_publishable_ keys go in apikey only.
+  const headers = anon.startsWith('eyJ') ? {apikey: anon, Authorization: 'Bearer ' + anon} : {apikey: anon};
   const res = UrlFetchApp.fetch(url + '/rest/v1/rpc/sheet_export', {
     method: 'post', contentType: 'application/json', muteHttpExceptions: true,
-    headers: {apikey: anon, Authorization: 'Bearer ' + anon},
+    headers,
     payload: JSON.stringify({token: key}),
   });
   const code = res.getResponseCode();
