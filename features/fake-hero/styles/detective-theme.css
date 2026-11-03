@@ -35,9 +35,14 @@ html body::before {
   border-style: solid; border-color: transparent;
   border-image: url(/images/bg-detective.webp) 330 420 430 340 fill / clamp(110px, 21vw, 300px) clamp(120px, 26vw, 360px) clamp(130px, 27vw, 370px) clamp(110px, 22vw, 290px) stretch;
 }
+/* Dashboard: smaller corner pieces so the scrolling page copy rarely sits on them; text that does gets a paper halo. */
+html body:has([data-slot=sidebar-wrapper])::before { border-image-width: clamp(90px, 14vw, 200px) clamp(100px, 17vw, 250px) clamp(100px, 18vw, 250px) clamp(90px, 13vw, 190px) }
 @media (min-width: 768px) { html body:has([data-slot=sidebar-wrapper])::before { left: var(--sidebar-width, 15rem) } }
+:is(.ll-hero-copy, .ll-welcome-line, .ll-section-title, .fh-entry-copy) :is(h1, h2, p, small, span:not(.ll-highlight)), .ll-hero-copy .ll-fine, .ll-welcome-line, .ll-section-title { text-shadow: 0 0 2px var(--dt-paper), 0 0 6px var(--dt-paper), 0 0 12px var(--dt-paper) }
 [data-slot=sidebar-inset], .fh-shell, .fh-hub { background: transparent !important }
-.fh-entry { background: transparent }
+.fh-entry, .fh-entry.login-page { background: transparent }
+/* bright.css (loaded before) paints the shell and page solid; let the paper show through. */
+.ll-bright-shell, .ll-bright-shell [data-slot=sidebar-inset] { background: transparent !important }
 .fh-entry-brand { background: var(--dt-card); box-shadow: var(--dt-lift) }
 .fh-role { box-shadow: 0 0 0 2px var(--dt-role-edge), 0 5px 0 2px var(--dt-role-edge), 0 12px 22px rgba(92, 64, 28, .12) }
 .fh-role.student { --dt-role-edge: #8CC3A0 } .fh-role.teacher { --dt-role-edge: #DDBF3A } .fh-role.general { --dt-role-edge: #9AA8D6 }
@@ -86,16 +91,16 @@ html body::before {
 }
 .gm-dock-main { box-shadow: 0 0 0 2px #C9AE2A, 0 4px 0 2px #8F7A12, inset 0 2px 0 rgba(255, 255, 255, .5) }
 .gm-dock-read { box-shadow: 0 0 0 2px var(--dt-green-d), 0 4px 0 2px #174A2C }
-.fh-tile.red { background: linear-gradient(180deg, #E8977A 0%, var(--dt-coral) 55%); color: var(--dt-ink); box-shadow: 0 0 0 2px var(--dt-coral-d), 0 5px 0 2px var(--dt-coral-d) }
+.fh-tile.red, .ll-bright-shell .fh-tile.red { background: linear-gradient(180deg, #E8977A 0%, var(--dt-coral) 55%); color: var(--dt-ink); box-shadow: 0 0 0 2px var(--dt-coral-d), 0 5px 0 2px var(--dt-coral-d) }
 .fh-tile.red * { color: var(--dt-ink) }
-.fh-link-card { background: var(--dt-ballpoint-l); border-color: var(--dt-ballpoint); color: var(--dt-ballpoint-d); box-shadow: 0 3px 0 var(--dt-ballpoint) }
+.fh-link-card, .ll-bright-shell .fh-link-card { background: var(--dt-ballpoint-l); border-color: var(--dt-ballpoint); color: var(--dt-ballpoint-d); box-shadow: 0 3px 0 var(--dt-ballpoint) }
 .fh-choice { box-shadow: 0 3px 0 var(--dt-line) }
 :is(.primary, .fh-primary, .secondary, .round-button, .fh-play, .gm-dock-main, .gm-dock-read, .fh-tile, .fh-link-card, .fh-choice, .gm-btn) { transition: transform .08s ease, box-shadow .08s ease }
 :is(.primary, .fh-primary, .secondary, .round-button, .fh-play, .gm-dock-main, .gm-dock-read, .fh-tile, .fh-link-card, .fh-choice):active:not(:disabled) { transform: translateY(3px) }
 
 /* Progress bars: inset track, green fill with a raised top light. */
-.fh-bar { background: #EDE3CF; box-shadow: inset 0 2px 0 rgba(92, 64, 28, .14) }
-.fh-bar > * { background: var(--dt-green); box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .18), inset 0 2px 0 rgba(255, 255, 255, .35) }
+.fh-bar, .ll-bright-shell .fh-bar { background: #EDE3CF; box-shadow: inset 0 2px 0 rgba(92, 64, 28, .14) }
+.fh-bar > *, .ll-bright-shell .fh-bar > span { background: var(--dt-green); box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .18), inset 0 2px 0 rgba(255, 255, 255, .35) }
 
 /* Cute 2.5D icons: bolder strokes, soft fill, on a raised colored tile drawn with box-shadow (no reflow). */
 .lucide { stroke-width: 2.5; fill: color-mix(in srgb, currentColor 18%, transparent); border-radius: 7px }
