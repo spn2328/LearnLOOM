@@ -327,3 +327,4 @@ User clarified the appearance to preserve is the **original cream-and-green dash
 - คู่มือ `docs/fake-hero/google-sheets-auto.md`
 - ตรวจแล้ว: สูตรคะแนนของสคริปต์เทียบกับ `dashboard.ts` ด้วยข้อมูลจำลองใน Node
 - **ยังไม่ได้ทดสอบ**: รัน SQL บน Supabase จริง, รัน Apps Script ใน Google Sheets จริง (เจ้าของต้องทำตามคู่มือ)
+- ต่อมา (branch `feat/sheets-setup-dialog`): เมนู LearnLOOM → ตั้งค่าการเชื่อมต่อ ให้วางคีย์ในกล่องของชีตแทนการหา Script properties; ตรวจรูปแบบ, ปฏิเสธคีย์ secret, ตัดช่องว่าง; รองรับคีย์ `sb_publishable_` (ส่งใน apikey อย่างเดียว) — ตรวจด้วย mock แล้ว ยังไม่ได้รันใน Google จริง
