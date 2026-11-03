@@ -7,6 +7,7 @@ import {Choices, Loom, Popup} from "./ui";
 import {PathActivity} from "./PathActivities";
 import {VarkHelp, WhyPath} from "./VarkHelp";
 import {useDraft} from "../pause";
+import {knowledgeSheets} from "../content/knowledgeSheets";
 
 // Generic adaptive flow for R01–R05 (เนื้อเรื่องและคำถามล่าสุด.pdf):
 // diagnose → path (hands-on activity + PDF text) → practice R0x-1/R0x-2 (a wrong item switches to
@@ -79,6 +80,7 @@ export default function AdaptiveUnit({unit, rec, onChange, onFinish}: {unit: Ada
         {step === 0 && <WhyPath unit={unit} d={d} path={path} />}
         {path === "D" && <div className="fh-flow small">{pathSteps.map((p, i) => <span key={p} className={i === step ? "on" : ""}>{unit.paths[p].level}</span>)}</div>}
         {path === "D" && <h3>{unit.paths[pathSteps[step]].name}</h3>}
+        <KnowledgeCard id={`${unit.id}${pathSteps[step]}`} />
         <VarkHelp key={`${pathSteps[step]}-${step}`} id={`${unit.id}-${pathSteps[step]}`} title={unit.paths[pathSteps[step]].name} pre={path === "D" && step === 0 ? unit.paths.D.lines : []} lines={unit.paths[pathSteps[step]].lines}>
           <PathActivity unit={unit.id} path={pathSteps[step]} onDone={() => setActDone(a => ({...a, [`${pathSteps[step]}-${step}`]: true}))} />
         </VarkHelp>
@@ -105,6 +107,7 @@ export default function AdaptiveUnit({unit, rec, onChange, onFinish}: {unit: Ada
       {stage === "switch" && lastSwitch && <>
         <span className="fh-eyebrow">เปลี่ยนวิธีช่วย · {unit.paths[lastSwitch.to].name}</span>
         <Loom pose="point" small>วิธีแรกอาจยังไม่ช่วย ลองมองอีกแบบนะ ทำกิจกรรมนี้ให้สำเร็จ แล้วกลับไปลองข้อ {lastSwitch.at} อีกครั้ง</Loom>
+        <KnowledgeCard id={`${unit.id}${lastSwitch.to}`} />
         <VarkHelp key={`sw-${switches.length}`} id={`${unit.id}-${lastSwitch.to}`} title={unit.paths[lastSwitch.to].name} lines={unit.paths[lastSwitch.to].lines}>
           <PathActivity unit={unit.id} path={lastSwitch.to} onDone={() => setActDone(a => ({...a, [`sw-${switches.length}`]: true}))} />
         </VarkHelp>
@@ -141,5 +144,20 @@ export default function AdaptiveUnit({unit, rec, onChange, onFinish}: {unit: Ada
         <p>{pop?.text}</p>
       </Popup>
     </div>
+  );
+}
+
+// Knowledge sheet shown before a path activity: read first, then practise with the activity below it.
+function KnowledgeCard({id}: {id: string}) {
+  const k = knowledgeSheets[id];
+  if (!k) return null;
+  return (
+    <section className="fh-sheet" aria-label={k.title}>
+      <h3>📘 {k.title}</h3>
+      <ul>{k.points.map(p => <li key={p}>{p}</li>)}</ul>
+      {k.example && <div className="fh-sheet-ex"><b>{k.example.label}</b><ol>{k.example.steps.map(x => <li key={x}>{x}</li>)}</ol></div>}
+      {k.think && <details className="fh-sheet-think"><summary>ลองคิดก่อนทำกิจกรรม: {k.think.q}</summary><p>{k.think.a}</p></details>}
+      <p className="fh-sheet-next">อ่านใบความรู้แล้ว ลองใช้หลักนี้ทำกิจกรรมด้านล่าง ↓</p>
+    </section>
   );
 }

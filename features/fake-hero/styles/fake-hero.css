@@ -223,3 +223,31 @@ body .fh-shell button.fh-pause{position:fixed;right:16px;bottom:calc(16px + env(
 body .fh-shell button.fh-pause:hover{background:#25503f}body .fh-shell button.fh-pause:focus-visible{outline:3px solid #f2c94c;outline-offset:2px}
 .fh-pause span{font-size:12px;letter-spacing:-1px}
 @media(max-width:640px){body .fh-shell button.fh-pause{right:10px;bottom:calc(10px + env(safe-area-inset-bottom));padding:8px 14px}}
+/* Round-2 feedback: Transfer answer box must stay readable (light field, dark text) */
+.fh-shell .fh-transfer-input{display:block;width:100%;box-sizing:border-box;min-height:140px;padding:12px 14px;border:2px solid #52836a;border-radius:14px;background:#fffdf6!important;color:#1f3b2e!important;font:inherit;font-size:1.05rem;line-height:1.7;resize:vertical}
+.fh-shell .fh-transfer-input::placeholder{color:#6b7f74;opacity:1}
+.fh-shell .fh-transfer-input:focus-visible{outline:3px solid #f4c44e;outline-offset:2px}
+/* Knowledge sheet on review paths */
+.fh-sheet{margin:14px 0;padding:16px 18px;border:2px solid #b9d3bf;border-left:8px solid #316552;border-radius:16px;background:#f7fbf3;color:#20372c}
+.fh-sheet h3{margin:0 0 8px;color:#204c35}
+.fh-sheet ul{margin:0 0 10px;padding-left:1.2em;line-height:1.75}
+.fh-sheet-ex{margin:8px 0;padding:10px 14px;border-radius:12px;background:#fff8e3;border:1px dashed #d9b75a}
+.fh-sheet-ex ol{margin:6px 0 0;padding-left:0;list-style:none;line-height:1.75}
+.fh-sheet-think{margin:10px 0 4px;padding:10px 14px;border-radius:12px;background:#eef5ff;border:1px solid #bcd0ea}
+.fh-sheet-think summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center}
+.fh-sheet-think p{margin:6px 0 0}
+.fh-sheet-next{margin:8px 0 0;font-weight:600;color:#316552}
+/* Dialogue voice: clear "this scene has voice" banner when the browser blocks autoplay */
+.fh-sp-voicecall{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0;padding:10px 14px;border-radius:14px;background:#fff3c9;border:2px solid #e2b23a;color:#4a3a0a;font-weight:600}
+.fh-sp-voicecall button{min-height:44px;padding:8px 16px;border-radius:999px;border:0;background:#316552;color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.fh-sp-voicecall button:focus-visible{outline:3px solid #f4c44e;outline-offset:2px}
+/* A02 evidence sorter */
+.fh-evlist{list-style:none;margin:10px 0;padding:0;display:grid;gap:10px}
+.fh-evlist li{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;border:2px solid #cfdccc;border-radius:14px;background:#fffdf6;color:#20372c}
+.fh-evlist li.wrong{border-color:#d9822b;background:#fff4e6}
+.fh-evlist li>span{flex:1 1 220px;line-height:1.6}
+.fh-evlist li>div{display:flex;gap:6px;flex-wrap:wrap}
+.fh-evlist button{min-height:44px;padding:6px 14px;border-radius:999px;border:2px solid #52836a;background:#fff;color:#254638;font:inherit;cursor:pointer}
+.fh-evlist button.on{background:#316552;color:#fff}
+.fh-evlist button:focus-visible{outline:3px solid #f4c44e;outline-offset:2px}
+.fh-evlist em{flex-basis:100%;font-style:normal;color:#8a4b0f;font-size:.95rem}
