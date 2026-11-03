@@ -4,6 +4,7 @@ import {lessons} from "../content/episode01";
 import type {MoleculeId} from "../content/molecules";
 import {Molecule2D, MoleculeView} from "./Molecule3D";
 import {Dialogue, Loom} from "./ui";
+import StoryPlayer from "./StoryPlayer";
 
 // Infographic lesson pages (owner mockups, แก้ไข.pdf p.3–7). Key sentences come from the lesson
 // content; card details (properties, uses, observations) are drafted and need teacher review.
@@ -37,15 +38,23 @@ const exceptions: (Info & {rows: [string, string][]; note: string})[] = [
     rows: [["องค์ประกอบ", "โซเดียม 2 · คาร์บอน 1 · ออกซิเจน 3 อะตอม"], ["ประเภท", "สารอนินทรีย์"], ["ลักษณะ", "ของแข็งสีขาว"], ["ตัวอย่างการพบ", "ผงซักฟอก การทำแก้ว"]]},
 ];
 
-export function LearnL01({story, media}: {story: string[]; media?: React.ReactNode}) {
+// The dialogue plays beat by beat like a story scene; the lesson sections open after the last line.
+export function LearnL01({story, next}: {story: string[]; next?: React.ReactNode}) {
+  return (
+    <div className="fh-learn">
+      <h2 className="fh-title">สารประกอบอินทรีย์คืออะไร?</h2>
+      <StoryPlayer label="Scene 03 · L01" script={[{media: "ep01-l01"}, ...story.slice(0, -1), {media: "ep01-l01b"}, ...story.slice(-1)]}
+        end={<><L01Sections />{next}</>} />
+    </div>
+  );
+}
+
+function L01Sections() {
   const [pick, setPick] = useState(0);
   const [tab, setTab] = useState(0);
   const m = organic[pick];
   return (
-    <div className="fh-learn">
-      <h2 className="fh-title">สารประกอบอินทรีย์คืออะไร?</h2>
-      {media}
-      <Dialogue lines={story} />
+    <>
       <Section mark="A" title="รู้จักสารประกอบอินทรีย์" sub={lessons[0].concept[0]} tone="green">
         <div className="fh-mcards">
           {organic.map((o, i) => (
@@ -88,7 +97,7 @@ export function LearnL01({story, media}: {story: string[]; media?: React.ReactNo
         <p className="fh-hint">สารตัวอย่างเหล่านี้เป็นสารสำหรับฝึกจำแนก ไม่ใช่ผลตรวจจากแม่น้ำหรือถังของเจฟ</p>
         <Loom pose="clipboard" small>ตอนนี้เรายังบอกไม่ได้ว่าสารในแม่น้ำคืออะไร ต้องใช้หลักฐานจากการตรวจจริงเพิ่มเติม ก่อนสรุปว่าใครเป็นต้นเหตุ</Loom>
       </Section>
-    </div>
+    </>
   );
 }
 
