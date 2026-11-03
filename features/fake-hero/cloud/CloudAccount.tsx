@@ -12,6 +12,10 @@ import "./cloud.css";
 
 const STATUS: Record<SyncStatus, string> = {offline: "ออฟไลน์", pending: "รอซิงก์", syncing: "กำลังซิงก์…", synced: "ซิงก์แล้ว", error: "รอซิงก์"};
 
+// True while a sign-in form is between signUp/signIn and its own reload. Signing in fires the session
+// listener at once; adopting (and reloading) from there would cut off the form's claim_teacher / join_class.
+let formBusy = false;
+
 async function loadProfile(session: Session): Promise<CloudProfile> {
   const sb = supabase!;
   const {data, error} = await sb.from("profiles").select("id, nickname, role").eq("id", session.user.id).maybeSingle();
@@ -51,6 +55,7 @@ function Account() {
   }, []);
   useEffect(() => {
     if (!session) { setProfile(null); return; }
+    if (formBusy) return; // the form reloads when it is done; adoption runs on that load
     let live = true;
     (async () => {
       try {
@@ -145,7 +150,7 @@ function StudentSignIn({embedded = false}: {embedded?: boolean}) {
   const [code, setCode] = useState(""), [nick, setNick] = useState(""), [pin, setPin] = useState(""), [ok, setOk] = useState(false);
   const [busy, setBusy] = useState(false), [error, setError] = useState("");
   const submit = async (e: React.FormEvent) => {
-    e.preventDefault(); setBusy(true); setError("");
+    e.preventDefault(); setBusy(true); setError(""); formBusy = true;
     try {
       const sb = supabase!;
       if (!/^\d{4,6}$/.test(pin)) throw new Error("PIN ต้องเป็นตัวเลข 4–6 หลัก");
@@ -168,7 +173,7 @@ function StudentSignIn({embedded = false}: {embedded?: boolean}) {
       const {error: e2} = await sb.rpc("join_class", {code: cleanCode(code)});
       if (e2) throw e2;
       location.reload();
-    } catch (e) { setError(e instanceof Error && /^[ก-๙"]/.test(e.message) ? e.message : thaiError(e)); }
+    } catch (e) { formBusy = false; setError(e instanceof Error && /^[ก-๙"]/.test(e.message) ? e.message : thaiError(e)); }
     finally { setBusy(false); }
   };
   return <form onSubmit={submit}>
@@ -187,25 +192,30 @@ function TeacherSignIn({embedded = false}: {embedded?: boolean}) {
   const [email, setEmail] = useState(""), [password, setPassword] = useState(""), [nickname, setNickname] = useState(""), [code, setCode] = useState("");
   const [busy, setBusy] = useState(false), [error, setError] = useState("");
   const submit = async (e: React.FormEvent) => {
-    e.preventDefault(); setBusy(true); setError("");
+    e.preventDefault(); setBusy(true); setError(""); formBusy = true;
     try {
       const sb = supabase!;
       if (mode === "up") {
         if (!nickname.trim()) throw new Error("กรุณากรอกชื่อที่จะแสดง");
         if (code.trim().length < 6) throw new Error("รหัสครูต้องยาวอย่างน้อย 6 ตัวอักษร");
-        const {data, error} = await sb.auth.signUp({email: email.trim(), password, options: {data: {nickname: nickname.trim().slice(0, 40)}}});
-        if (error) throw error;
-        if (!data.session) throw new Error("ระบบยังเปิดการยืนยันอีเมลอยู่ ให้ปิด Confirm email ใน Supabase ก่อน (ดูคู่มือ)");
-        await loadProfile(data.session);
+        // a retry after a wrong teacher code reuses the account made on the first try
+        let session = (await sb.auth.getSession()).data.session;
+        if (session?.user.email?.toLowerCase() !== email.trim().toLowerCase()) {
+          const {data, error} = await sb.auth.signUp({email: email.trim(), password, options: {data: {nickname: nickname.trim().slice(0, 40)}}});
+          if (error) throw error;
+          session = data.session;
+        }
+        if (!session) throw new Error("ระบบยังเปิดการยืนยันอีเมลอยู่ ให้ปิด Confirm email ใน Supabase ก่อน (ดูคู่มือ)");
+        await loadProfile(session);
         const {data: okRole, error: e2} = await sb.rpc("claim_teacher", {code: code.trim()});
         if (e2) throw e2;
-        if (!okRole) throw new Error("รหัสครูไม่ถูกต้อง บัญชีถูกสร้างแล้วแต่ยังเป็นนักเรียน เข้าสู่ระบบแล้วใส่รหัสครูที่ถูกต้องในหน้าบัญชี");
+        if (!okRole) throw new Error("รหัสครูไม่ถูกต้อง บัญชีถูกสร้างแล้วแต่ยังเป็นนักเรียน แก้รหัสครูแล้วกด สมัครบัญชีครู อีกครั้งได้เลย");
       } else {
         const {error} = await sb.auth.signInWithPassword({email: email.trim(), password});
         if (error) throw error;
       }
       location.reload();
-    } catch (e) { setError(e instanceof Error && /^[ก-๙]/.test(e.message) ? e.message : thaiError(e)); }
+    } catch (e) { formBusy = false; setError(e instanceof Error && /^[ก-๙]/.test(e.message) ? e.message : thaiError(e)); }
     finally { setBusy(false); }
   };
   return <form onSubmit={submit}>
@@ -260,7 +270,7 @@ function StudentHome({profile, close}: {profile: CloudProfile; close: () => void
     e.preventDefault(); setError("");
     const {data, error} = await supabase!.rpc("claim_teacher", {code: teacherCode.trim()});
     if (error) return setError(thaiError(error));
-    if (!data) return setError("รหัสครูไม่ถูกต้อง");
+    if (!data) return setError(teacherCode.trim().length < 6 ? "รหัสครูต้องยาวอย่างน้อย 6 ตัวอักษร" : "รหัสครูไม่ถูกต้อง");
     location.reload();
   };
   return <>
@@ -271,6 +281,7 @@ function StudentHome({profile, close}: {profile: CloudProfile; close: () => void
         <input aria-label="รหัสสำหรับครู" placeholder="รหัสสำหรับครู" value={teacherCode} onChange={e => setTeacherCode(e.target.value)} required autoComplete="off"/>
         <button type="submit">ยืนยัน</button>
       </form>
+      <p className="ll-cloud-note">ครูคนแรกของระบบ: ตั้งรหัสใหม่ได้เลย (อย่างน้อย 6 ตัว) ระบบจะจำไว้ · ครูคนต่อไป: ขอรหัสจากครูคนแรก</p>
     </details>
     {error && <p className="ll-cloud-error" role="alert">{error}</p>}
   </>;
