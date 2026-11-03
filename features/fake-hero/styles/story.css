@@ -34,10 +34,10 @@
 /* dialogue: speech bubble with a tail, Loom on the left, the player on the right */
 .fh-sp-caption.say{bottom:50px;left:50%;translate:-50% 0;background:#fffffff5;border:2px solid #27392f;border-radius:22px;padding:12px 18px;box-shadow:0 6px 0 #27392f22}
 .fh-sp-caption.say::after{content:"";position:absolute;bottom:-12px;left:50%;width:20px;height:20px;background:inherit;border-right:2px solid #27392f;border-bottom:2px solid #27392f;transform:translateX(-50%) rotate(45deg) skew(8deg,8deg);border-radius:0 0 6px 0}
-.fh-sp-caption.say.loom{left:16px;translate:none}
-.fh-sp-caption.say.loom::after{left:42px}
-.fh-sp-caption.say.me{left:auto;right:16px;translate:none;background:#eef6ee}
-.fh-sp-caption.say.me::after{left:auto;right:30px}
+.fh-sp-caption.say.loom{left:auto;right:16px;translate:none;flex-direction:row-reverse}
+.fh-sp-caption.say.loom::after{left:auto;right:42px}
+.fh-sp-caption.say.me{left:16px;translate:none;background:#eef6ee}
+.fh-sp-caption.say.me::after{left:30px}
 /* an on-screen message (clip title, phone text) */
 .fh-sp-caption.quote{top:50%;left:50%;translate:-50% -50%;bottom:auto;background:#27392fe8;color:#fff;border:0;border-radius:14px;padding:12px 20px;font-weight:700;text-align:center;box-shadow:0 10px 26px #0005}
 .fh-sp-caption.quote::after{display:none}
@@ -45,7 +45,7 @@
 
 .fh-sp-who{display:block;font-size:.78em;color:#316552;font-weight:700;letter-spacing:.02em}
 .fh-sp-caption.me .fh-sp-who{color:#1f5f8b}
-.fh-sp-avatar{width:48px;height:48px;object-fit:contain;flex:none;margin:-4px 0 0 -4px}
+.fh-sp-avatar{width:48px;height:48px;object-fit:contain;flex:none;margin:-4px -4px 0 0}
 .fh-sp-more{position:absolute;right:0;bottom:0;z-index:3;margin:0;padding:8px 16px 8px 22px;border-radius:22px 0 0 0;background:#fcfaf6;color:#316552;font-style:normal;font-size:14px;box-shadow:-2px -2px 8px #0000001a;animation:fh-sp-blink 1.6s ease-in-out infinite}
 @keyframes fh-sp-blink{50%{opacity:.55}}
 
@@ -79,8 +79,8 @@
   .fh-sp-caption{max-width:calc(100% - 24px);font-size:16px;line-height:1.55}
   .fh-sp-caption.narration{top:10px;left:10px;padding:8px 12px}
   .fh-sp-caption.say{bottom:46px;padding:10px 14px}
-  .fh-sp-caption.say.loom{left:10px}
-  .fh-sp-caption.say.me{right:10px}
+  .fh-sp-caption.say.loom{right:10px}
+  .fh-sp-caption.say.me{left:10px}
   .fh-sp-avatar{width:38px;height:38px}
   .fh-sp-more{font-size:13px;padding:6px 12px 6px 16px}
 }

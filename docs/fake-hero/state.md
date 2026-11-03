@@ -289,3 +289,16 @@ User clarified the appearance to preserve is the **original cream-and-green dash
   - ตรวจแล้ว (localhost): typecheck, test, test-fake-hero, build:demo ผ่าน; `pnpm test:db` 39 ข้อผ่าน (เพิ่ม: ครูคนแรกตั้งรหัส, รหัสผิดยังเป็นนักเรียน, anon เห็นแค่ชื่อห้อง, route 3 แบบ, คะแนน/น้ำหนัก/สถานะ, misconception จากข้อมูลที่ครูอ่านได้จริง); browser กับ **server จำลอง** (ตอบข้อมูลตายตัว ไม่มี RLS จริง): ฟอร์มนักเรียน/ครู, ข้อความเชื่อมต่อไม่ได้, เข้าสู่ระบบนักเรียน → แดชบอร์ดนักเรียน → ปุ่มเรียนต่อเปิด EP.01, เข้าสู่ระบบครู → ภาพรวม/ตาราง/รายละเอียด/misconception, 375px ไม่ล้นจอ, dialog อยู่เหนือปุ่มลอย
   - **ยังไม่ได้ตรวจ (ต้องมีโปรเจกต์ Supabase จริง):** Supabase ยอมรับที่อยู่ซ่อน `@student.learnloom.app` ไหม, สมัคร/เข้า/ซิงก์จริง, เรียนต่อข้ามเครื่อง, อุปกรณ์จริง
   - ข้อจำกัด: ยังไม่มีรีเซ็ต PIN; ครูเห็นสถานะจากครั้งล่าสุด; ยังไม่ทำ pause/resume note, knowledge map, dev log, ปรับหน้าตา
+
+
+## 3 พฤศจิกายน 2569 — Bright learning interface (PR #9)
+- ตามคำขอเจ้าของ: ใช้ BeBetter เป็นแนวจัดหน้า ปุ่มเหลืองสด การ์ดฟ้า/เขียว/ชมพู และหัวข้อใหญ่
+- ปรับหน้าเลือกบทบาทและหน้าหลัก เพิ่มทางลัดคลังบทเรียน ความก้าวหน้า สมุดบันทึก พร้อมใช้ผลความคืบหน้าจริง
+- ไฟล์: demo/main.tsx, components/learnloom-app.tsx, features/fake-hero/components/LearningHub.tsx, features/fake-hero/styles/bright.css
+- แยกธีมใน .ll-bright-shell และ .fh-entry; .ll-focus-mode ไม่รับธีมใหม่ ไม่แก้เรื่อง คำถาม เฉลย เสียง ภาพ แอนิเมชัน กฎ Adaptive หรือ storage key
+- ✅ Local: node scripts/test-fake-hero.mjs; GitHub Actions 41581326419 และ 41581612944: source checks, EP.01 keys, TypeScript, build:demo ผ่าน
+- ✅ Browser QA: desktop 1280×720, tablet 768×1024, mobile 375×812 ไม่มีหน้าหลักล้นแนวนอน; ภาพเดิมโหลดครบ
+- ✅ เลือกผู้เรียน → หน้าหลัก → คลังบทเรียน → Chapter 1 → EP.01 → Scene 01 → A01; กลับหน้าหลัก/รีเฟรชแล้วเรียนต่อที่ A01 ได้
+- ✅ สมุดบันทึกเพิ่มข้อความในโปรไฟล์ Preview และยังอยู่หลังรีเฟรช; ไม่ใช้ข้อมูลเรียนจริงในการทดสอบ
+- ⚠️ เบราว์เซอร์ทดสอบเล่น MP4 ไม่ได้ทั้ง Preview และ asset เดียวกันบน production เดิม; ยังไม่ยืนยันการเล่น/คุณภาพเสียงด้วยอุปกรณ์จริง (ไฟล์และตัวเล่นไม่เปลี่ยน)
+- เจ้าของตอบ “ทำต่อ” ให้ตรวจ Preview และ merge/deploy; Preview READY e6241ce0 ก่อนบันทึกผล QA นี้

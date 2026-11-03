@@ -6,6 +6,7 @@ import PlayLayer from '../features/fake-hero/components/PlayLayer';
 import CloudAccount from '../features/fake-hero/cloud/CloudAccount';
 import '../app/globals.css';
 import './style.css';
+import '../features/fake-hero/styles/bright.css';
 
 class DemoBoundary extends React.Component<React.PropsWithChildren, {failed:boolean}> {
   state = {failed:false};
