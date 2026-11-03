@@ -226,3 +226,91 @@
 /* the L01 cover has a caption band on top; keep crops on the characters */
 .fh-intro-art img,.fh-series-head img,.fh-tile img,.fh-chapter img,.fh-entry-art img{object-position:center 85%}
 .fh-intro-copy .fh-chip,.fh-series-head .fh-chip{justify-self:start;width:max-content}
+
+/* LearnLOOM Detective Paper — skin only, no changes to layout, text or learning logic.
+   All decoration sits on the background layer; individual cards retain solid faces. */
+:root {
+  --ll-case-ballpoint:#7285C1;
+  --ll-case-growth:#3A8F5D;
+  --ll-case-coral:#DB7C56;
+  --ll-case-gold:#F1D64A;
+  --ll-case-ink:#1A2238;
+  --ll-case-paper:#fff8ed;
+}
+body,
+[data-slot="sidebar-inset"],
+.fh-entry,
+.fh-shell {
+  background-color:var(--ll-case-paper);
+  background-image:url("/images/deco/detective-paper.svg");
+  background-repeat:no-repeat;
+  background-position:center center;
+  background-size:cover;
+}
+[data-slot="sidebar-inset"]{background-attachment:fixed}
+.fh-shell{background-attachment:fixed}
+.fh-entry{background-attachment:fixed}
+.page-content,.fh-hub,.ll-focus-mode .page-content{background-color:transparent}
+.fh-hub{
+  --fh-green:var(--ll-case-growth);
+  --fh-mint:#e7f0e7;
+  --fh-cream:var(--ll-case-paper);
+  --fh-red:var(--ll-case-coral);
+  --fh-yellow:var(--ll-case-gold);
+  --fh-blue:var(--ll-case-ballpoint);
+  --fh-ink:var(--ll-case-ink);
+  --fh-soft:#5c6070;
+}
+.fh-hub::before,.fh-hub::after{display:none}
+.fh-card,.fh-chapter,.fh-timeline li,.fh-intro,.fh-panel,
+.fh-qbox,.fh-note-list li,.fh-evidence article,
+.page-content .panel,.page-content .card{
+  background-color:#fffdf9;
+  border-color:#e2d3c4;
+  box-shadow:0 5px 16px rgba(61,44,39,.09);
+}
+.fh-hub h1,.fh-hub h2,.fh-hub h3{color:var(--ll-case-ink)}
+.fh-bar{background:#e8e3db;border:1px solid #cfc6bc}
+.fh-bar>span,.fh-ring{background-color:var(--ll-case-growth)}
+.fh-ring{background:conic-gradient(var(--ll-case-growth) calc(var(--v)*1%),#e8e3db 0)}
+.fh-shell .fh-primary,.page-content .primary,.fh-hub .fh-play{
+  background-color:var(--ll-case-coral);
+  color:#1A2238;
+  border-color:#ae5c3a;
+  box-shadow:0 4px 0 #a9573b,0 7px 12px rgba(77,45,27,.12);
+}
+.page-content .primary:disabled{box-shadow:none}
+.fh-chip:not(.red){background:#e7eefb;color:#354b87}
+.fh-hub .fh-tabs button[aria-selected="true"],.fh-hub .fh-sizes button[aria-pressed="true"]{
+  background:var(--ll-case-ballpoint);border-color:#566ba6;color:white
+}
+.fh-hub .fh-continue,.fh-hub .fh-chapter.open,.fh-timeline li.open{border-color:#c2a28b}
+.fh-hub button:focus-visible,.fh-entry button:focus-visible,.fh-bottom-nav button:focus-visible{
+  outline:3px solid #465c9b;outline-offset:3px
+}
+/* Preserve icon hit area and position. Adds small raised illustration-like depth. */
+.app-sidebar [data-slot="sidebar-menu-button"] svg:not(.nav-chevron),
+.fh-bottom-nav button svg {
+  stroke-width:2.5;
+  stroke-linejoin:round;
+  filter:drop-shadow(0 2px 0 rgba(23,32,56,.16));
+}
+.app-sidebar [data-slot="sidebar-menu"] > li:nth-child(4n+1) svg{color:#bc6747}
+.app-sidebar [data-slot="sidebar-menu"] > li:nth-child(4n+2) svg{color:#6177b8}
+.app-sidebar [data-slot="sidebar-menu"] > li:nth-child(4n+3) svg{color:#368456}
+.app-sidebar [data-slot="sidebar-menu"] > li:nth-child(4n+4) svg{color:#94732a}
+.app-sidebar [data-active="true"]{background:#fff1dc;color:#263047;box-shadow:inset 0 -3px 0 #d8ad79}
+.fh-hub .fh-chapter svg,.fh-hub .fh-timeline svg,.fh-hub .fh-card svg{
+  stroke-width:2.35;filter:drop-shadow(0 2px 0 rgba(26,34,56,.12))
+}
+/* Keep story images, media and chemistry diagrams untouched. */
+.novel-background,.fh-story-media img,.fh-story-media video,.fh-mol3d,
+.fh-entry-art img{filter:none}
+@media(max-width:767px){
+  [data-slot="sidebar-inset"],.fh-entry,.fh-shell{
+    background-attachment:scroll;
+    background-position:center top;
+  }
+  .fh-bottom-nav{background:#fffdf9}
+}
+@media(prefers-reduced-motion:reduce){.fh-bar>span{transition:none}}
