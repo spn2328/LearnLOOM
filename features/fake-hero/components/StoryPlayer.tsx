@@ -12,6 +12,8 @@ import "../styles/story.css";
 export type ScriptItem = string | {media: MediaSlotId} | {quote: string};
 type Beat = {text: string; quote: boolean; file?: MediaFile; slot?: MediaSlotId};
 
+const VOICE_KEY = "learnloom-story-voice";
+const readVoicePref = () => { try { return localStorage.getItem(VOICE_KEY) !== "off"; } catch { return true; } };
 const SPEAKER = /^(ลูม|ผู้เล่น|เจฟ|ชาวบ้าน|เฮียศักดิ์|แม่)\s*:\s*(.*)$/;
 const reducedMotion = () =>
   typeof window !== "undefined" &&
@@ -43,8 +45,12 @@ export default function StoryPlayer({script, end, label = "ฉาก"}: {script:
   const [muted, setMuted] = useState(true);
   // VARK: listen mode reads each beat aloud, read-write mode opens the full script
   const vark = useVark();
-  const [voice, setVoice] = useState(false);
-  useEffect(() => { setVoice(vark.pref === "A"); if (vark.pref === "R") setAll(true); }, [vark.pref]);
+  // Dialogue voice plays as soon as a scene opens (round-2 feedback); a learner who turns it off keeps it off.
+  const [voice, setVoiceState] = useState(() => readVoicePref());
+  // the browser refused to start sound without a tap: show a clear "start listening" call instead
+  const [blocked, setBlocked] = useState(false);
+  const setVoice = (on: boolean) => { setVoiceState(on); setBlocked(false); try { localStorage.setItem(VOICE_KEY, on ? "on" : "off"); } catch {} };
+  useEffect(() => { if (vark.pref === "A") setVoiceState(true); if (vark.pref === "R") setAll(true); }, [vark.pref]);
   const video = useRef<HTMLVideoElement>(null);
   const beat = beats[i];
   const done = i >= beats.length - 1;
@@ -59,10 +65,16 @@ export default function StoryPlayer({script, end, label = "ฉาก"}: {script:
   }, [file?.url]);
 
   useEffect(() => {
-    if (!voice || !beat) return;
-    speak(beat.text);
+    if (!voice || !beat || blocked) return;
+    if (started.current === i) { started.current = -1; return () => stopSpeak(); }
+    const ua = (navigator as Navigator & {userActivation?: {hasBeenActive: boolean}}).userActivation;
+    if (ua && !ua.hasBeenActive) { setBlocked(true); return; }
+    speak(beat.text, undefined, () => setBlocked(true));
     return () => stopSpeak();
-  }, [voice, i, beat?.text]);
+  }, [voice, i, beat?.text, blocked]);
+  // runs inside the tap, so the browser allows sound from here on
+  const started = useRef(-1);
+  const startVoice = () => { started.current = i; setVoice(true); if (beat) speak(beat.text); };
 
   if (!beat) return null;
   const m = SPEAKER.exec(beat.text);
@@ -95,7 +107,7 @@ export default function StoryPlayer({script, end, label = "ฉาก"}: {script:
         </button>
 
         <div className="fh-sp-tools">
-          <button type="button" onClick={() => setVoice((v) => !v)} aria-pressed={voice} aria-label={voice ? "หยุดให้ลูมอ่านบท" : "ให้ลูมอ่านบทให้ฟัง"}>{voice ? "🗣️" : "🔈"}</button>
+          <button type="button" onClick={() => setVoice(!voice)} aria-pressed={voice} aria-label={voice ? "หยุดให้ลูมอ่านบท" : "ให้ลูมอ่านบทให้ฟัง"}>{voice ? "🗣️" : "🔈"}</button>
           {file?.kind === "video" && (
             <>
               <button type="button" onClick={() => setMuted((v) => !v)} aria-label={muted ? "เปิดเสียงคลิป" : "ปิดเสียงคลิป"}>{muted ? "🔇" : "🔊"}</button>
@@ -104,6 +116,13 @@ export default function StoryPlayer({script, end, label = "ฉาก"}: {script:
           )}
         </div>
       </div>
+
+      {voice && blocked && (
+        <div className="fh-sp-voicecall" role="status">
+          <span>🔊 ช่วงนี้มีเสียงบทพูดให้ฟัง</span>
+          <button type="button" onClick={startVoice}>▶ กดเพื่อเริ่มฟังเสียง</button>
+        </div>
+      )}
 
       <div className="fh-sp-bar">
         <button type="button" onClick={back} disabled={i === 0} aria-label="ประโยคก่อนหน้า">‹ ย้อน</button>

@@ -66,7 +66,8 @@ export function hasThaiVoice() { return canSpeak() && speechSynthesis.getVoices(
 // otherwise the device voice. Passing fixed texts as separate parts lets each one find its file.
 let audio: HTMLAudioElement | null = null;
 let run = 0;
-export function speak(text: string | string[], onEnd?: () => void) {
+// onBlocked: the browser refused to start sound without a tap (autoplay policy); nothing plays.
+export function speak(text: string | string[], onEnd?: () => void, onBlocked?: () => void) {
   const parts = (Array.isArray(text) ? text : [text]).map(norm).filter(Boolean);
   if (typeof window === "undefined" || !parts.length || (!canSpeak() && !parts.some(hasVoice))) { onEnd?.(); return false; }
   stopSpeak();
@@ -78,17 +79,21 @@ export function speak(text: string | string[], onEnd?: () => void) {
     if (hasVoice(p)) {
       // file missing or blocked: read this part with the device voice instead (error and play() both report it)
       let fell = false;
-      const fallback = () => { if (me === run && !fell) { fell = true; device(p, go); } };
+      const fallback = () => { if (me === run && !fell) { fell = true; device(p, go, onBlocked); } };
       audio = new Audio(voiceUrl(voiceKey(p)));
       audio.onended = go;
       audio.onerror = fallback;
-      audio.play().catch(e => { if ((e as Error).name !== "AbortError") fallback(); });
-    } else device(p, go);
+      audio.play().catch(e => {
+        const name = (e as Error).name;
+        if (name === "NotAllowedError" && onBlocked) { if (me === run) { stopSpeak(); onBlocked(); } }
+        else if (name !== "AbortError") fallback();
+      });
+    } else device(p, go, onBlocked);
   };
   next(0);
   return true;
 }
-function device(text: string, done: () => void) {
+function device(text: string, done: () => void, onBlocked?: () => void) {
   if (!canSpeak()) { done(); return; }
   const u = new SpeechSynthesisUtterance(text.replace(/[–=≡]/g, m => ({"–": " พันธะเดี่ยว ", "=": " พันธะคู่ ", "≡": " พันธะสาม "})[m]!));
   u.lang = "th-TH"; u.rate = 0.95;
@@ -96,7 +101,8 @@ function device(text: string, done: () => void) {
   // No Thai voice on this device: stay silent rather than read Thai with an English voice
   if (!th && voices.length) { done(); return; }
   if (th) u.voice = th;
-  u.onend = done; u.onerror = done;
+  u.onend = done;
+  u.onerror = (ev) => { if (ev.error === "not-allowed" && onBlocked) onBlocked(); else done(); };
   speechSynthesis.speak(u);
 }
 export function stopSpeak() {
