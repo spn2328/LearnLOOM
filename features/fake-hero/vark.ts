@@ -92,7 +92,9 @@ function device(text: string, done: () => void) {
   if (!canSpeak()) { done(); return; }
   const u = new SpeechSynthesisUtterance(text.replace(/[–=≡]/g, m => ({"–": " พันธะเดี่ยว ", "=": " พันธะคู่ ", "≡": " พันธะสาม "})[m]!));
   u.lang = "th-TH"; u.rate = 0.95;
-  const th = speechSynthesis.getVoices().find(v => v.lang.toLowerCase().startsWith("th"));
+  const voices = speechSynthesis.getVoices(), th = voices.find(v => v.lang.toLowerCase().startsWith("th"));
+  // No Thai voice on this device: stay silent rather than read Thai with an English voice
+  if (!th && voices.length) { done(); return; }
   if (th) u.voice = th;
   u.onend = done; u.onerror = done;
   speechSynthesis.speak(u);
