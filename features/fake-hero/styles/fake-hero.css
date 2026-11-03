@@ -251,3 +251,6 @@ body .fh-shell button.fh-pause:hover{background:#25503f}body .fh-shell button.fh
 .fh-evlist button.on{background:#316552;color:#fff}
 .fh-evlist button:focus-visible{outline:3px solid #f4c44e;outline-offset:2px}
 .fh-evlist em{flex-basis:100%;font-style:normal;color:#8a4b0f;font-size:.95rem}
+/* A01 evidence cards (owner storyboard 4.1–4.3): three in a row, stacked on narrow phones */
+.fh-media-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:14px 0 18px}
+.fh-media-row .fh-story-media{margin:0}
