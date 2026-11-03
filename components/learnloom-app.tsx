@@ -6,7 +6,8 @@ import {allMediaFiles} from '@/features/fake-hero/media/registry';
 import LearningHub,{markActivity,hubImage,type HubMode} from '@/features/fake-hero/components/LearningHub';
 
 import {useState,useEffect,useRef,useCallback,type CSSProperties} from 'react';
-import {Home,LibraryBig,BookOpen,ChartNoAxesCombined,History,HelpCircle,MessageCircle,LogOut,ArrowRight,ArrowLeft,ChevronRight,ChevronLeft,Volume2,VolumeX,Headphones,Eye,Hand,Atom,Leaf,Clock,CloudCheck,CloudOff,RefreshCw,Settings2,Pause,Play,Check,Download,Upload,Wifi,WifiOff,User,Users,GraduationCap,Menu,Maximize2,Lightbulb,Send,Footprints,CupSoda,PersonStanding,Moon,Search,NotebookPen,ShieldCheck,LoaderCircle} from 'lucide-react';
+import {History,HelpCircle,LogOut,ArrowRight,ChevronRight,Volume2,VolumeX,Headphones,Eye,Hand,Atom,Leaf,Clock,CloudCheck,CloudOff,RefreshCw,Settings2,Download,Upload,Wifi,WifiOff,User,Users,GraduationCap,Menu,Maximize2,Lightbulb,Send,Footprints,CupSoda,PersonStanding,Moon,Search,ShieldCheck,LoaderCircle} from 'lucide-react';
+import {Home,LibraryBig,BookOpen,ChartNoAxesCombined,NotebookPen,MessageCircle,ArrowLeft,ChevronLeft,Play,Pause,Check} from '@/features/fake-hero/components/CuteIcons';
 import {SidebarProvider,Sidebar,SidebarHeader,SidebarContent,SidebarFooter,SidebarMenu,SidebarMenuItem,SidebarMenuButton,SidebarInset,SidebarTrigger,useSidebar} from '@/components/ui/sidebar';
 import {Tabs,TabsList,TabsTrigger,TabsContent} from '@/components/ui/tabs';
 import {Dialog,DialogContent,DialogTitle,DialogDescription} from '@/components/ui/dialog';

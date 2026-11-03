@@ -125,3 +125,72 @@ html body::before {
 @media (prefers-reduced-motion: reduce) {
   :is(.primary, .fh-primary, .secondary, .round-button, .fh-play, .gm-dock-main, .gm-dock-read, .fh-tile, .fh-link-card, .fh-choice, .gm-btn) { transition: none }
 }
+
+/* ---- Design System v2: cute 2.5D icons, game buttons, raised bars and status badges ---- */
+
+/* Cute icons draw their own tile/edge, so they skip the lucide tile rings. Sidebar icons grow to the
+   old visible tile size (16px glyph + 4px ring) with negative margins, so the row layout doesn't move. */
+.cute-icon { flex: none; stroke: none; overflow: visible; filter: drop-shadow(0 1px 1px rgba(26, 34, 56, .14)) }
+[data-slot=sidebar-menu-button] > .cute-icon { width: 24px !important; height: 24px !important; margin: -4px }
+.fh-bottom-nav .cute-icon { width: 26px; height: 26px; margin: -2px }
+.fh-bottom-nav button[aria-current="page"] .cute-icon { transform: translateY(-1px) }
+
+/* Primary keeps coral, gains a soft drop shadow under the bottom edge. */
+:is(.primary, .fh-primary, .fh-play) {
+  box-shadow: 0 0 0 2px var(--dt-coral-d), 0 4px 0 2px var(--dt-coral-d), inset 0 2px 0 rgba(255, 255, 255, .45), 0 9px 14px rgba(26, 34, 56, .16);
+}
+/* Check-answer button = Growth green. */
+.fh-qfoot :is(.primary, .fh-primary) {
+  background: linear-gradient(180deg, #6BB88A 0%, var(--dt-green) 60%) !important; color: #FFFFFF !important;
+  box-shadow: 0 0 0 2px var(--dt-green-d), 0 4px 0 2px var(--dt-green-d), inset 0 2px 0 rgba(255, 255, 255, .4), 0 9px 14px rgba(26, 34, 56, .16);
+}
+/* Secondary = white with a ballpoint rim and edge. */
+.secondary, .round-button {
+  background: linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 55%, var(--dt-ballpoint-l) 100%);
+  border: 2px solid var(--dt-ballpoint); color: var(--dt-ballpoint-d);
+  box-shadow: 0 4px 0 var(--dt-ballpoint-d), inset 0 2px 0 rgba(255, 255, 255, .9), 0 8px 12px rgba(26, 34, 56, .12);
+}
+/* Helper (ask Loom) = Bubblegum pink. */
+.fh-shell .fh-help, .fh-help {
+  background: linear-gradient(180deg, #FFF1F6 0%, #FDE3EE 70%); border: 2px solid #E9A6C4; color: #8A2E58;
+  box-shadow: 0 4px 0 #D07FA4, inset 0 2px 0 rgba(255, 255, 255, .8), 0 8px 12px rgba(26, 34, 56, .1);
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+.fh-help:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 #D07FA4 }
+/* Pressed: the bottom edge shrinks as the button sinks. */
+:is(.primary, .fh-primary, .fh-play):active:not(:disabled) { box-shadow: 0 0 0 2px var(--dt-coral-d), 0 1px 0 2px var(--dt-coral-d), inset 0 2px 0 rgba(255, 255, 255, .45) }
+.fh-qfoot :is(.primary, .fh-primary):active:not(:disabled) { box-shadow: 0 0 0 2px var(--dt-green-d), 0 1px 0 2px var(--dt-green-d) }
+:is(.secondary, .round-button):active:not(:disabled) { box-shadow: 0 1px 0 var(--dt-ballpoint-d) }
+/* Disabled: flat grey, dashed rim, text stays readable (#5A6275 on #EEF0F3 ≈ 5.6:1). */
+:is(.primary, .fh-primary, .secondary, .round-button, .fh-play, .fh-help, .fh-sp-bar > button, .gm-btn):disabled {
+  background: #EEF0F3 !important; color: #5A6275 !important; border: 2px dashed #9AA3B5 !important;
+  box-shadow: none !important; opacity: 1 !important; transform: none !important; cursor: not-allowed;
+}
+
+/* Progress bars: light grey inset track, Growth fill with a thin shine and a raised lip. */
+:is(.fh-bar, .gm-xpbar), .ll-bright-shell :is(.fh-bar, .gm-xpbar) {
+  background: #E6E8EE; border: 0;
+  box-shadow: inset 0 2px 3px rgba(26, 34, 56, .18), 0 1px 0 rgba(255, 255, 255, .9), 0 0 0 1.5px #D3D7E0;
+}
+.fh-bar > *, .ll-bright-shell .fh-bar > span, .gm-xpbar i, .ll-bright-shell .gm-xpbar i, .gm-vark-row .gm-xpbar i {
+  background: linear-gradient(180deg, #5FAE7F 0%, #3A8F5D 55%, #2F7C4F 100%) !important; animation: none;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .16), inset 0 2px 0 rgba(255, 255, 255, .45);
+}
+
+/* Status badges: raised rounded pills (light face, darker rim, 3px bottom edge). Text already names the state. */
+:is(.fh-pill, .fh-qtag, .fh-chip, .fh-badge, .fh-cert em, .fh-sumbar b, .fh-sumbar span, .connection) {
+  border: 2px solid transparent; font-weight: 600;
+}
+.fh-pill, .fh-sumbar b { background: var(--dt-green); color: #FFFFFF; border-color: var(--dt-green-d); box-shadow: 0 3px 0 var(--dt-green-d) }
+.fh-qtag, .fh-chip, .ll-preview-heading > span { background: var(--dt-ballpoint-l); color: var(--dt-ballpoint-d); border: 2px solid #B8C2E3; box-shadow: 0 3px 0 #B8C2E3 }
+.fh-chip.red, .ll-bright-shell .fh-chip.red { background: var(--dt-coral-l); color: var(--dt-coral-d); border-color: #F3C2AE; box-shadow: 0 3px 0 #F3C2AE }
+.fh-badge, .fh-sumbar span { background: var(--dt-yellow-l); color: var(--dt-yellow-d); border-color: #EBD878; box-shadow: 0 3px 0 #EBD878 }
+.fh-cert em { background: #EEF0F3; color: #5A6275; border: 2px dashed #9AA3B5; box-shadow: 0 2px 0 #D3D7E0 }
+.fh-good { background: var(--dt-green-l); color: var(--dt-green-d); border: 2px solid #B5DAC2; box-shadow: 0 3px 0 #B5DAC2 }
+.fh-compare .bad h4 { background: var(--dt-coral-l); border: 2px solid #F3C2AE; box-shadow: 0 3px 0 #F3C2AE }
+.connection, .ll-bright-shell .connection { background: var(--dt-green-l); color: var(--dt-green-d); border-color: #B5DAC2; box-shadow: 0 2px 0 #B5DAC2 }
+.gm-chip.on, .fh-choice.active, .fh-evlist button.on { box-shadow: 0 3px 0 var(--dt-ballpoint-d) }
+.fh-choice.active { background: var(--dt-ballpoint-l) !important; border-color: var(--dt-ballpoint) !important }
+.gm-badge.got { border-color: #C9AE2A; background: linear-gradient(180deg, var(--dt-yellow-l), #FFFFFF); box-shadow: 0 4px 0 #EBD878 }
+
+@media (prefers-reduced-motion: reduce) { .fh-help { transition: none } }
