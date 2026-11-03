@@ -6,10 +6,10 @@
 @keyframes fh-page-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 
 .fh-sp{margin:10px 0 4px;display:grid;gap:10px}
-.fh-sp-stage{position:relative;aspect-ratio:16/9;border-radius:18px;overflow:hidden;background:#f3f0ea;border:6px solid #fff;box-shadow:0 10px 28px #27392f24,0 0 0 1px #e1e6dc;isolation:isolate;perspective:1400px}
+.fh-sp-stage{position:relative;aspect-ratio:16/9;border-radius:18px;overflow:hidden;background:#f3f0ea;border:6px solid #fff;box-shadow:0 10px 28px #27392f24,0 0 0 1px #E6D5B8;isolation:isolate;perspective:1400px}
 .fh-sp-media{position:absolute;inset:0;transform-origin:left center;animation:fh-sp-turn .7s cubic-bezier(.3,.7,.2,1) both}
 .fh-sp-media img,.fh-sp-media video{width:100%;height:100%;object-fit:cover;display:block}
-.fh-sp-stage.empty .fh-sp-media{display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,#fcfaf6,#eaf2e9)}
+.fh-sp-stage.empty .fh-sp-media{display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,#fcfaf6,#FBF3E4)}
 .fh-sp-media .fh-sp-loom{width:auto;height:58%;object-fit:contain;margin-bottom:14%;animation:fh-sp-bob 3.2s ease-in-out infinite}
 /* a new picture turns in like a book page */
 @keyframes fh-sp-turn{from{opacity:.2;transform:rotateY(-14deg) translateX(3%)}to{opacity:1;transform:none}}
@@ -25,48 +25,48 @@
 
 /* the whole page is one big "next" button; text is drawn on the picture */
 .fh-sp-tap{position:absolute;inset:0;z-index:2;display:block;padding:0;border:0;background:transparent;cursor:pointer;text-align:left;font:inherit;color:inherit;border-radius:inherit}
-.fh-sp-tap:focus-visible{outline:4px solid #f4c44e;outline-offset:-4px}
+.fh-sp-tap:focus-visible{outline:4px solid #F1D64A;outline-offset:-4px}
 
-.fh-sp-caption{position:absolute;display:flex;gap:10px;align-items:flex-start;max-width:min(62%,560px);color:#27392f;font-size:clamp(16px,1.9vw,20px);line-height:1.6;animation:fh-sp-pop .35s cubic-bezier(.2,.8,.3,1.2) both}
+.fh-sp-caption{position:absolute;display:flex;gap:10px;align-items:flex-start;max-width:min(62%,560px);color:#1A2238;font-size:clamp(16px,1.9vw,20px);line-height:1.6;animation:fh-sp-pop .35s cubic-bezier(.2,.8,.3,1.2) both}
 .fh-sp-caption>span{display:block}
 /* narration: storybook caption box in the top corner */
-.fh-sp-caption.narration{top:14px;left:14px;background:#fffaf0f2;border:2px solid #27392f;border-radius:6px;padding:10px 16px;box-shadow:4px 4px 0 #27392f33}
+.fh-sp-caption.narration{top:14px;left:14px;background:#fffaf0f2;border:2px solid #1A2238;border-radius:6px;padding:10px 16px;box-shadow:4px 4px 0 #27392f33}
 /* dialogue: speech bubble with a tail, Loom on the left, the player on the right */
-.fh-sp-caption.say{bottom:50px;left:50%;translate:-50% 0;background:#fffffff5;border:2px solid #27392f;border-radius:22px;padding:12px 18px;box-shadow:0 6px 0 #27392f22}
-.fh-sp-caption.say::after{content:"";position:absolute;bottom:-12px;left:50%;width:20px;height:20px;background:inherit;border-right:2px solid #27392f;border-bottom:2px solid #27392f;transform:translateX(-50%) rotate(45deg) skew(8deg,8deg);border-radius:0 0 6px 0}
+.fh-sp-caption.say{bottom:50px;left:50%;translate:-50% 0;background:#fffffff5;border:2px solid #1A2238;border-radius:22px;padding:12px 18px;box-shadow:0 6px 0 #27392f22}
+.fh-sp-caption.say::after{content:"";position:absolute;bottom:-12px;left:50%;width:20px;height:20px;background:inherit;border-right:2px solid #1A2238;border-bottom:2px solid #1A2238;transform:translateX(-50%) rotate(45deg) skew(8deg,8deg);border-radius:0 0 6px 0}
 .fh-sp-caption.say.loom{left:auto;right:16px;translate:none;flex-direction:row-reverse}
 .fh-sp-caption.say.loom::after{left:auto;right:42px}
-.fh-sp-caption.say.me{left:16px;translate:none;background:#eef6ee}
+.fh-sp-caption.say.me{left:16px;translate:none;background:#EEF7F1}
 .fh-sp-caption.say.me::after{left:30px}
 /* an on-screen message (clip title, phone text) */
 .fh-sp-caption.quote{top:50%;left:50%;translate:-50% -50%;bottom:auto;background:#27392fe8;color:#fff;border:0;border-radius:14px;padding:12px 20px;font-weight:700;text-align:center;box-shadow:0 10px 26px #0005}
 .fh-sp-caption.quote::after{display:none}
 @keyframes fh-sp-pop{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
 
-.fh-sp-who{display:block;font-size:.78em;color:#316552;font-weight:700;letter-spacing:.02em}
-.fh-sp-caption.me .fh-sp-who{color:#1f5f8b}
+.fh-sp-who{display:block;font-size:.78em;color:#23683F;font-weight:700;letter-spacing:.02em}
+.fh-sp-caption.me .fh-sp-who{color:#3E4F8C}
 .fh-sp-avatar{width:48px;height:48px;object-fit:contain;flex:none;margin:-4px -4px 0 0}
-.fh-sp-more{position:absolute;right:0;bottom:0;z-index:3;margin:0;padding:8px 16px 8px 22px;border-radius:22px 0 0 0;background:#fcfaf6;color:#316552;font-style:normal;font-size:14px;box-shadow:-2px -2px 8px #0000001a;animation:fh-sp-blink 1.6s ease-in-out infinite}
+.fh-sp-more{position:absolute;right:0;bottom:0;z-index:3;margin:0;padding:8px 16px 8px 22px;border-radius:22px 0 0 0;background:#fcfaf6;color:#23683F;font-style:normal;font-size:14px;box-shadow:-2px -2px 8px #0000001a;animation:fh-sp-blink 1.6s ease-in-out infinite}
 @keyframes fh-sp-blink{50%{opacity:.55}}
 
 .fh-sp-tools{position:absolute;top:12px;right:12px;z-index:3;display:flex;gap:8px}
 .fh-sp-tools button{width:44px;height:44px;border-radius:50%;border:0;background:#ffffffe6;font-size:18px;cursor:pointer;box-shadow:0 4px 12px #0003}
-.fh-sp-tools button:focus-visible{outline:3px solid #f4c44e;outline-offset:2px}
+.fh-sp-tools button:focus-visible{outline:3px solid #F1D64A;outline-offset:2px}
 
 .fh-sp-bar{display:flex;align-items:center;gap:12px}
-.fh-sp-bar>button{min-height:44px;padding:6px 16px;border-radius:99px;border:1px solid #cfdccc;background:#fff;color:#316552;font:inherit;font-size:15px;cursor:pointer;white-space:nowrap}
+.fh-sp-bar>button{min-height:44px;padding:6px 16px;border-radius:99px;border:1px solid #E6D5B8;background:#fff;color:#23683F;font:inherit;font-size:15px;cursor:pointer;white-space:nowrap}
 .fh-sp-bar>button:disabled{opacity:.4;cursor:default}
 .fh-sp-dots{flex:1;display:flex;gap:5px;justify-content:center;flex-wrap:wrap}
-.fh-sp-dots span{width:9px;height:9px;border-radius:50%;background:#e1e6dc;transition:background .3s}
-.fh-sp-dots span.on{background:#3ea36b}
-.fh-sp-script{margin:0;padding:14px 18px 14px 38px;background:#fff;border:1px solid #e1e6dc;border-radius:16px;line-height:1.8}
-.fh-sp-script li.quote{font-weight:700;color:#316552}
+.fh-sp-dots span{width:9px;height:9px;border-radius:50%;background:#E6D5B8;transition:background .3s}
+.fh-sp-dots span.on{background:#3A8F5D}
+.fh-sp-script{margin:0;padding:14px 18px 14px 38px;background:#fff;border:1px solid #E6D5B8;border-radius:16px;line-height:1.8}
+.fh-sp-script li.quote{font-weight:700;color:#23683F}
 .fh-sp-end{animation:fh-sp-pop .4s ease both}
 
 /* beat the story shell's generic button skin */
 .fh-sp .fh-sp-tap,.fh-sp .fh-sp-tap:hover{background:transparent!important;border:0!important;min-height:0;box-shadow:none!important;color:inherit!important;margin:0;padding:0!important}
 .fh-sp .fh-sp-tools button,.fh-sp .fh-sp-tools button:hover{background:#ffffffe6!important;padding:0!important;min-height:0}
-.fh-sp .fh-sp-bar>button:hover:not(:disabled){background:#eaf2e9!important}
+.fh-sp .fh-sp-bar>button:hover:not(:disabled){background:#FBF3E4!important}
 .fh-sp-stage.empty .fh-sp-avatar{display:none}
 .fh-sp-stage:has(.fh-sp-tools button) .fh-sp-caption.narration{max-width:min(calc(100% - 140px),560px)}
 /* keep the whole page inside the screen on wide/short windows */
