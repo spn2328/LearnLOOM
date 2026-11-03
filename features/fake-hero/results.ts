@@ -20,6 +20,7 @@ export type ConceptResult = {
   path?: string; // adaptive help path A–D
   diagnosis?: Record<string, Choice>; // adaptive diagnostic answers (D0x-n; D01–D04 in older Q04 saves)
   recheckB?: Choice;
+  practice?: Record<string, Choice>; // first answers to practice items R0x-n
   helpSwitches?: {at: string; from: string; to: string}[]; // help form changed after a wrong practice item
   practiceRetry?: Record<string, Choice>; // answers after the switch (first practice answers are not overwritten)
   transfer?: string; // free-text answer to the transfer / confirm-understanding item
@@ -55,7 +56,7 @@ function concept(i: number, first?: {main?: string; reason?: Choice}, assisted =
     id: l.main.id.replace("Q", "C"),
     firstMain: first?.main, firstReason: first?.reason, firstCorrect,
     assisted, recheck, recheckCorrect,
-    ...(adaptive?.path ? {path: adaptive.path, diagnosis: adaptive.diagnosis, recheckB: adaptive.recheckB, transfer: adaptive.transfer, ...(adaptive.switches?.length ? {helpSwitches: adaptive.switches, practiceRetry: adaptive.practiceRetry} : {})} : {}),
+    ...(adaptive?.path ? {path: adaptive.path, diagnosis: adaptive.diagnosis, ...(adaptive.practice ? {practice: adaptive.practice} : {}), recheckB: adaptive.recheckB, transfer: adaptive.transfer, ...(adaptive.switches?.length ? {helpSwitches: adaptive.switches, practiceRetry: adaptive.practiceRetry} : {})} : {}),
     outcome: !first?.main ? "ยังไม่ได้ทำ" : firstCorrect ? "ผ่านด้วยตนเอง" : recheckCorrect ? "ผ่านหลังช่วยเหลือ" : "ยังต้องทบทวน",
   };
 }

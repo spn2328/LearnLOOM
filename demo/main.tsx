@@ -3,6 +3,7 @@ import {createRoot} from 'react-dom/client';
 import LearnloomApp from '../components/learnloom-app';
 import FakeHero from '../features/fake-hero/components/FakeHero';
 import PlayLayer from '../features/fake-hero/components/PlayLayer';
+import CloudAccount from '../features/fake-hero/cloud/CloudAccount';
 import '../app/globals.css';
 import './style.css';
 import '../features/fake-hero/styles/bright.css';
@@ -15,4 +16,4 @@ class DemoBoundary extends React.Component<React.PropsWithChildren, {failed:bool
     return this.props.children;
   }
 }
-createRoot(document.getElementById('root')!).render(<DemoBoundary><aside className="demo-notice" role="note"><strong>LearnLOOM · THE FAKE HERO · EP.01</strong><span>เคมีอินทรีย์ ม.6 · ความคืบหน้าบันทึกในเบราว์เซอร์นี้</span></aside>{new URLSearchParams(location.search).has('standalone')?<><FakeHero/><PlayLayer/></>:<LearnloomApp/>}</DemoBoundary>);
+createRoot(document.getElementById('root')!).render(<DemoBoundary><aside className="demo-notice" role="note"><strong>LearnLOOM · THE FAKE HERO · EP.01</strong><CloudAccount/></aside>{new URLSearchParams(location.search).has('standalone')?<><FakeHero/><PlayLayer/></>:<LearnloomApp/>}</DemoBoundary>);

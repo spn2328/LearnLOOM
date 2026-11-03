@@ -38,6 +38,8 @@ jobs:
         run: pnpm test
       - name: Verify EP01 question bank
         run: node scripts/test-fake-hero.mjs
+      - name: Database access rules (PGlite)
+        run: pnpm test:db
       - name: TypeScript checks
         run: pnpm typecheck
       - name: Build Vercel browser demo

@@ -1,0 +1,62 @@
+/* Account chip + dialog. Cream/green palette from the existing theme; scoped to ll-cloud- classes. */
+.ll-cloud-chip{display:inline-flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 10px}
+.ll-cloud-chip button{min-height:32px;padding:4px 12px;border-radius:999px;border:1px solid #316552;background:#fff;color:#285740;font:inherit;font-weight:700;cursor:pointer}
+.ll-cloud-chip button:hover{background:#eaf2e9}
+.ll-cloud-badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#eaf2e9;color:#285740}
+.ll-cloud-badge.is-offline{background:#ececec;color:#3d3d3d}
+.ll-cloud-badge.is-pending,.ll-cloud-badge.is-error,.ll-cloud-badge.is-syncing{background:#fff3d6;color:#6b4a00}
+.ll-cloud-backdrop{position:fixed;inset:0;z-index:200;background:rgba(31,43,35,.45);display:flex;align-items:flex-start;justify-content:center;padding:clamp(12px,6vh,64px) 16px;overflow:auto;text-align:left}
+.ll-cloud-dialog{position:relative;width:min(560px,100%);background:#fff;border-radius:20px;border:1px solid #e1e6dc;padding:24px clamp(16px,4vw,32px);color:#22332a;font-size:15px;line-height:1.7;box-shadow:0 18px 50px rgba(0,0,0,.18)}
+.ll-cloud-dialog h2{margin:0 0 8px;font-size:22px;color:#285740}
+.ll-cloud-dialog h3{margin:20px 0 8px;font-size:17px;color:#285740}
+.ll-cloud-dialog form{display:flex;flex-direction:column;gap:10px}
+.ll-cloud-dialog label{display:flex;flex-direction:column;gap:4px;font-weight:600}
+.ll-cloud-dialog input:not([type=checkbox]){min-height:44px;padding:8px 12px;border:1px solid #c9d3c4;border-radius:12px;font:inherit;background:#fffdf7}
+.ll-cloud-dialog input:focus-visible,.ll-cloud-dialog button:focus-visible{outline:3px solid #f0b429;outline-offset:2px}
+.ll-cloud-dialog button{min-height:44px;padding:8px 16px;border-radius:12px;border:1px solid #316552;background:#fff;color:#285740;font:inherit;font-weight:700;cursor:pointer}
+.ll-cloud-dialog button:disabled{opacity:.6;cursor:default}
+.ll-cloud-dialog .ll-cloud-primary{background:#316552;color:#fff}
+.ll-cloud-dialog .ll-cloud-link{border:0;background:none;text-decoration:underline;min-height:36px}
+.ll-cloud-close{position:absolute;top:10px;right:10px;min-height:40px!important;width:40px;padding:0!important;border-radius:999px!important}
+.ll-cloud-check{flex-direction:row!important;align-items:center;gap:8px!important}
+.ll-cloud-check input{width:20px;height:20px}
+.ll-cloud-row{display:flex!important;flex-direction:row!important;flex-wrap:wrap;gap:8px!important;align-items:center}
+.ll-cloud-row input{flex:1 1 160px}
+.ll-cloud-note{color:#566256;font-size:14px;margin:6px 0}
+.ll-cloud-ok{color:#1f6b45;font-weight:700}
+.ll-cloud-error{color:#a12a1a;font-weight:700}
+.ll-cloud-list{margin:4px 0;padding-left:20px}
+.ll-cloud-details{margin-top:14px;font-size:14px}
+.ll-cloud-details summary{cursor:pointer;color:#566256}
+.ll-cloud-class{margin-top:12px;padding:12px;border:1px solid #e1e6dc;border-radius:14px;background:#fbfcf8;overflow-x:auto}
+.ll-cloud-class p{margin:0 0 8px}
+.ll-cloud-class code{font-size:16px;font-weight:700;letter-spacing:.12em;background:#fff0cb;padding:2px 8px;border-radius:8px}
+.ll-cloud-class table{width:100%;border-collapse:collapse;font-size:14px}
+.ll-cloud-class th,.ll-cloud-class td{text-align:left;padding:6px 8px;border-bottom:1px solid #e9ece4;white-space:nowrap}
+/* Teacher dashboard is wider; tables scroll inside their own box on phones. */
+.ll-cloud-dialog.is-wide{width:min(1100px,100%)}
+.ll-cloud-dialog h4{margin:18px 0 6px;font-size:16px;color:#285740}
+.ll-cloud-dialog select{min-height:44px;padding:6px 10px;border:1px solid #c9d3c4;border-radius:12px;font:inherit;background:#fffdf7}
+.ll-cloud-inline{flex-direction:row!important;align-items:center;gap:8px!important}
+.ll-cloud-tabs{display:flex;gap:8px;margin:8px 0 14px}
+.ll-cloud-tabs button{flex:1}
+.ll-cloud-consent{border:1px solid #f0d58a;background:#fff8e6;border-radius:14px;padding:10px 14px;font-size:14px}
+.ll-cloud-consent ul{margin:4px 0 8px;padding-left:20px}
+.ll-cloud-code{font-size:18px;font-weight:700;letter-spacing:.14em;background:#fff0cb;padding:2px 10px;border-radius:8px}
+.ll-cloud-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin:10px 0}
+.ll-cloud-stats div{border:1px solid #e1e6dc;border-radius:14px;padding:8px 12px;background:#fbfcf8;font-size:13px;color:#566256}
+.ll-cloud-stats b{display:block;font-size:24px;color:#285740}
+.ll-cloud-stats .is-warn{background:#fff8e6;border-color:#f0d58a}
+.ll-cloud-stats .is-warn b{color:#6b4a00}
+.ll-cloud-scroll{overflow-x:auto;border:1px solid #e1e6dc;border-radius:14px}
+.ll-cloud-table{width:100%;border-collapse:collapse;font-size:14px}
+.ll-cloud-table th{background:#eaf2e9;color:#285740}
+.ll-cloud-table th,.ll-cloud-table td{text-align:left;padding:6px 10px;border-bottom:1px solid #e9ece4;white-space:nowrap;vertical-align:top}
+.ll-cloud-table td.ll-cloud-wrap{white-space:normal;min-width:220px}
+.ll-cloud-table button{min-height:36px;padding:4px 10px;font-size:13px}
+.ll-cloud-status{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#ececec;color:#3d3d3d}
+.ll-cloud-status.is-ok{background:#eaf2e9;color:#1f6b45}
+.ll-cloud-status.is-warn{background:#fff3d6;color:#6b4a00}
+.ll-cloud-continue{width:100%;font-size:17px;margin:4px 0 10px}
+.ll-cloud-meter{height:12px;border-radius:999px;background:#e9ece4;overflow:hidden}
+.ll-cloud-meter span{display:block;height:100%;background:#316552;border-radius:999px}

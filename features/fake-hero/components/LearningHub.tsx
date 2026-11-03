@@ -6,6 +6,7 @@ import SendResult from "./SendResult";
 import {GameHud, GameProgress, GameQuests} from "./GameHub";
 import DevPanel from "./DevPanel";
 import {loomSrc} from "./ui";
+import {savedWhere} from "../cloud/client";
 import {getMedia} from "../media/registry";
 import {lessons} from "../content/episode01";
 import {buildResult, type StudentResult} from "../results";
@@ -146,7 +147,7 @@ export default function LearningHub({mode, go, onStart, nickname = "", settings}
               <small>{c.outcome}</small>
             </li>)}
           </ul>
-          <p className="fine">Checkpoint: {r.checkpoint.score}/10 · ข้อมูลบันทึกเฉพาะเบราว์เซอร์นี้</p>
+          <p className="fine">Checkpoint: {r.checkpoint.score}/10 · {savedWhere()}</p>
         </article>
       </div>
       <GameHud r={r}/>
@@ -314,7 +315,7 @@ function Notebook({r}: {r: StudentResult}) {
         <small>{new Date(n.id).toLocaleDateString("th-TH", {day: "numeric", month: "short"})}</small>
         <button className="fh-icon" aria-label="ลบบันทึกนี้" onClick={() => save(notes.filter(x => x.id !== n.id))}><Trash2 size={17}/></button>
       </article>)}
-      <p className="fine">บันทึกเก็บไว้ในเบราว์เซอร์นี้เท่านั้น</p>
+      <p className="fine">{savedWhere()}</p>
     </div>}
   </>;
 }

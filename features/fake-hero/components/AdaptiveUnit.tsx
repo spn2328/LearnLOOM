@@ -6,6 +6,7 @@ import {nextSwitch, pickPath, pickTransfer, type AdaptiveUnitData} from "../cont
 import {Choices, Loom, Popup} from "./ui";
 import {PathActivity} from "./PathActivities";
 import {VarkHelp, WhyPath} from "./VarkHelp";
+import {useDraft} from "../pause";
 
 // Generic adaptive flow for R01–R05 (เนื้อเรื่องและคำถามล่าสุด.pdf):
 // diagnose → path (hands-on activity + PDF text) → practice R0x-1/R0x-2 (a wrong item switches to
@@ -23,13 +24,8 @@ export const unitRoute = (unit: AdaptiveUnitData, n: UnitRecord) =>
   `${unit.paths[n.path ?? "C"].name}${(n.switches ?? []).map(x => ` → เปลี่ยนวิธีช่วยเป็น Path ${x.to}`).join("")} → Recheck${n.recheckB ? " → Recheck-B" : ""}${n.transfer ? " → ยืนยันความเข้าใจ" : ""}`;
 
 export default function AdaptiveUnit({unit, rec, onChange, onFinish}: {unit: AdaptiveUnitData; rec: UnitRecord; onChange: (r: UnitRecord) => void; onFinish: () => void}) {
-  const [sel, setSel] = useState<Choice>();
-  const [text, setText] = useState(rec.transfer ?? "");
-  const [shown, setShown] = useState(false);
-  const [actDone, setActDone] = useState<Record<string, boolean>>({});
   const [pop, setPop] = useState<null | {tone: "good" | "warn"; title: string; text: string; next: () => void}>(null);
   const stage = rec.stage ?? "diagnose";
-  const set = (r: UnitRecord) => { setSel(undefined); onChange({...rec, ...r}); };
   const d = rec.diagnosis ?? {};
   const dIndex = unit.diagnosis.findIndex(q => !d[q.id]);
   const path = rec.path ?? "C";
@@ -45,6 +41,13 @@ export default function AdaptiveUnit({unit, rec, onChange, onFinish}: {unit: Ada
   // move on to the recheck once every practice item has a first answer and no retry is pending
   const afterPractice = (r: UnitRecord): UnitRecord => unit.practice.every(q => (r.practice ?? pr)[q.id]) ? {...r, stage: "recheck"} : r;
   const answerText = (q: Question) => q.choices[q.answer.charCodeAt(0) - 65];
+  // picks not yet saved, typed text and finished activities survive a pause or reload (pause.ts)
+  const [sel, setSel] = useDraft<Choice | undefined>(`${unit.id}:pick:${stage}:${dIndex}:${pIndex}:${retryQ?.id ?? ""}`, undefined);
+  const [text, setText] = useDraft(`${unit.id}:transfer`, rec.transfer ?? "");
+  const [actDone, setDone] = useDraft<Record<string, boolean>>(`${unit.id}:activities`, {});
+  const setActDone = (f: (a: Record<string, boolean>) => Record<string, boolean>) => setDone(f(actDone));
+  const [shown, setShown] = useState(!!rec.transfer);
+  const set = (r: UnitRecord) => { setSel(undefined); onChange({...rec, ...r}); };
   const flowOn = (s: string) => s === stage || (s === "recheck" && stage === "recheckB") || (s === "path" && (stage === "practice" || stage === "switch"));
 
   const ask = (q: Question, label: string, onSave: (v: Choice) => void) => <>
