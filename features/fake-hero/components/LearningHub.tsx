@@ -11,7 +11,8 @@ import {getMedia} from "../media/registry";
 import {lessons} from "../content/episode01";
 import {buildResult, type StudentResult} from "../results";
 import "../styles/hub.css";
-import {ArrowRight, CheckCircle2, Circle, LockKeyhole, Play, Plus, Trash2, Download, Award, NotebookPen, HelpCircle, BookOpen, ChartNoAxesCombined} from "lucide-react";
+import {ArrowRight,Circle,LockKeyhole,Plus,Trash2,Download,HelpCircle} from "lucide-react";
+import {CheckCircle2,Play,Award,NotebookPen,BookOpen,ChartNoAxesCombined} from "./CuteIcons";
 
 export type HubMode = "home" | "library" | "episodes" | "intro" | "progress" | "notebook" | "certificates" | "settings";
 export type HubSettings = {
