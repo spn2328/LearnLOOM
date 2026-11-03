@@ -1,6 +1,7 @@
 "use client";
 import {useEffect, useMemo, useRef, useState, type ReactNode} from "react";
 import {speak, stopSpeak, useVark} from "../vark";
+import {useDraft} from "../pause";
 import {getMedia, type MediaFile} from "../media/registry";
 import {mediaSlots, type MediaSlotId} from "../media/slots";
 import {loomSrc} from "./ui";
@@ -35,7 +36,9 @@ function toBeats(script: ScriptItem[]): Beat[] {
 
 export default function StoryPlayer({script, end, label = "ฉาก"}: {script: ScriptItem[]; end?: ReactNode; label?: string}) {
   const beats = useMemo(() => toBeats(script), [script]);
-  const [i, setI] = useState(0);
+  // the line reached is kept, so leaving mid-scene resumes on the same line
+  const [at, setI] = useDraft(`story:${label}`, 0);
+  const i = Math.min(Math.max(at, 0), Math.max(beats.length - 1, 0));
   const [all, setAll] = useState(false);
   const [muted, setMuted] = useState(true);
   // VARK: listen mode reads each beat aloud, read-write mode opens the full script
@@ -47,8 +50,8 @@ export default function StoryPlayer({script, end, label = "ฉาก"}: {script:
   const done = i >= beats.length - 1;
   const file = beat?.file;
 
-  const next = () => setI((v) => Math.min(v + 1, beats.length - 1));
-  const back = () => setI((v) => Math.max(v - 1, 0));
+  const next = () => setI(Math.min(i + 1, beats.length - 1));
+  const back = () => setI(Math.max(i - 1, 0));
 
   useEffect(() => {
     const v = video.current;
