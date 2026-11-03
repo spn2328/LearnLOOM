@@ -270,3 +270,14 @@ User clarified the appearance to preserve is the **original cream-and-green dash
 - ตรวจแล้ว (localhost): typecheck, test, test-fake-hero, build:demo ผ่าน; ffprobe ไฟล์ใหม่ถูกต้อง; ดูข้อความที่ส่งให้เสียงอ่านของบรรทัดตัวอย่าง (สูตรกิ่ง, C(?), เลขคณิต, รหัส CP01/R01-1/C02–C05) ถูกตามกฎ
 - ยังไม่ได้ตรวจ: ฟังด้วยหูว่าเสียงออกเสียงคำทับศัพท์ ("ทเวลฟ์", "ซีเอชทรี") ชัด (ส่งตัวอย่าง 4 ไฟล์ให้เจ้าของฟัง); ครูยังไม่ได้ยืนยันว่าต้องการเลขอังกฤษหรือเลขไทยสำหรับตัวห้อย
 - แก้ต่อ 3 พ.ย. (เจ้าของเลือก "เปลี่ยนเป็นเลขไทย"): ตัวห้อยในสูตรอ่านเป็นเลขไทย (Na₂CO₃ "เอ็นเอสอง ซีโอสาม", C₆H₁₂O₆ "ซีหก เอชสิบสอง โอหก"); สร้างไฟล์ใหม่ 79 ไฟล์; ตรวจแล้ว: test, test-fake-hero ผ่าน, ffprobe ไฟล์ใหม่ถูกต้อง; ยังไม่ได้ฟังด้วยหู (ส่งตัวอย่างให้เจ้าของ)
+
+
+## 3 พฤศจิกายน 2569 — Bright learning interface (PR #9)
+- ตามคำขอเจ้าของ: ใช้ BeBetter เป็นแนวจัดหน้า ปุ่มเหลืองสด การ์ดฟ้า/เขียว/ชมพู และหัวข้อใหญ่
+- ปรับหน้าเลือกบทบาทและหน้าหลัก เพิ่มทางลัดคลังบทเรียน ความก้าวหน้า สมุดบันทึก พร้อมใช้ผลความคืบหน้าจริง
+- ไฟล์: demo/main.tsx, components/learnloom-app.tsx, features/fake-hero/components/LearningHub.tsx, features/fake-hero/styles/bright.css
+- แยกธีมไว้ใน .ll-bright-shell และ .fh-entry; Story Player ใช้ .ll-focus-mode เดิม ไม่แตะเนื้อเรื่อง คำถาม เฉลย เสียง ภาพ แอนิเมชัน หรือกฎ Adaptive
+- ✅ Local: node scripts/test-fake-hero.mjs; GitHub Actions run 41581326419: source checks, EP.01 keys, TypeScript, build:demo ผ่านทุกขั้น (commit 6a9c579a)
+- ✅ Vercel Preview READY: https://learnloom-mcnfbtb1x-manifest23.vercel.app/
+- ⏳ Browser QA desktop/768×1024/375×812: ยังไม่ได้ตรวจ เพราะ Preview ต้องลงชื่อเข้าใช้ Vercel; การสร้างลิงก์แชร์ถูกระบบอนุมัติอัตโนมัติปฏิเสธ
+- ⏳ ยังไม่ทดสอบกับอุปกรณ์จริง/นักเรียนจริง; ยังไม่ merge หรือแทนที่ production ตามกติกา lf-ship
