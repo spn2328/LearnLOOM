@@ -36,6 +36,7 @@
    |---|---|
    | `VITE_SUPABASE_URL` | Project URL จากข้อ 5 |
    | `VITE_SUPABASE_ANON_KEY` | anon public key จากข้อ 6 |
+   ถ้าเชื่อม Supabase ผ่าน Vercel Integration ไว้แล้ว (มี `NEXT_PUBLIC_SUPABASE_URL` และ `NEXT_PUBLIC_SUPABASE_ANON_KEY` หรือ `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`) ไม่ต้องเพิ่ม เว็บใช้ค่าเหล่านั้นแทนได้ ค่าลับ (service role, secret, JWT secret, POSTGRES_*) ไม่ถูกใส่ในเว็บ และถ้าหลุดเข้าไฟล์เว็บ build จะล้มทันที
 4. แท็บ **Deployments** → รายการบนสุด → ปุ่ม `⋯` → **Redeploy** (ค่าใหม่จะมีผลหลัง deploy ใหม่เท่านั้น)
 5. เปิดเว็บ แถบด้านบนต้องมีปุ่ม **เข้าสู่ระบบ** ถ้าไม่มี แปลว่าค่ายังไม่เข้า ให้ตรวจชื่อ Key ว่าสะกดตรงทุกตัว
 
