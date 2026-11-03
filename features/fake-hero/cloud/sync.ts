@@ -70,7 +70,7 @@ export function capture() {
   o.attempts[a.id] = {id: a.id, user_id: meta.userId, episode: EPISODE, number: a.number, started_at: a.startedAt, finished_at: a.finished ? (o.attempts[a.id]?.finished_at ?? now) : null};
   const sent = new Set(read<string[]>(META + "-sent") ?? []);
   for (const e of eventsFrom(r, keys, a.id, meta.userId, now)) if (!sent.has(e.id) && !o.events[e.id]) o.events[e.id] = e;
-  for (const c of conceptsFrom(r, a.id, meta.userId, now)) o.concepts[`${c.attempt_id}|${c.concept}`] = c;
+  for (const c of conceptsFrom(r, keys, a.id, meta.userId, now)) o.concepts[`${c.attempt_id}|${c.concept}`] = c;
   o.snapshot = true;
   write(OUTBOX, o);
   setState({pending: pendingCount(o), status: navigator.onLine ? "pending" : "offline"});

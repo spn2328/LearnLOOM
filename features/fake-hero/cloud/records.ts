@@ -42,11 +42,31 @@ export function eventsFrom(r: StudentResult, keys: Keys, attemptId: string, user
   return out;
 }
 
+export type Route = "both" | "reason" | "answer";
+// Path letters follow adaptiveUnits.pickPath: one wrong diagnosis group picks that path, two or more pick D, none picks C.
+const PATH_REASON: Record<string, string> = {
+  A: "ข้อวินิจฉัยกลุ่ม A ผิด จึงช่วยด้วยเส้นทาง A (Bloom L1)",
+  B: "ข้อวินิจฉัยกลุ่ม B ผิด จึงช่วยด้วยเส้นทาง B (Bloom L2)",
+  C: "ข้อวินิจฉัยไม่ผิดกลุ่มใด จึงฝึกนำไปใช้ด้วยเส้นทาง C (Bloom L3)",
+  D: "ข้อวินิจฉัยผิดตั้งแต่ 2 กลุ่มขึ้นไป จึงช่วยด้วยเส้นทาง D (L1 → L2 → L3)",
+};
+/** Flowchart split on the first try: answer+reason right / answer right but reason wrong / answer wrong. */
+export function routeOf(c: StudentResult["concepts"][number], keys: Keys): {route: Route; routeReason: string} | null {
+  const q = c.id.replace("C", "Q");
+  if (c.firstMain === undefined) return null;
+  const mainOk = c.firstMain === keys.main[q], reasonOk = c.firstReason === keys.reason[q];
+  const route: Route = mainOk && reasonOk ? "both" : mainOk ? "reason" : "answer";
+  const head = route === "both" ? "ตอบถูกและให้เหตุผลถูกตั้งแต่ครั้งแรก จึงไปต่อได้เลย"
+    : route === "reason" ? "ตอบถูกแต่เหตุผลยังไม่ถูก จึงส่งไปวินิจฉัยความเข้าใจที่คลาดเคลื่อน"
+    : "คำตอบยังไม่ถูก จึงส่งไปวินิจฉัยความเข้าใจที่คลาดเคลื่อน";
+  return {route, routeReason: [head, c.path ? PATH_REASON[c.path] : ""].filter(Boolean).join(" · ")};
+}
+
 /** The route each concept took and why, as currently computed (updated in place as the learner moves on). */
-export function conceptsFrom(r: StudentResult, attemptId: string, userId: string, now: string): ConceptRow[] {
+export function conceptsFrom(r: StudentResult, keys: Keys, attemptId: string, userId: string, now: string): ConceptRow[] {
   return r.concepts.filter(c => c.outcome !== "ยังไม่ได้ทำ").map(c => ({
     attempt_id: attemptId, user_id: userId, concept: c.id, outcome: c.outcome, path: c.path ?? null, updated_at: now,
-    detail: {firstCorrect: c.firstCorrect, assisted: c.assisted, recheckCorrect: c.recheckCorrect, helpSwitches: c.helpSwitches ?? []},
+    detail: {firstCorrect: c.firstCorrect, assisted: c.assisted, recheckCorrect: c.recheckCorrect, helpSwitches: c.helpSwitches ?? [], ...routeOf(c, keys)},
   }));
 }
 

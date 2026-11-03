@@ -44,10 +44,19 @@ await ok("student can change own nickname", async () => {
   await as("s1", "update profiles set nickname = 'ฟ้าใส' where id = $1", [ids.s1]);
   assert.equal((await as("s1", "select nickname from profiles where id = $1", [ids.s1]))[0].nickname, "ฟ้าใส");
 });
-await ok("wrong teacher code is refused", async () => assert.equal((await as("t1", "select claim_teacher('nope') r"))[0].r, false));
+await ok("first claim sets the teacher code (no SQL editing needed)", async () => {
+  assert.equal((await as("t1", "select claim_teacher('abc') r"))[0].r, false);
+  assert.equal((await as("t1", "select claim_teacher('TEST-CODE') r"))[0].r, true);
+});
+await ok("wrong teacher code is refused", async () => assert.equal((await as("t2", "select claim_teacher('nope-nope') r"))[0].r, false));
+await ok("wrong teacher code is refused (short)", async () => assert.equal((await as("t1", "select claim_teacher('nope') r"))[0].r, false));
 await ok("right teacher code grants teacher", async () => {
   assert.equal((await as("t1", "select claim_teacher('TEST-CODE') r"))[0].r, true);
   await as("t2", "select claim_teacher('TEST-CODE')");
+});
+await ok("student with a wrong code stays a student", async () => {
+  assert.equal((await as("s1", "select claim_teacher('WRONG-CODE') r"))[0].r, false);
+  assert.equal((await as("s1", "select role from profiles where id = $1", [ids.s1]))[0].role, "student");
 });
 await fails("anon cannot read private settings", () => as("anon", "select * from private.settings"));
 await fails("student cannot read private settings", () => as("s1", "select * from private.settings"));
@@ -117,6 +126,10 @@ await ok("concept route can be updated by its owner (upsert)", async () => {
   await as("s2", "update concept_results set outcome = 'x'");
   assert.equal((await as("s1", "select outcome from concept_results"))[0].outcome, "ผ่านหลังช่วยเหลือ");
 });
+await ok("anon can look up a class name by code, nothing else", async () => {
+  assert.equal((await as("anon", "select class_name($1) n", [c1.join_code.toLowerCase() + " "]))[0].n, "ม.6/1 เคมี");
+  assert.equal((await as("anon", "select class_name('ZZZZZZ') n"))[0].n, null);
+});
 await ok("teacher sees concept routes of own students only", async () => {
   assert.equal((await as("t1", "select * from concept_results")).length, 1);
   assert.equal((await as("t2", "select * from concept_results")).length, 0);
@@ -125,7 +138,7 @@ await ok("teacher sees concept routes of own students only", async () => {
 console.log(`\n${passed} database access checks passed`);
 
 // Event ids from the browser sync are stable, so re-sending the outbox never duplicates history.
-const {eventsFrom, stableId} = await import("../features/fake-hero/cloud/records.ts");
+const {eventsFrom, conceptsFrom, routeOf, stableId} = await import("../features/fake-hero/cloud/records.ts");
 const sample = {concepts: [{id: "C01", firstMain: "A", firstReason: "B", firstCorrect: false, assisted: true, recheckCorrect: false, outcome: "ยังต้องทบทวน",
   diagnosis: {"D01-1": "A"}, practice: {"R01-1": "C"}, practiceRetry: {"R01-1": "A"}, recheck: "B"}], checkpoint: {answers: {CP01: "A"}, reasons: {}}, transfer: ""};
 const keys = {main: {Q01: "A"}, reason: {Q01: "A"}, checkpoint: {CP01: "A"}, checkpointReason: {}};
@@ -147,5 +160,15 @@ await ok("synced rows insert once even when sent twice", async () => {
     await as("s1", "insert into answer_events (id, attempt_id, user_id, concept, item_id, kind, value, correct, recorded_at) values ($1,$2,$3,$4,$5,$6,$7,$8,$9) on conflict do nothing",
       [e.id, e.attempt_id, e.user_id, e.concept, e.item_id, e.kind, e.value, e.correct, e.recorded_at]);
   assert.equal((await as("s1", "select count(*)::int n from answer_events where attempt_id = $1", [a1b]))[0].n, rows.length + 1);
+});
+await ok("route splits answer+reason / answer only / wrong, with a reason", async () => {
+  const base = {id: "C01", firstCorrect: false, assisted: true, recheckCorrect: false, outcome: "ยังต้องทบทวน"};
+  assert.equal(routeOf({...base, firstMain: "A", firstReason: "A"}, keys).route, "both");
+  assert.equal(routeOf({...base, firstMain: "A", firstReason: "B"}, keys).route, "reason");
+  const wrong = routeOf({...base, firstMain: "C", firstReason: "A", path: "D"}, keys);
+  assert.equal(wrong.route, "answer");
+  assert.match(wrong.routeReason, /เส้นทาง D/);
+  assert.equal(routeOf({...base, outcome: "ยังไม่ได้ทำ"}, keys), null);
+  assert.equal(conceptsFrom(sample, keys, a1, ids.s1, "t")[0].detail.route, "reason");
 });
 console.log(`${passed} checks passed in total`);

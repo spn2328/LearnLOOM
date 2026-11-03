@@ -110,17 +110,30 @@ language sql stable security definer set search_path = public as $$
   select exists (select 1 from attempts where id = attempt and user_id = auth.uid())
 $$;
 
--- Teacher role needs the code the owner stored in private.settings; students cannot self-promote.
+-- Teacher role needs the code stored in private.settings; students cannot self-promote.
+-- First-run setup: while no code is stored yet, the first person to claim sets it (at least 6 characters),
+-- so the owner never has to edit SQL. Later teachers must type that same code.
 create or replace function public.claim_teacher(code text) returns boolean
 language plpgsql security definer set search_path = public, private as $$
 declare expected text;
 begin
   if auth.uid() is null then raise exception 'not signed in'; end if;
+  if code is null or char_length(btrim(code)) < 6 then return false; end if;
   select value into expected from private.settings where key = 'teacher_code';
-  if expected is null or code is null or code <> expected then return false; end if;
+  if expected is null then
+    insert into private.settings (key, value) values ('teacher_code', btrim(code)) on conflict (key) do nothing;
+    select value into expected from private.settings where key = 'teacher_code';
+  end if;
+  if btrim(code) <> expected then return false; end if;
   update profiles set role = 'teacher' where id = auth.uid();
   return found;
 end $$;
+
+-- Lets the sign-in screen confirm a class code before a student account is made. Reveals only the class name.
+create or replace function public.class_name(code text) returns text
+language sql stable security definer set search_path = public as $$
+  select name from classrooms where join_code = upper(btrim(code))
+$$;
 
 create or replace function public.join_class(code text) returns uuid
 language plpgsql security definer set search_path = public as $$
@@ -219,5 +232,6 @@ create policy snapshots_update on public.progress_snapshots for update to authen
   using (user_id = auth.uid()) with check (user_id = auth.uid());
 
 revoke all on all tables in schema public from anon;
-revoke execute on function public.claim_teacher(text), public.join_class(text) from public, anon;
+revoke execute on function public.claim_teacher(text), public.join_class(text), public.class_name(text) from public, anon;
+grant execute on function public.class_name(text) to anon, authenticated;
 grant execute on function public.claim_teacher(text), public.join_class(text) to authenticated;
