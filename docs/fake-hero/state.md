@@ -327,3 +327,9 @@ User clarified the appearance to preserve is the **original cream-and-green dash
 - คู่มือ `docs/fake-hero/google-sheets-auto.md`
 - ตรวจแล้ว: สูตรคะแนนของสคริปต์เทียบกับ `dashboard.ts` ด้วยข้อมูลจำลองใน Node
 - **ยังไม่ได้ทดสอบ**: รัน SQL บน Supabase จริง, รัน Apps Script ใน Google Sheets จริง (เจ้าของต้องทำตามคู่มือ)
+
+## 4 พฤศจิกายน 2569 — Scene 03 · L01 แตะทีละบทเหมือนฉากเนื้อเรื่อง (branch `feat/l01-tap-through`)
+- `LearnPages.tsx`: บทพูด L01 ทั้ง 3 บรรทัดเล่นผ่าน `StoryPlayer` (ภาพ `ep01-l01` บรรทัด 1–2, `ep01-l01b` บรรทัด 3); ส่วนความรู้ A/B/C และปุ่ม "ทดลองจัดแฟ้มสาร" แสดงหลังบทสุดท้าย (`end`); `FakeHero.tsx` ส่งปุ่มเข้า `LearnL01`
+- ถ้อยคำบทพูดไม่เปลี่ยน; สีและเลย์เอาต์เดิม
+- ตรวจแล้ว (localhost dev): test, test-fake-hero, typecheck, build:demo ผ่าน; แตะครบ 3 บท ภาพเปลี่ยนตรงบรรทัด 3, ส่วน A สีเขียว + ปุ่มขึ้นหลังบทสุดท้าย; 375px ไม่ล้นจอ; ไม่มี console error
+- ยังไม่ได้ตรวจ: tablet 768px, มือถือจริง/iPad; production หลัง merge
