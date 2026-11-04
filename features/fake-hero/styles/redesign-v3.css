@@ -38,7 +38,7 @@
 .fh-entry .login-form { align-self: stretch !important; display: flex !important; flex-direction: column; justify-content: center; gap: 0; height: auto !important; background: url(/images/welcome-bg.webp) center / cover no-repeat !important; padding: 40px !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important }
 .fh-entry .login-form > * { max-width: 560px }
 .fh-entry .login-form .eyebrow { display: inline-flex; align-self: flex-start; align-items: center; gap: 6px; background: var(--v3-yellow-lt) !important; color: var(--v3-yellow-dk) !important; border: 2px solid var(--v3-yellow-edge) !important; border-radius: 999px !important; padding: 3px 12px !important; font-size: 14px !important; letter-spacing: 0 !important; text-transform: none !important; box-shadow: 0 3px 0 color-mix(in srgb, currentColor 35%, transparent) }
-.fh-entry .fh-roles > h2 { font-size: 44px !important; font-weight: 400; margin: 12px 0 0 !important; background-image: linear-gradient(180deg, #1A2238, #5E75BB); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent }
+.fh-entry .fh-roles > h2 { font-size: 44px !important; font-weight: 400; margin: 12px 0 0 !important; background-image: linear-gradient(180deg, #1A2238, #5E75BB); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; text-shadow: none !important }
 .fh-entry .fh-roles > p { display: none }
 .fh-entry .fh-role-grid { display: flex !important; flex-direction: column; gap: 14px !important; margin-top: 18px }
 .fh-entry .fh-role { --v3-tile: var(--v3-blue-lt); --v3-edge: #C9D1EC; display: grid !important; grid-template-columns: 46px 1fr auto !important; grid-template-rows: auto auto; column-gap: 14px; row-gap: 2px; align-items: center; background: var(--v3-paper) !important; color: var(--v3-navy) !important; border: 2px solid var(--v3-navy) !important; box-shadow: 0 4px 0 var(--v3-edge) !important; border-radius: 20px !important; padding: 14px 18px !important; min-height: 76px; text-align: left; transition: transform .08s ease, box-shadow .08s ease }
@@ -132,3 +132,78 @@
 .fh-hub-home .gm-quests li { background: var(--v3-paper) !important; border: 2px dashed #9C8460 !important; border-radius: 12px !important; padding: 10px 14px !important; font-size: 15px; box-shadow: none !important }
 .fh-hub-home .gm-quests li.done { background: var(--v3-green-lt) !important; border: 2px solid var(--v3-green) !important }
 .ll-bright-shell .logo-button { margin-top: 18px }
+
+/* ==== Phase 2: Library, Progress, Notebook, Certificates (boards Library/Progress/Notebook/Certificates) ==== */
+:is(.fh-hub-library, .fh-hub-progress, .fh-hub-notebook, .fh-hub-certificates) .page-title :is(.eyebrow, p) { display: none !important }
+:is(.fh-hub-library, .fh-hub-progress, .fh-hub-notebook, .fh-hub-certificates) .page-title h1 { font-size: 40px !important; font-weight: 400; margin: 0 !important }
+.fh-hub-notebook .page-title h1 { background-image: linear-gradient(180deg, #1A2238, #7E4B30); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; text-shadow: none !important }
+
+/* Filter / section tabs */
+.fh-hub .fh-tabs { display: flex !important; flex-wrap: wrap; gap: 10px !important; background: none !important; border: 0 !important; box-shadow: none !important; padding: 0 !important }
+.fh-hub .fh-tabs button { font-size: 15px !important; background: var(--v3-paper) !important; color: var(--v3-navy) !important; border: 2px solid #9C8460 !important; border-radius: 999px !important; padding: 8px 20px !important; min-height: 44px; box-shadow: none !important }
+.fh-hub .fh-tabs button[aria-selected="true"] { background: var(--v3-blue-dk) !important; color: #FFFFFF !important; border-color: var(--v3-blue-dk) !important }
+.fh-hub-notebook .fh-tabs button[aria-selected="true"] { background: var(--v3-apple-dk) !important; border-color: var(--v3-apple-dk) !important }
+
+/* Library chapter cards */
+.fh-hub-library .fh-chapters { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)) !important; gap: 20px !important }
+.fh-hub-library .fh-chapter { position: relative; isolation: isolate; display: grid !important; grid-template-columns: 1fr 76px; grid-template-rows: auto auto auto auto; grid-template-areas: "k img" "t img" "p p" "c c"; align-items: end; gap: 0 12px !important; padding: 0 !important; background: var(--v3-paper) !important; border: 2px solid var(--v3-navy) !important; box-shadow: 0 5px 0 var(--v3-navy) !important; border-radius: 24px !important; overflow: hidden; min-height: 260px; color: var(--v3-navy) }
+.fh-hub-library .fh-chapter::before { content: ""; grid-row: 1 / 3; grid-column: 1 / -1; z-index: -1; align-self: stretch; background: radial-gradient(#FFFCFC, #BDC7FF); border-bottom: 2px solid var(--v3-navy); margin: 0 -12px }
+.fh-hub-library .fh-chapter > div { display: contents !important }
+.fh-hub-library .fh-chapter b { grid-area: k; padding: 20px 0 4px 20px; font-size: 13px; letter-spacing: .04em; font-weight: 400; text-transform: uppercase; align-self: end; margin-top: 70px }
+.fh-hub-library .fh-chapter > div > span { grid-area: t; padding: 0 0 20px 20px; font-size: 28px; line-height: 1.2 }
+.fh-hub-library .fh-chapter > img { grid-area: img; align-self: end; width: 76px !important; height: 76px !important; margin: 0 20px 20px -20px; border-radius: 16px !important; object-fit: cover; border: 3px solid #FFFFFF !important; position: static !important; justify-self: end }
+.fh-hub-library .fh-chapter small { grid-area: p; justify-self: start; margin: 16px 20px 0; display: inline-flex; background: #FBE3D8; color: var(--v3-apple-dk) !important; border: 2px solid var(--v3-apple); border-radius: 999px; padding: 2px 12px; font-size: 14px }
+.fh-hub-library .fh-chapter .fh-play { grid-area: c; justify-self: start; margin: 12px 20px 18px; width: auto !important; height: auto !important; min-height: 40px; border-radius: 999px !important; padding: 6px 18px !important; background: var(--v3-apple) !important; color: var(--v3-navy) !important; border: 2px solid var(--v3-navy) !important; box-shadow: none !important; display: inline-flex; align-items: center; gap: 6px; font-size: 16px }
+.fh-hub-library .fh-chapter .fh-play::before { content: "เปิดแฟ้มคดี" }
+.fh-hub-library .fh-chapter.locked { display: flex !important; flex-direction: column; gap: 10px !important; padding: 20px !important; background: #F3ECDD !important; border: 2px dashed #9C8460 !important; box-shadow: none !important; filter: none !important; opacity: 1 !important }
+.fh-hub-library .fh-chapter.locked::before, .fh-hub-library .fh-chapter.locked > img { display: none !important }
+.fh-hub-library .fh-chapter.locked b { padding: 0; margin: 0; align-self: flex-start; font-size: 13px; color: var(--v3-muted) }
+.fh-hub-library .fh-chapter.locked > div { display: flex !important; flex-direction: column; gap: 10px; flex: 1; align-self: stretch; align-items: flex-start }
+.fh-hub-library .fh-chapter.locked small { margin: auto 0 0; background: var(--v3-paper); color: var(--v3-muted) !important; border-color: #9C8460 }
+.fh-hub-library .fh-chapter.locked > svg { position: absolute; top: 20px; right: 20px; color: var(--v3-muted) }
+
+/* Progress */
+.fh-hub-progress .fh-progress-grid { gap: 20px !important; align-items: start }
+.fh-hub-progress .fh-progress-ring { background: var(--v3-paper) !important; border: 2px solid var(--v3-green) !important; box-shadow: 0 5px 0 var(--v3-green) !important; border-radius: 24px !important; padding: 22px !important }
+.fh-hub-progress .fh-progress-grid > .fh-card:not(.fh-progress-ring) { background: var(--v3-paper) !important; border: 2px solid var(--v3-line) !important; box-shadow: 0 5px 0 var(--v3-line), 0 10px 22px rgba(92,64,28,.10) !important; border-radius: 24px !important; padding: 22px !important }
+.fh-hub-progress .fh-card h2 { font-size: 20px !important; font-weight: 400 }
+.fh-hub-progress .fh-concept-bars li { border-bottom: 1.5px solid #F6EEDD; padding: 8px 0 }
+.fh-hub-progress .fh-concept-bars li b { background: var(--v3-blue-lt) !important; color: var(--v3-blue-dk) !important; border-radius: 8px; padding: 2px 8px; font-size: 13px; font-weight: 400 }
+.fh-hub-progress .fh-progress-grid .fine { align-self: flex-start; display: inline-block; background: var(--v3-yellow-lt); color: var(--v3-yellow-dk) !important; border-radius: 999px; padding: 2px 12px; font-size: 14px }
+.fh-hub-progress .gm-hud { background: var(--v3-yellow-lt) !important; border: 2px solid var(--v3-yellow-edge) !important; box-shadow: 0 5px 0 var(--v3-yellow-edge) !important; border-radius: 24px !important }
+.fh-hub-progress .gm-card { border-radius: 24px !important; padding: 22px !important }
+.fh-hub-progress .gm-card:has(.gm-map) { background: var(--v3-paper) !important; border: 2px solid var(--v3-blue-edge) !important; box-shadow: 0 5px 0 var(--v3-blue-edge) !important }
+.fh-hub-progress .gm-node.s0 { background: var(--v3-blue-lt) !important; border: 2px solid var(--v3-blue-dk) !important; color: var(--v3-blue-dk) !important }
+.fh-hub-progress .gm-card:has(.gm-cards) { background: transparent !important; border: 0 !important; box-shadow: none !important; padding: 0 !important }
+.fh-hub-progress .gm-ecard-front { background: #F3ECDD !important; border: 2px dashed #9C8460 !important; border-radius: 18px !important; box-shadow: none !important }
+.fh-hub-progress .gm-card:has(.gm-badges) { background: var(--v3-yellow-lt) !important; border: 2px solid var(--v3-yellow-edge) !important; box-shadow: none !important }
+.fh-hub-progress .gm-badge { background: var(--v3-paper) !important; border: 2px solid var(--v3-yellow-edge) !important; border-radius: 18px !important; box-shadow: none !important }
+.fh-hub-progress .gm-card:has(.gm-vark) { background: var(--v3-paper) !important; border: 2px solid var(--v3-apple-edge) !important; box-shadow: 0 5px 0 var(--v3-apple-edge) !important }
+.fh-hub-progress .gm-vark { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px !important }
+.fh-hub-progress .gm-vark-row { --v3-vt: var(--v3-blue-lt); --v3-vf: #C9D1EC; --v3-vd: var(--v3-blue-dk); display: flex !important; flex-direction: column; align-items: stretch !important; gap: 8px !important; background: var(--v3-vt) !important; border: 2px solid var(--v3-vf) !important; border-radius: 16px !important; padding: 14px 16px !important }
+.fh-hub-progress .gm-vark-row:nth-child(2) { --v3-vt: var(--v3-apple-lt); --v3-vf: #F3C2AE; --v3-vd: var(--v3-apple-dk) }
+.fh-hub-progress .gm-vark-row:nth-child(3) { --v3-vt: var(--v3-yellow-lt); --v3-vf: var(--v3-yellow); --v3-vd: var(--v3-yellow-dk) }
+.fh-hub-progress .gm-vark-row:nth-child(4) { --v3-vt: #FBE3D8; --v3-vf: var(--v3-apple); --v3-vd: var(--v3-apple-dk) }
+.fh-hub-progress .gm-vark-row span { font-size: 16px }
+.fh-hub-progress .gm-vark-row .gm-xpbar { width: 100% !important; height: 10px !important; background: var(--v3-paper) !important; border: 1.5px solid var(--v3-vf) !important; border-radius: 999px !important; box-shadow: none !important }
+.fh-hub-progress .gm-vark-row .gm-xpbar > i { background: var(--v3-vf) !important }
+.fh-hub-progress .gm-vark-row small { font-size: 13px; color: var(--v3-vd) !important }
+
+/* Notebook */
+.fh-hub-notebook .fh-note-list { background: var(--v3-paper) !important; border: 2px solid var(--v3-apple-edge) !important; box-shadow: 0 5px 0 var(--v3-apple-edge) !important; border-radius: 24px !important; padding: 8px 24px !important; gap: 0 !important; max-width: 936px }
+.fh-hub-notebook .fh-note-list li { background: none !important; border: 0 !important; border-bottom: 1.5px solid #F6EEDD !important; border-radius: 0 !important; box-shadow: none !important; padding: 16px 0 !important }
+.fh-hub-notebook .fh-note-list li:last-child { border-bottom: 0 !important }
+.fh-hub-notebook .fh-note-list li b { font-size: 17px; font-weight: 400 }
+.fh-hub-notebook .fh-note-list li.locked p { display: inline-flex; background: #F3ECDD; color: var(--v3-muted) !important; border-radius: 999px; padding: 2px 10px; font-size: 14px; margin-top: 6px }
+.fh-hub-notebook textarea { background: var(--v3-paper) !important; border: 2px solid #9C8460 !important; border-radius: 16px !important; padding: 14px !important; font-size: 16px }
+
+/* Certificates */
+.fh-hub-certificates .fh-cert-grid { gap: 24px !important; align-items: start }
+.fh-hub-certificates .fh-cert { background: var(--v3-yellow-lt) !important; border: 2px dashed var(--v3-yellow-dk) !important; border-radius: 24px !important; padding: 28px !important; box-shadow: none !important; text-align: center }
+.fh-hub-certificates .fh-cert img { width: 110px !important; height: 110px !important; border-radius: 24px !important; object-fit: cover; border: 3px solid #FFFFFF !important; opacity: .7 }
+.fh-hub-certificates .fh-cert small { color: var(--v3-yellow-dk) !important; letter-spacing: .04em; font-size: 14px }
+.fh-hub-certificates .fh-cert b { font-size: 30px; font-weight: 400 }
+.fh-hub-certificates .fh-cert h2 { font-size: 32px !important; font-weight: 400 }
+.fh-hub-certificates .fh-cert-grid > .fh-card { background: var(--v3-paper) !important; border: 2px solid var(--v3-yellow-edge) !important; box-shadow: 0 5px 0 var(--v3-yellow-edge) !important; border-radius: 24px !important; padding: 24px !important }
+.fh-hub-certificates .fh-cert-grid > .fh-card h2 { font-size: 24px !important; font-weight: 400 }
+.fh-hub-certificates .fh-checks li { font-size: 17px }
