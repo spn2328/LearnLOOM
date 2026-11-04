@@ -3,7 +3,7 @@ import {useEffect, useRef, useState} from "react";
 import {atomColor, atomRadius, molecule, type MoleculeId} from "../content/molecules";
 
 // Owner-supplied 2D drawings that replace the generated one.
-const images: Partial<Record<MoleculeId, string>> = {Na2CO3: "/images/molecules/na2co3.webp"};
+const images: Partial<Record<MoleculeId, string>> = {Na2CO3: "/images/molecules/na2co3.webp", CH3OH: "/images/molecules/ch3oh.webp"};
 
 // 2D ball-and-stick drawing (projection on the x–y plane). Also the fallback when WebGL is missing.
 export function Molecule2D({id, size = 220}: {id: MoleculeId; size?: number}) {
