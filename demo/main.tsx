@@ -8,6 +8,7 @@ import '../app/globals.css';
 import './style.css';
 import '../features/fake-hero/styles/bright.css';
 import '../features/fake-hero/styles/detective-theme.css';
+import '../features/fake-hero/styles/redesign-v3.css';
 
 class DemoBoundary extends React.Component<React.PropsWithChildren, {failed:boolean}> {
   state = {failed:false};
