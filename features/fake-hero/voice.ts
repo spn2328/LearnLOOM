@@ -24,4 +24,6 @@ export function loadVoiceIndex() {
 export const voiceUrl = (key: string) => `/voice/${key}.mp3`;
 export const hasVoice = (text: string) => !!index?.has(voiceKey(text));
 export async function voiceFiles() { return [...await loadVoiceIndex()].map(k => voiceUrl(k)); }
+// Every picture under public/images (list made by the demo build); empty when the list is missing.
+export async function imageFiles(): Promise<string[]> { try { const r = await fetch("/offline-images.json", {cache: "no-store"}); return r.ok ? await r.json() : []; } catch { return []; } }
 if (typeof window !== "undefined") void loadVoiceIndex();
