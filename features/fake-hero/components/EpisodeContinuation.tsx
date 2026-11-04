@@ -40,7 +40,7 @@ export default function EpisodeContinuation({onRestart}:{onRestart:()=>void}){
  // First attempt is saved once; later visits (e.g. after reload) never overwrite it.
  const submitFirst=(main:string,reason:Choice)=>{const ok=main===u.main.answer&&reason===u.reason.answer;setS(x=>({...x,records:{...x.records,[id]:{...x.records[id],first:x.records[id]?.first??{main,reason},assisted:!ok}}}));setPop(ok?{tone:"good",title:"ถูกต้องทั้งคำตอบและเหตุผล!",text:"บันทึกผลแนวคิดนี้แล้ว ไปดูสรุปกัน",next:()=>change({step:"report",selected:undefined})}:{tone:"warn",title:"ยังมีบางส่วนที่ไม่ถูก",text:"บันทึกคำตอบครั้งแรกแล้ว ลูมจะช่วยทบทวนเฉพาะจุดที่ยังไม่เข้าใจ",next:()=>change({step:"support",selected:undefined})})};
  const help=()=>setS(x=>({...x,records:{...x.records,[id]:{...x.records[id],hint:true}}}));
- const figure=s.unit===1?<div className="fh-center"><Molecule2D id="C2H4" size={110}/><div className="fh-formula-chip">CH₂=CH₂</div></div>:s.unit===3?<div className="fh-formula-chip big">CH₃–C(?)=CH₂</div>:s.unit===4?<div className="fh-center"><Molecule2D id="but1ene" size={120}/><div className="fh-formula-chip">CH₂=CH–CH₂–CH₃</div></div>:undefined;
+ const figure=s.unit===1?<div className="fh-center"><Molecule2D id="C2H4" size={110}/><div className="fh-formula-chip">CH₂=CH₂</div></div>:s.unit===3?<div className="fh-formula-chip big">CH₃–C(?)=CH₂</div>:s.unit===4?<div className="fh-center"><img className="fh-qfig-img" src="/images/molecules/q05-but1ene.webp" alt="แบบจำลองโมเลกุล CH₂=CH–CH₂–CH₃"/></div>:undefined;
  const q03=s.q03??{};
  const arrangement=q03Targets.map(t=>chips.find(c=>q03[c.id]===t.id)?.label??"?").join(" — ");
  const q03Main=letters[u.main.choices.indexOf(arrangement)]??arrangement;
