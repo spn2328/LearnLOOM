@@ -75,7 +75,6 @@ export default function AdaptiveUnit({unit, rec, onChange, onFinish}: {unit: Ada
       </>}
 
       {stage === "path" && <>
-        <p className="fh-hint">เส้นทางนี้เลือกจากคำตอบวินิจฉัย เป็นเบาะแสว่าควรช่วยตรงไหน ไม่ใช่การตัดสินผู้เรียนแบบถาวร</p>
         {step === 0 && <WhyPath unit={unit} d={d} path={path} />}
         {path === "D" && <div className="fh-flow small">{pathSteps.map((p, i) => <span key={p} className={i === step ? "on" : ""}>{unit.paths[p].level}</span>)}</div>}
         {path === "D" && <h3>{unit.paths[pathSteps[step]].name}</h3>}

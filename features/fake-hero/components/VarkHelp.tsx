@@ -9,7 +9,6 @@ import {NO_THAI_VOICE, VARK_INFO, VARK_ORDER, canListen, markVark, speak, stopSp
 import {loomSrc} from "./ui";
 import "../styles/game.css";
 
-const GROUP: Record<"A" | "B" | "C", string> = {A: "พื้นฐาน / สัญลักษณ์", B: "ความเข้าใจคลาดเคลื่อน", C: "นำไปใช้กับสถานการณ์ใหม่"};
 
 // Makes the diagnosis visible: which answers were off and which group they point to.
 export function WhyPath({unit, d, path}: {unit: AdaptiveUnitData; d: Record<string, Choice>; path: PathId}) {
@@ -21,7 +20,7 @@ export function WhyPath({unit, d, path}: {unit: AdaptiveUnitData; d: Record<stri
       <b>🔎 ทำไมลูมเลือก Path {path} ให้เธอ?</b>
       {wrong.length
         ? <>ลูมดูจากคำตอบวินิจฉัย {unit.diagnosis.length} ข้อ พบจุดที่ยังสับสน {wrong.length} ข้อ:
-            <ul>{wrong.map(q => <li key={q.id}>{q.id}: {q.prompt} <small>(กลุ่ม {q.group} · {GROUP[q.group]})</small></li>)}</ul></>
+            <ul>{wrong.map(q => <li key={q.id}>{q.id}: {q.prompt}</li>)}</ul></>
         : <>เธอตอบวินิจฉัยถูกทุกข้อ ลูมจึงพาไปฝึกนำความรู้ไปใช้กับสถานการณ์ใหม่</>}
       <div className="gm-chips">{(["A", "B", "C"] as const).map(g => <span key={g} className={`gm-chip ${path === g || (path === "D" && count(g)) ? "on" : ""}`}>กลุ่ม {g} ผิด {count(g)} ข้อ</span>)}
         {path === "D" && <span className="gm-chip on">ผิดหลายกลุ่ม → Path D ทีละขั้น</span>}</div>
