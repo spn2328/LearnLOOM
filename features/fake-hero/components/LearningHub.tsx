@@ -207,15 +207,12 @@ function Home({data, nickname, go, onStart}: {data: Data; nickname: string; go: 
   const {r, active, pct} = data;
   const startLabel = r.finished ? "ทบทวน EP.01" : active ? "เรียนต่อจากจุดเดิม" : "เริ่มสืบคดี";
   return <>
-    <div className="ll-welcome-line"><span><i aria-hidden="true"/>สวัสดี{nickname ? ` ${nickname}` : ""} พร้อมเรียนรู้ไปด้วยกันไหม?</span><small>พื้นที่เรียนรู้ของคุณ</small></div>
+    <div className="ll-welcome-line"><small>พื้นที่เรียนรู้ของคุณ</small></div>
     <section className="ll-hero" aria-label="เรียนเคมีผ่านการสืบคดี">
       <div className="ll-hero-copy">
         <span className="ll-kicker">LEARNLOOM · เคมีอินทรีย์ ม.6</span>
         <h1>เรียนเคมีให้เข้าใจ<br/><span className="ll-highlight">ทีละเบาะแส</span></h1>
-        <p>ร่วมไขคดีกับลูม สำรวจหลักฐาน ทดลองด้วยตัวเอง แล้วใช้ความเข้าใจค้นหาความจริง</p>
-        <div className="ll-hero-actions"><button className="primary" onClick={onStart}>{startLabel}<ArrowRight size={19}/></button><button className="text-button" onClick={() => go("episodes")}>ดูทุกตอน<ArrowRight size={17}/></button></div>
-        <p className="ll-fine">ดู ฟัง อ่าน หรือลงมือทำ เลือกได้ตามที่ถนัด<br/>พักได้ แล้วกลับมาเรียนต่อในจังหวะของตัวเอง</p>
-      </div>
+        <div className="ll-hero-actions"><button className="primary" onClick={onStart}>{startLabel}<ArrowRight size={19}/></button><button className="text-button" onClick={() => go("episodes")}>ดูทุกตอน<ArrowRight size={17}/></button></div>      </div>
       <div className="ll-browser">
         <div className="ll-browser-top" aria-hidden="true"><i/><i/><i/><span>LearnLOOM / ห้องเรียนของคุณ</span></div>
         <div className="ll-browser-body">
