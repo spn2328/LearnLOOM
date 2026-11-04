@@ -2,8 +2,13 @@
 import {useEffect, useRef, useState} from "react";
 import {atomColor, atomRadius, molecule, type MoleculeId} from "../content/molecules";
 
+// Owner-supplied 2D drawings that replace the generated one.
+const images: Partial<Record<MoleculeId, string>> = {Na2CO3: "/images/molecules/na2co3.webp"};
+
 // 2D ball-and-stick drawing (projection on the x–y plane). Also the fallback when WebGL is missing.
 export function Molecule2D({id, size = 220}: {id: MoleculeId; size?: number}) {
+  const img = images[id];
+  if (img) return <img className="fh-mol2d fh-mol-img" src={img} alt="โครงสร้างโมเลกุล 2 มิติ" style={{maxHeight: size}} />;
   const m = molecule(id);
   const xs = m.atoms.map(a => a.p[0]), ys = m.atoms.map(a => -a.p[1]);
   const pad = 0.7, minX = Math.min(...xs) - pad, minY = Math.min(...ys) - pad;

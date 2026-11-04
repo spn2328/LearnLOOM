@@ -30,10 +30,10 @@ const organic: (Info & {rows: [string, string][]; struct: string; uses: string[]
   {id: "CH3OH", formula: "CH₃OH", th: "เมทานอล", en: "Methanol", struct: "คาร์บอนต่อกับไฮโดรเจน 3 อะตอม และหมู่ –OH", uses: ["ตัวทำละลายในอุตสาหกรรม", "เป็นพิษ ห้ามดื่มหรือสัมผัสโดยตรง"], note: "สารอินทรีย์อาจมีธาตุอื่น เช่น ออกซิเจน อยู่ด้วย",
     rows: [["สูตรโมเลกุล", "CH₃OH"], ["ชื่อเรียก", "เมทานอล (Methanol)"], ["ประเภท", "สารประกอบอินทรีย์"], ["องค์ประกอบ", "คาร์บอน 1 · ไฮโดรเจน 4 · ออกซิเจน 1 อะตอม"], ["ลักษณะ", "ของเหลวใส ระเหยง่าย ติดไฟได้"], ["ตัวอย่างการพบ", "ตัวทำละลาย เชื้อเพลิงบางชนิด"]]},
 ];
-const exceptions: (Info & {rows: [string, string][]; note: string; img?: string})[] = [
+const exceptions: (Info & {rows: [string, string][]; note: string})[] = [
   {id: "CO2", formula: "CO₂", th: "คาร์บอนไดออกไซด์", en: "Carbon dioxide", note: "แม้มีคาร์บอน แต่จัดเป็นสารอนินทรีย์ตามการจำแนกทั่วไป",
     rows: [["องค์ประกอบ", "คาร์บอน 1 · ออกซิเจน 2 อะตอม"], ["ประเภท", "สารอนินทรีย์"], ["ลักษณะ", "แก๊ส ไม่มีสี"], ["ตัวอย่างการพบ", "ในอากาศ ลมหายใจออก"]]},
-  {id: "Na2CO3", formula: "Na₂CO₃", img: "/images/molecules/na2co3.webp", th: "โซเดียมคาร์บอเนต", en: "Sodium carbonate", note: "เป็นเกลือคาร์บอเนต จัดเป็นสารอนินทรีย์ แม้มีคาร์บอนเป็นองค์ประกอบ",
+  {id: "Na2CO3", formula: "Na₂CO₃", th: "โซเดียมคาร์บอเนต", en: "Sodium carbonate", note: "เป็นเกลือคาร์บอเนต จัดเป็นสารอนินทรีย์ แม้มีคาร์บอนเป็นองค์ประกอบ",
     rows: [["องค์ประกอบ", "โซเดียม 2 · คาร์บอน 1 · ออกซิเจน 3 อะตอม"], ["ประเภท", "สารอนินทรีย์"], ["ลักษณะ", "ของแข็งสีขาว"], ["ตัวอย่างการพบ", "ผงซักฟอก การทำแก้ว"]]},
 ];
 
@@ -71,7 +71,7 @@ export function LearnL01({story, media}: {story: string[]; media?: React.ReactNo
           {exceptions.map(x => (
             <div key={x.id} className="fh-excard">
               <div className="fh-excard-head"><b>{x.formula}</b><span>{x.th}<small>({x.en})</small></span><em>ข้อยกเว้น</em></div>
-              <div className="fh-excard-body">{x.img ? <img className="fh-mol2d fh-mol-img" src={x.img} alt={`โครงสร้าง ${x.formula}`} /> : <Molecule2D id={x.id} size={110} />}<dl className="fh-rows small">{x.rows.map(([k, v]) => <React.Fragment key={k}><dt>{k}</dt><dd>{v}</dd></React.Fragment>)}</dl></div>
+              <div className="fh-excard-body"><Molecule2D id={x.id} size={110} /><dl className="fh-rows small">{x.rows.map(([k, v]) => <React.Fragment key={k}><dt>{k}</dt><dd>{v}</dd></React.Fragment>)}</dl></div>
               <p className="fh-note warn">⚗️ {x.note}</p>
             </div>
           ))}
