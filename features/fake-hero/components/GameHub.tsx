@@ -69,7 +69,6 @@ function EvidenceCards({r}: {r: StudentResult}) {
   const [flip, setFlip] = useState<string>();
   return <article className="gm-card">
     <h3>🃏 แฟ้มหลักฐาน ({got.length}/{r.concepts.length})</h3>
-    <p>ผ่านแนวคิดไหน จะได้การ์ดหลักฐานของแนวคิดนั้น แตะการ์ดเพื่อพลิกดูเส้นทางที่ใช้</p>
     <div className="gm-cards">{r.concepts.map((c, i) => {
       const on = got.includes(c.id);
       return <button key={c.id} type="button" className={`gm-ecard ${on ? "got" : ""} ${flip === c.id ? "flip" : ""}`} disabled={!on} aria-pressed={flip === c.id}
@@ -91,7 +90,6 @@ export function GameProgress({r}: {r: StudentResult}) {
   return <>
     <article className="gm-card gm-wash">
       <h3>🗺️ แผนที่ภารกิจของฉัน (Adaptive Route)</h3>
-      <p>ลูมปรับเส้นทางให้แต่ละคนตามคำตอบ ถ้าตอบถูกตั้งแต่ครั้งแรกจะไปต่อได้เลย ถ้ายังไม่ถูก ระบบจะวินิจฉัยแล้วพาไป Path ที่ตรงกับจุดที่สับสน และเปลี่ยนวิธีช่วยถ้าวิธีแรกยังไม่ได้ผล</p>
       <ol className="gm-map">{r.concepts.map((c, i) => {
         const s = starsOf(c), steps = routeSteps(c), unit = adaptiveUnits[c.id as keyof typeof adaptiveUnits];
         return <li key={c.id}>
@@ -117,7 +115,7 @@ export function GameProgress({r}: {r: StudentResult}) {
 
     <article className="gm-card">
       <h3>🎨 สไตล์การเรียนของฉัน (VARK)</h3>
-      <p>{vark.pref ? `สไตล์หลัก: ${VARK_INFO[vark.pref].icon} ${VARK_INFO[vark.pref].name}${vark.how === "quiz" ? " (จากแบบทดสอบ)" : " (เลือกเอง)"} — ${VARK_INFO[vark.pref].tip}` : "ยังไม่ได้เลือกสไตล์ กดปุ่ม “สไตล์เรียน” มุมล่างซ้ายระหว่างเรียนได้เลย"}</p>
+      {vark.pref && <p>{`สไตล์หลัก: ${VARK_INFO[vark.pref].icon} ${VARK_INFO[vark.pref].name}${vark.how === "quiz" ? " (จากแบบทดสอบ)" : " (เลือกเอง)"} — ${VARK_INFO[vark.pref].tip}`}</p>}
       <div className="gm-vark">{VARK_ORDER.map(k => {
         const n = vark.use[k] ?? 0, pct = total ? Math.round(n / total * 100) : 0;
         return <div key={k} className={`gm-vark-row ${vark.pref === k ? "pref" : ""}`}>

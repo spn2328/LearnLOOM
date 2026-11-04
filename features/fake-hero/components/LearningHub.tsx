@@ -153,7 +153,7 @@ export default function LearningHub({mode, go, onStart, nickname = "", settings}
       </div>
       <GameHud r={r}/>
       <GameProgress r={r}/>
-      {active && <article className="fh-card"><h2>ส่งผลการเรียนให้ครู</h2><SendResult className="secondary"/></article>}
+      {active && <article className="fh-card"><h2>ส่งผลการเรียนให้ครู</h2><SendResult className="secondary" hint={false}/></article>}
     </>}
 
     {mode === "notebook" && <Notebook r={r}/>}
