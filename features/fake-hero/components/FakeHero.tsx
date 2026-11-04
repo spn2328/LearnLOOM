@@ -1,6 +1,7 @@
 "use client";
 import React,{useEffect,useState} from "react";
 import "../styles/fake-hero.css";
+import {ConfirmButton} from "./ConfirmButton";
 import EpisodeContinuation from "./EpisodeContinuation";
 import AdaptiveUnit,{type UnitRecord,unitRoute} from "./AdaptiveUnit";
 import {adaptiveUnits} from "../content/adaptiveUnits";
@@ -57,7 +58,7 @@ export default function FakeHero(){
  if(!loaded)return <main className="fh-shell">กำลังเปิดแฟ้มคดี…</main>;
  if(p.page==="continued")return <main className="fh-shell"><header className="fh-header"><div><span className="fh-eyebrow">LearnLOOM · THE FAKE HERO</span><h1>EP.01 — คนในคลิป</h1></div></header><EpisodeContinuation onRestart={()=>{restart();try{localStorage.removeItem("learnloom-fake-hero-ep01-extension-v1")}catch{}}}/><PauseControl/></main>;
  return <main className="fh-shell"><header className="fh-header"><div><span className="fh-eyebrow">LearnLOOM · THE FAKE HERO</span><h1>EP.01 — คนในคลิป</h1></div><span className="fh-tag">บทเรียนเคมีอินทรีย์ ม.6 · สถานการณ์สมมติ</span></header>
- <nav className="fh-nav"><span>แฟ้มหลักฐาน · {p.page==="summary"?"สรุป":p.page==="intro"?"เริ่มต้น":"กำลังสืบค้น"}</span><button onClick={()=>{if(window.confirm("เริ่มคดีใหม่และลบความคืบหน้าของคดีนี้?"))restart()}}>เริ่มใหม่</button></nav>
+ <nav className="fh-nav"><span>แฟ้มหลักฐาน · {p.page==="summary"?"สรุป":p.page==="intro"?"เริ่มต้น":"กำลังสืบค้น"}</span><ConfirmButton label="เริ่มใหม่" question="เริ่มคดีใหม่และลบความคืบหน้าของคดีนี้?" onConfirm={restart}/></nav>
  <article className="fh-panel fh-page-in" key={p.page}>
  {p.page==="intro"&&<><span className="fh-eyebrow">SCENE 01</span><h2>คลิปที่ทุกคนเชื่อ</h2><StoryPlayer label="Scene 01" script={[{media:"ep01-s01"},"สถานที่: ชุมชนริมแม่น้ำปราจีนบุรี","หน้าจอเริ่มด้วยเสียงแจ้งเตือนโทรศัพท์ดังต่อเนื่อง","SFX: ติ๊ง! ติ๊ง! ติ๊ง!","บนหน้าจอมีคลิปหนึ่งที่กำลังถูกแชร์อย่างรวดเร็ว",{media:"ep01-s01b"},{quote:"“เจอตัวแล้ว! คนปล่อยน้ำมันลงแม่น้ำ!”"},"ภาพในคลิปแสดงเจฟกำลังยกถังแล้วเทของเหลวลงท่อระบายน้ำ จากนั้นภาพตัดไปยังคราบแวววาวบนแม่น้ำ","ลูม: “เดี๋ยวนะ คลิปนี้มีอะไรบางอย่างที่เรายังไม่รู้”","ผู้เล่น: “หมายถึงอะไร?”",{media:"ep01-s01c"},"ลูม: “เราเห็นเจฟเทของลงท่อ แต่เห็นไหมว่าในถังเป็นอะไร?”"]} end={<button className="fh-primary" onClick={()=>go("inspect")}>ตรวจหลักฐานจากคลิป</button>}/></>}
  {p.page==="inspect"&&<><span className="fh-eyebrow">ACTION A01</span><h2>ตรวจหลักฐานจากคลิป</h2><p>แตะสำรวจหลักฐาน 3 จุด ได้แก่ ถังที่เจฟถือ ท่อระบายน้ำ และภาพคราบบนแม่น้ำ</p><div className="fh-media-row"><MediaSlot id="ep01-a01"/></div><div className="fh-clues">{[["tank","ถังที่เจฟถือ"],["drain","ท่อระบายน้ำ"],["river","ภาพคราบบนแม่น้ำ"]].map(([id,label])=><button key={id} className={p.seen.includes(id)?"done":""} onClick={()=>update({seen:[...new Set([...p.seen,id])]})}>{p.seen.includes(id)?"✓ ":"○ "}{label}</button>)}</div><p className="fh-hint">สิ่งที่เห็นในคลิปยังไม่ใช่ผลตรวจชนิดของสารหรือแหล่งกำเนิดคราบ</p><button className="fh-primary" disabled={p.seen.length<3} onClick={()=>go("s01")}>ตรวจครบแล้ว · ตอบคำถาม</button></>}

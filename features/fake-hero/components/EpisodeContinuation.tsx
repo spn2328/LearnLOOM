@@ -3,6 +3,7 @@ import React,{useEffect,useState} from "react";
 import {lessons,checkpoint,checkpointReasons,type Question,type Choice,type Lesson} from "../content/episode01";
 import {recheckB,paths} from "../content/adaptive04";
 import MediaSlot from "./MediaSlot";
+import {ConfirmButton} from "./ConfirmButton";
 import {clearDrafts} from "../pause";
 import StoryPlayer from "./StoryPlayer";
 import SendResult from "./SendResult";
@@ -49,7 +50,7 @@ export default function EpisodeContinuation({onRestart}:{onRestart:()=>void}){
  const cpScore=cpCount+reasonCount;
  const button=(label:string,onClick:()=>void,disabled=false)=><button className="fh-primary" disabled={disabled} onClick={onClick}>{label}</button>;
  if(!ready)return <div className="fh-panel">กำลังคืนค่าความคืบหน้า…</div>;
- return <><nav className="fh-nav"><span>EP.01 · {s.unit<5?s.unit+1:5}/5 แนวคิด · {s.step}</span><button onClick={()=>{if(window.confirm("เริ่มช่วง C02–C05 ใหม่?")){setS(fresh);clearDrafts();try{localStorage.removeItem(KEY)}catch{}}}}>เริ่มช่วงนี้ใหม่</button></nav><article className="fh-panel fh-page-in" key={`${s.step}-${s.unit}`}>
+ return <><nav className="fh-nav"><span>EP.01 · {s.unit<5?s.unit+1:5}/5 แนวคิด · {s.step}</span><ConfirmButton label="เริ่มช่วงนี้ใหม่" question="เริ่มช่วง C02–C05 ใหม่?" onConfirm={()=>{setS(fresh);clearDrafts();try{localStorage.removeItem(KEY)}catch{}}}/></nav><article className="fh-panel fh-page-in" key={`${s.step}-${s.unit}`}>
  {s.step==="story"&&<><span className="fh-eyebrow">{u.scene} · {id}</span><h2>{u.title}</h2><StoryPlayer key={id} label={u.scene} script={[{media:`ep01-${id.toLowerCase()}-story` as MediaSlotId},...u.story]} end={button("เข้าสู่บทเรียนเคมี",()=>change({step:"learn"}))}/></>}
  {s.step==="learn"&&<><span className="fh-eyebrow">LEARN L0{s.unit+1} · {id}</span><MediaSlot id={`ep01-${id.toLowerCase()}-learn` as MediaSlotId}/><LearnUnit unit={s.unit}/>{button("ทำกิจกรรม",()=>change({step:"activity"}))}</>}
  {s.step==="activity"&&<><QuestionCard q={u.activity} value={s.activity} onChoose={activity=>change({activity})}/>{s.activity&&s.activity!==u.activity.answer&&<p className="fh-hint">ตรวจแนวคิดจากบทเรียนอีกครั้ง แล้วลองเลือกใหม่</p>}{button("ไปคำถามหลัก",()=>change({step:"main",selected:undefined}),s.activity!==u.activity.answer)}</>}
