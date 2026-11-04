@@ -25,7 +25,7 @@ const nextTitle=["C02 — พันธะของคาร์บอน","C03 �
 const KEY="learnloom-fake-hero-ep01-extension-v1";
 const fresh:Save={unit:1,step:"story",records:{},cp:{},cpReasons:{}};
 // Owner-supplied pictures shown in place of a formula at the start of a prompt (prompt data stays unchanged).
-const promptFigures:Record<string,{formula:string;img:string}>={A05:{formula:"CH₃–CH(CH₃)–CH₃",img:"/images/molecules/isobutane-condensed.webp"}};
+const promptFigures:Record<string,{formula:string;img:string}>={A05:{formula:"CH₃–CH(CH₃)–CH₃",img:"/images/molecules/isobutane-condensed.webp"},CP03:{formula:"CH₃–CH₂–CH(CH₃)–CH₃",img:"/images/molecules/cp03-2-methylbutane.webp"}};
 function QuestionCard({q,value,onChoose}:{q:Question;value?:Choice;onChoose:(a:Choice)=>void}){const f=promptFigures[q.id],fig=f&&q.prompt.startsWith(f.formula)?f:undefined;return <div className="fh-question"><span className="fh-eyebrow">{q.id}</span>{fig&&<img className="fh-prompt-fig" src={fig.img} alt={fig.formula}/>}<h2>{fig?q.prompt.slice(fig.formula.length).trim():q.prompt}</h2><div className="fh-options">{q.choices.map((v,i)=><button key={i} className={"fh-choice "+(value===letters[i]?"active":"")} onClick={()=>onChoose(letters[i])}><strong>{letters[i]}.</strong> {v}</button>)}</div></div>}
 export default function EpisodeContinuation({onRestart}:{onRestart:()=>void}){
  const [s,setS]=useState<Save>(fresh);const [ready,setReady]=useState(false);
