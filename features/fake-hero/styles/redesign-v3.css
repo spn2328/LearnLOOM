@@ -299,3 +299,4 @@
 @media (max-width: 640px) { .fh-shell .fh-header h1, .fh-hub-episodes .fh-series-head h1 { font-size: 30px !important } .fh-intro h1 { font-size: 30px !important } .fh-shell .fh-panel { padding: 18px !important } .fh-shell .fh-panel h2 { font-size: 24px !important } }
 .fh-mol-img { width: auto !important; max-width: 100%; height: auto; object-fit: contain; border-radius: 12px; background: #FFFFFF }
 .fh-question .fh-prompt-fig { display: block; width: 100%; max-width: 420px; height: auto; margin: 14px 0 0; background: #FFFFFF; border: 2px solid var(--v3-line); border-radius: 16px; padding: 6px 10px }
+.fh-q03-mol { background: #FFFFFF !important; border-color: var(--v3-line) !important } .fh-q03-mol img { filter: none !important }

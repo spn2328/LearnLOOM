@@ -20,7 +20,7 @@ type RecordItem={first?:{main:string;reason:Choice};assisted?:boolean;hint?:bool
 type Save={unit:number;step:Step;selected?:Choice;main?:string;activity?:Choice;records:Record<string,RecordItem>;cp:Record<string,Choice>;cpReasons:Record<string,Choice>;transfer?:string;s02?:Choice;q03?:Record<string,string|undefined>};
 const cid=(x:Lesson)=>x.main.id.replace('Q','C');
 const chips=[{id:"straight",label:"โซ่ตรง"},{id:"branch",label:"โซ่กิ่ง"},{id:"ring",label:"วง"}];
-const q03Targets=[{id:"A",name:"สาร A",img:"/images/molecules/molecule_A.png",formula:"H₃C–CH₂–CH₂–CH₃"},{id:"B",name:"สาร B",img:"/images/molecules/molecule_B.png",formula:"CH₃–CH(CH₃)–CH₃"},{id:"C",name:"สาร C",img:"/images/molecules/molecule_C.png",formula:"ไซโคลเฮกเซน"}];
+const q03Targets=[{id:"A",name:"สาร A",img:"/images/molecules/q03-a-skeletal.webp",formula:"H₃C–CH₂–CH₂–CH₃"},{id:"B",name:"สาร B",img:"/images/molecules/q03-b-skeletal.webp",formula:"CH₃–CH(CH₃)–CH₃"},{id:"C",name:"สาร C",img:"/images/molecules/q03-c-skeletal.webp",formula:"ไซโคลเฮกเซน"}];
 const nextTitle=["C02 — พันธะของคาร์บอน","C03 — รูปแบบโครงสร้าง","C04 — ตรวจพันธะให้ครบ","C05 — รหัสสุดท้ายของโมเลกุล","แฟ้มคดีท้ายตอน + Episode Checkpoint"];
 const KEY="learnloom-fake-hero-ep01-extension-v1";
 const fresh:Save={unit:1,step:"story",records:{},cp:{},cpReasons:{}};
