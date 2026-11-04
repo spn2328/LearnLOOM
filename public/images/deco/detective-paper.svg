@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+<defs>
+<linearGradient id="paper" x2=".8" y2="1"><stop stop-color="#fff9ee"/><stop offset=".52" stop-color="#fff1db"/><stop offset="1" stop-color="#fbe6ce"/></linearGradient>
+<radialGradient id="light"><stop stop-color="#ffdb94" stop-opacity=".42"/><stop offset="1" stop-color="#ffdb94" stop-opacity="0"/></radialGradient>
+<pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" stroke="#a98263" stroke-opacity=".055"/></pattern>
+<filter id="soft"><feGaussianBlur stdDeviation="8"/></filter>
+</defs>
+<path fill="url(#paper)" d="M0 0H1600V1000H0z"/><path fill="url(#grid)" d="M0 0H1600V1000H0z"/>
+<ellipse cx="110" cy="100" rx="500" ry="340" fill="url(#light)"/>
+<!-- Left-side torn paper / file -->
+<path d="M0 0h240l-26 18 34 19-22 18 14 19-32 30 14 26-20 22L0 188Z" fill="#c68b67" opacity=".16"/>
+<path d="M0 1000V828l33 23 20-17 25 26 22-8 30 25 16-11 39 48 35-10 35 42 22-10 32 64Z" fill="#e7b58b" opacity=".33"/>
+<!-- Top-right detective board -->
+<path d="M1225 0H1600V244l-25-9-25 18-31-29-20 9-20-35-35 8-24-31-28 3-28-41-34 6-24-38-35-5Z" fill="#9e6347" opacity=".17"/>
+<path d="M1330 -10 Q1460 130 1630 32" stroke="#a85844" stroke-width="5" fill="none" opacity=".44"/>
+<path d="M1250 0Q1390 110 1580 135" stroke="#a85844" stroke-width="3" fill="none" opacity=".3"/>
+<circle cx="1365" cy="19" r="10" fill="#b75c4c" opacity=".58"/><circle cx="1555" cy="133" r="11" fill="#b75c4c" opacity=".58"/>
+<g transform="translate(1410 54) rotate(8)" opacity=".4"><rect width="108" height="116" rx="4" fill="#faf1e1" stroke="#b28b72" stroke-width="3"/><path d="M25 49L55 22l28 31-29 35-29-39Zm30-27v66M25 49l58 4" fill="none" stroke="#7285c1" stroke-width="3"/><circle cx="54" cy="8" r="7" fill="#aa5d4d"/></g>
+<!-- Detective magnifier, at perimeter -->
+<g transform="translate(1504 340) rotate(-23)" opacity=".12" stroke="#604c45" fill="none" stroke-width="14"><circle r="58"/><path d="M40 43l78 80" stroke-linecap="round"/></g>
+<!-- subtle footprints, used as watermark rather than content -->
+<g fill="#9b785f" opacity=".105" transform="translate(1210 690) rotate(24)"><ellipse cx="0" cy="0" rx="12" ry="25"/><ellipse cx="30" cy="29" rx="11" ry="23"/><ellipse cx="75" cy="4" rx="11" ry="24"/><ellipse cx="103" cy="35" rx="11" ry="23"/><ellipse cx="147" cy="9" rx="11" ry="24"/></g>
+<!-- footer corner file folder and book -->
+<g transform="translate(0 855)" opacity=".24"><rect x="-54" y="48" width="183" height="80" rx="8" fill="#6e5a52"/><path d="M-10 49v-25h93l21 25" fill="#b37e5b"/><path d="M-12 65h125v12H-12M-12 95h125v12H-12" stroke="#e9c49a" stroke-width="5"/></g>
+<g transform="translate(1440 864)" opacity=".27"><path d="M-20 35h105l16 18v100H-20z" fill="#dfb67f" stroke="#986849" stroke-width="4"/><path d="M-20 35v-16h47l15 16" fill="#ce9864"/><rect x="-2" y="67" width="74" height="36" rx="4" fill="#f9efd9" stroke="#a06e50" stroke-width="2"/><path d="M17 84h38" stroke="#ad614d" stroke-width="5"/></g>
+<!-- low-contrast chemistry nod to Fake Hero EP01 -->
+<g transform="translate(130 150)" stroke="#62818b" stroke-width="3" fill="none" opacity=".075"><path d="M0 32L28 8l28 24v35L28 88 0 67Z"/><path d="M56 32l27-24 27 24v35L83 88 56 67Z"/><circle cx="28" cy="8" r="6"/><circle cx="83" cy="88" r="6"/></g>
+</svg>
