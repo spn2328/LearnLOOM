@@ -24,7 +24,9 @@ const q03Targets=[{id:"A",name:"สาร A",img:"/images/molecules/molecule_A.p
 const nextTitle=["C02 — พันธะของคาร์บอน","C03 — รูปแบบโครงสร้าง","C04 — ตรวจพันธะให้ครบ","C05 — รหัสสุดท้ายของโมเลกุล","แฟ้มคดีท้ายตอน + Episode Checkpoint"];
 const KEY="learnloom-fake-hero-ep01-extension-v1";
 const fresh:Save={unit:1,step:"story",records:{},cp:{},cpReasons:{}};
-function QuestionCard({q,value,onChoose}:{q:Question;value?:Choice;onChoose:(a:Choice)=>void}){return <div className="fh-question"><span className="fh-eyebrow">{q.id}</span><h2>{q.prompt}</h2><div className="fh-options">{q.choices.map((v,i)=><button key={i} className={"fh-choice "+(value===letters[i]?"active":"")} onClick={()=>onChoose(letters[i])}><strong>{letters[i]}.</strong> {v}</button>)}</div></div>}
+// Owner-supplied pictures shown in place of a formula at the start of a prompt (prompt data stays unchanged).
+const promptFigures:Record<string,{formula:string;img:string}>={A05:{formula:"CH₃–CH(CH₃)–CH₃",img:"/images/molecules/isobutane-condensed.webp"}};
+function QuestionCard({q,value,onChoose}:{q:Question;value?:Choice;onChoose:(a:Choice)=>void}){const f=promptFigures[q.id],fig=f&&q.prompt.startsWith(f.formula)?f:undefined;return <div className="fh-question"><span className="fh-eyebrow">{q.id}</span>{fig&&<img className="fh-prompt-fig" src={fig.img} alt={fig.formula}/>}<h2>{fig?q.prompt.slice(fig.formula.length).trim():q.prompt}</h2><div className="fh-options">{q.choices.map((v,i)=><button key={i} className={"fh-choice "+(value===letters[i]?"active":"")} onClick={()=>onChoose(letters[i])}><strong>{letters[i]}.</strong> {v}</button>)}</div></div>}
 export default function EpisodeContinuation({onRestart}:{onRestart:()=>void}){
  const [s,setS]=useState<Save>(fresh);const [ready,setReady]=useState(false);
  useEffect(()=>{try{const v=localStorage.getItem(KEY);if(v){const x=JSON.parse(v);if(x&&x.unit>=1&&x.unit<=5&&typeof x.step==="string")setS({...fresh,...x});}}catch{}setReady(true)},[]);
