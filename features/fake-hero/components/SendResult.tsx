@@ -5,7 +5,7 @@ import {download} from "../../../lib/export";
 import {buildResult,resultFileName} from "../results";
 
 // Saves this browser's EP.01 progress as a file the student hands to the teacher.
-export default function SendResult({className="primary",hint=true}:{className?:string;hint?:boolean}){
+export default function SendResult({className="primary",hint=false}:{className?:string;hint?:boolean}){
   const [sent,setSent]=useState("");
   function send(){const r=buildResult();download(resultFileName(r),JSON.stringify(r,null,2));setSent(resultFileName(r));}
   return <div className="fh-send-result"><button className={className} onClick={send}><Send size={18}/> ส่งผลให้ครู</button>
