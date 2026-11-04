@@ -19,7 +19,7 @@ assert.deepEqual(checkpointReasons.map(q=>q.answer),['B','A','D','A','B']);
 for(const reason of checkpointReasons){assert.equal(reason.choices.length,4);assert.ok(reason.choices['ABCD'.indexOf(reason.answer)]);}
 // Q04 adaptive flow: owner-confirmed prompts, valid keys, and the cause → path mapping.
 const {diagnosis,choosePath,midCheck,recheckB}=await import('../features/fake-hero/content/adaptive04.ts');
-assert.equal(lessons[3].main.prompt,'CH₃–C(?)=CH₂ คาร์บอนตรงกลางต้องมีไฮโดรเจนกี่อะตอม จึงจะมีผลรวมอันดับพันธะเท่ากับ?');
+assert.equal(lessons[3].main.prompt,'CH₃–C(?)=CH₂ คาร์บอนตรงกลางต้องมีไฮโดรเจนกี่อะตอม จึงจะมีผลรวมอันดับพันธะเท่ากับ 4?');
 assert.deepEqual(diagnosis.map(d=>d.id),['D01','D02','D03','D04']);
 for(const q of [...diagnosis,...Object.values(midCheck),recheckB])assert.ok(q.choices['ABCD'.indexOf(q.answer)],q.id+' valid answer');
 const right=Object.fromEntries(diagnosis.map(d=>[d.id,d.answer]));
