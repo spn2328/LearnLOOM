@@ -232,14 +232,12 @@ function TeacherSignIn({embedded = false}: {embedded?: boolean}) {
 
 function Signed({profile, close}: {profile: CloudProfile; close: () => void}) {
   const sync = useSyncExternalStore(syncStore.subscribe, syncStore.get, syncStore.get);
-  const [busy, setBusy] = useState(false), [error, setError] = useState("");
-  const logout = async () => {
-    setBusy(true); setError("");
+  const [busy, setBusy] = useState(false), [error, setError] = useState(""), [unsynced, setUnsynced] = useState(false);
+  // In-page confirm instead of window.confirm, which some in-app browsers block.
+  const logout = async (force = false) => {
+    setBusy(true); setError(""); setUnsynced(false);
     try {
-      if (!await signOutDevice()) {
-        if (!window.confirm("ยังซิงก์ไม่ครบ (ออฟไลน์หรือเชื่อมต่อไม่ได้) ถ้าออกตอนนี้ คำตอบที่ยังไม่ซิงก์ในเครื่องนี้จะหาย ออกจากระบบเลยไหม?")) { setBusy(false); return; }
-        await signOutDevice(true);
-      }
+      if (!await signOutDevice(force)) { setUnsynced(true); setBusy(false); return; }
       location.reload();
     } catch (e) { setError(thaiError(e)); setBusy(false); }
   };
@@ -251,8 +249,15 @@ function Signed({profile, close}: {profile: CloudProfile; close: () => void}) {
     {sync.status === "error" && <p className="ll-cloud-error">ซิงก์ไม่สำเร็จ จะลองใหม่อัตโนมัติ ({sync.error})</p>}
     <div className="ll-cloud-row">
       <button type="button" onClick={() => void flush()} disabled={sync.status === "syncing"}>ซิงก์ตอนนี้</button>
-      <button type="button" onClick={logout} disabled={busy}>{busy ? "กำลังออก…" : "ออกจากระบบ"}</button>
+      <button type="button" onClick={() => void logout()} disabled={busy}>{busy ? "กำลังออก…" : "ออกจากระบบ"}</button>
     </div>
+    {unsynced && <div role="alertdialog" aria-label="ยืนยันออกจากระบบ">
+      <p className="ll-cloud-error">ยังซิงก์ไม่ครบ (ออฟไลน์หรือเชื่อมต่อไม่ได้) ถ้าออกตอนนี้ คำตอบที่ยังไม่ซิงก์ในเครื่องนี้จะหาย ออกจากระบบเลยไหม?</p>
+      <div className="ll-cloud-row">
+        <button type="button" onClick={() => void logout(true)} disabled={busy}>ออกจากระบบเลย</button>
+        <button type="button" className="ll-cloud-primary" onClick={() => setUnsynced(false)}>ยกเลิก</button>
+      </div>
+    </div>}
     {profile.role === "teacher" ? <TeacherDashboard profile={profile}/> : <StudentHome profile={profile} close={close}/>}
     {error && <p className="ll-cloud-error" role="alert">{error}</p>}
   </>;
