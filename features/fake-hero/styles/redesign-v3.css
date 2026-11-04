@@ -207,3 +207,93 @@
 .fh-hub-certificates .fh-cert-grid > .fh-card { background: var(--v3-paper) !important; border: 2px solid var(--v3-yellow-edge) !important; box-shadow: 0 5px 0 var(--v3-yellow-edge) !important; border-radius: 24px !important; padding: 24px !important }
 .fh-hub-certificates .fh-cert-grid > .fh-card h2 { font-size: 24px !important; font-weight: 400 }
 .fh-hub-certificates .fh-checks li { font-size: 17px }
+
+/* ==== Phase 3: Episodes, EP intro, Focus Mode story + questions (boards Episodes/Intro/Scene/Lesson/Question/Recheck) ==== */
+/* Shared 3D pill buttons */
+.fh-shell .fh-primary, .fh-intro .fh-row > :first-child { font-size: 18px !important; color: var(--v3-navy) !important; background: linear-gradient(180deg, #E8977A 0%, var(--v3-apple) 60%) !important; border: 2px solid var(--v3-apple-dk) !important; box-shadow: 0 5px 0 var(--v3-apple-dk), 0 8px 14px rgba(26,34,56,.16), inset 0 2px 0 rgba(255,255,255,.45) !important; border-radius: 999px !important; padding: 10px 28px !important; min-height: 50px }
+.fh-shell :is(.fh-primary, .fh-choice, .fh-help, .fh-sp-bar button):active:not(:disabled) { transform: translateY(3px) }
+.fh-shell button:disabled, .fh-shell .fh-primary:disabled { background: #EEF0F3 !important; color: var(--v3-muted) !important; border: 2px dashed #9AA3B5 !important; box-shadow: none !important; cursor: not-allowed }
+.ll-focus-toolbar .secondary, .fh-shell .fh-sp-bar button, .fh-shell .fh-pause, .fh-intro .fh-row > :not(:first-child) { font-size: 16px !important; color: var(--v3-navy) !important; background: linear-gradient(180deg, #FFFFFF 0%, var(--v3-blue-lt) 70%) !important; border: 2px solid var(--v3-blue) !important; box-shadow: 0 5px 0 var(--v3-blue-dk), 0 8px 14px rgba(26,34,56,.16), inset 0 2px 0 rgba(255,255,255,.45) !important; border-radius: 999px !important; padding: 8px 20px !important; min-height: 46px }
+
+/* Focus toolbar + header */
+.ll-focus-toolbar { background: var(--v3-apple-dk) !important; border-bottom: 2px dashed #C9B28C !important; color: #FFFFFF !important; box-shadow: none !important }
+.ll-focus-toolbar > span { color: #FFFFFF !important }
+.ll-focus-toolbar .secondary:first-child { background: var(--v3-paper) !important; border-color: var(--v3-navy) !important; box-shadow: none !important }
+.ll-focus-toolbar .secondary:last-child { background: var(--v3-apple-lt) !important; color: var(--v3-apple-dk) !important; border-color: var(--v3-apple-edge) !important; box-shadow: none !important }
+.fh-shell .fh-header .fh-eyebrow { font-size: 14px !important; letter-spacing: .03em; color: var(--v3-blue-dk) !important; background: none !important; border: 0 !important; padding: 0 !important }
+.fh-shell .fh-header h1 { font-size: 44px !important; font-weight: 400; color: var(--v3-navy) !important }
+.fh-shell .fh-tag { background: var(--v3-blue-lt) !important; color: var(--v3-blue-dk) !important; border: 2px solid var(--v3-blue-edge) !important; border-radius: 999px !important; padding: 4px 14px !important; font-size: 14px; box-shadow: none !important }
+.fh-shell .fh-nav { background: none !important; border: 0 !important; box-shadow: none !important; padding: 0 !important; gap: 10px }
+.fh-shell .fh-nav > span { background: var(--v3-green-lt) !important; color: var(--v3-green-dk) !important; border: 2px solid var(--v3-green) !important; border-radius: 999px !important; padding: 3px 12px !important; font-size: 14px }
+.fh-shell .fh-nav > button { background: var(--v3-paper) !important; color: var(--v3-apple-dk) !important; border: 2px solid var(--v3-apple) !important; border-radius: 999px !important; padding: 8px 16px !important; min-height: 44px; font-size: 14px; box-shadow: none !important }
+.fh-shell .fh-nav > button::before { content: "↺ " }
+.fh-shell .fh-footer { border-top: 2px solid var(--v3-line) !important; color: var(--v3-muted) !important; font-size: 13px; background: none !important; text-align: center; justify-content: center }
+
+/* Main panel + cards */
+.fh-shell .fh-panel { background: var(--v3-paper) !important; border: 2px solid var(--v3-line) !important; box-shadow: 0 5px 0 var(--v3-line), 0 10px 22px rgba(92,64,28,.10) !important; border-radius: 24px !important; padding: 24px !important; color: var(--v3-navy) }
+.fh-shell .fh-panel h2 { font-size: 28px !important; font-weight: 400; line-height: 1.5; color: var(--v3-navy) !important }
+.fh-shell .fh-panel h3 { font-weight: 400; color: var(--v3-navy) !important }
+.fh-shell .fh-panel > .fh-eyebrow, .fh-shell :is(.fh-question, .fh-qstage, .fh-adaptive, .fh-learn) > .fh-eyebrow, .fh-shell .fh-qtag { align-self: flex-start; display: inline-block; background: var(--v3-yellow) !important; color: var(--v3-navy) !important; border: 2px solid var(--v3-navy) !important; border-radius: 10px !important; padding: 2px 12px !important; font-size: 15px !important; letter-spacing: .03em; box-shadow: none !important }
+.fh-shell :is(.fh-qbox, .fh-card, .fh-columns > section, .fh-scard, .fh-excard, .fh-act-card, .fh-summary) { background: var(--v3-paper) !important; border: 2px solid var(--v3-line) !important; box-shadow: 0 5px 0 var(--v3-line) !important; border-radius: 20px !important }
+.fh-shell .fh-qbox.dim { opacity: .6 }
+.fh-shell .fh-columns > section:first-child { border-color: var(--v3-green) !important; box-shadow: 0 5px 0 var(--v3-green) !important; background: var(--v3-green-lt) !important }
+.fh-shell .fh-columns > section:last-child { border-color: var(--v3-apple-edge) !important; box-shadow: 0 5px 0 var(--v3-apple-edge) !important; background: var(--v3-apple-lt) !important }
+.fh-shell .fh-story-media img, .fh-shell .fh-qfigure { border-radius: 18px !important; border: 2px solid var(--v3-navy) !important }
+.fh-shell .fh-formula-chip, .fh-shell .fh-formula { background: var(--v3-yellow) !important; color: var(--v3-navy) !important; border: 2px solid var(--v3-navy) !important; border-radius: 12px !important; box-shadow: none !important }
+.fh-shell .fh-hint, .fh-shell .fh-note { background: var(--v3-yellow-lt) !important; color: var(--v3-yellow-dk) !important; border: 2px solid var(--v3-yellow-edge) !important; border-radius: 14px !important; padding: 10px 14px !important; box-shadow: none !important }
+.fh-shell .fh-good { background: var(--v3-green-lt) !important; color: var(--v3-green-dk) !important; border: 2px solid var(--v3-green) !important; border-radius: 14px !important; box-shadow: none !important }
+
+/* Answer choices (board Question): idle, selected */
+.fh-shell .fh-choice { font-size: 17px !important; color: var(--v3-navy) !important; background: #FFFFFF !important; border: 2px solid #9C8460 !important; box-shadow: 0 3px 0 var(--v3-line) !important; border-radius: 18px !important; padding: 12px 14px !important; min-height: 58px; display: flex !important; align-items: center; gap: 12px; text-align: left; line-height: 1.5 }
+.fh-shell .fh-choice > strong { flex: none; width: 34px; height: 34px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; background: #F3ECDD; color: var(--v3-navy); border: 2px solid #9C8460; font-weight: 400 }
+.fh-shell .fh-choice:hover:not(:disabled):not(.active) { background: #FFFDF9 !important; border-color: var(--v3-blue) !important }
+.fh-shell .fh-choice.active { background: var(--v3-blue-lt) !important; border-color: var(--v3-blue-dk) !important; box-shadow: 0 3px 0 #C9D1EC !important }
+.fh-shell .fh-choice.active > strong { background: #C9D1EC; border-color: var(--v3-navy) }
+
+/* Loom help + speech */
+.fh-shell .fh-help { font-size: 16px !important; color: #8A2E58 !important; background: linear-gradient(180deg, #FFF1F6 0%, #FDE3EE 70%) !important; border: 2px solid #E9A6C4 !important; box-shadow: 0 4px 0 #D07FA4, 0 8px 12px rgba(26,34,56,.1), inset 0 2px 0 rgba(255,255,255,.8) !important; border-radius: 999px !important; min-height: 48px }
+.fh-shell .fh-bubble { background: var(--v3-apple-lt) !important; color: var(--v3-navy) !important; border: 2px solid var(--v3-apple-edge) !important; border-radius: 18px !important; box-shadow: none !important }
+.fh-shell .fh-bubble::before, .fh-shell .fh-bubble::after { border-color: transparent !important }
+.fh-shell .fh-loom img { border-radius: 18px; border: 2px solid #FFFFFF }
+
+/* Adaptive help flow */
+.fh-shell .fh-flow span { background: var(--v3-paper) !important; color: var(--v3-muted) !important; border: 2px solid var(--v3-line) !important; border-radius: 999px !important; padding: 4px 12px !important; font-size: 14px; box-shadow: none !important }
+.fh-shell .fh-flow span.on { background: var(--v3-blue-dk) !important; color: #FFFFFF !important; border-color: var(--v3-blue-dk) !important }
+
+/* Story player (board Scene) */
+.fh-shell .fh-sp-stage { background: var(--v3-navy) !important; border: 2px solid var(--v3-navy) !important; border-radius: 24px !important; box-shadow: 0 6px 0 var(--v3-line) !important; overflow: hidden }
+.fh-shell .fh-sp-caption { background: var(--v3-paper) !important; color: var(--v3-navy) !important; border: 2px solid var(--v3-navy) !important; border-radius: 18px !important; box-shadow: none !important }
+.fh-shell .fh-sp-caption .fh-sp-line { font-size: 20px; line-height: 1.6 }
+.fh-shell .fh-sp-who { color: var(--v3-apple-dk) !important; font-weight: 400 }
+.fh-shell .fh-sp-avatar { border: 2px solid var(--v3-apple-edge) !important; border-radius: 999px }
+.fh-shell .fh-sp-more { color: var(--v3-blue-dk) !important }
+.fh-shell .fh-sp-dots span { width: 10px; height: 10px; border-radius: 999px; background: var(--v3-paper) !important; border: 1.5px solid #9C8460 !important }
+.fh-shell .fh-sp-dots span.on { background: var(--v3-green) !important; border-color: var(--v3-green-dk) !important }
+.fh-shell .fh-sp-voicecall { background: var(--v3-apple-lt) !important; color: var(--v3-apple-dk) !important; border: 2px solid var(--v3-apple-edge) !important; border-radius: 16px !important; box-shadow: none !important }
+.fh-shell .fh-sp-script { background: var(--v3-paper) !important; border: 2px solid var(--v3-line) !important; border-radius: 18px !important }
+
+/* Tabs inside lessons (board Lesson) */
+.fh-shell .fh-tabs button, .fh-shell .fh-act-tabs button { font-size: 15px !important; background: var(--v3-paper) !important; color: var(--v3-navy) !important; border: 2px solid #9C8460 !important; border-radius: 999px !important; padding: 8px 20px !important; min-height: 44px; box-shadow: none !important }
+.fh-shell :is(.fh-tabs, .fh-act-tabs) button:is([aria-selected="true"], .active, .on) { background: var(--v3-blue-dk) !important; color: #FFFFFF !important; border-color: var(--v3-blue-dk) !important }
+
+/* Episode list (board Episodes) */
+.fh-hub-episodes .fh-series-head { background: #C9D1EC !important; border: 2px solid var(--v3-navy) !important; box-shadow: 0 6px 0 var(--v3-navy) !important; border-radius: 28px !important; padding: 24px !important }
+.fh-hub-episodes .fh-series-head img { border-radius: 18px !important; border: 3px solid #FFFFFF !important }
+.fh-hub-episodes .fh-series-head .fh-chip { background: var(--v3-paper) !important; color: var(--v3-apple-dk) !important; border: 2px solid var(--v3-navy) !important; border-radius: 999px !important; box-shadow: none !important }
+.fh-hub-episodes .fh-series-head h1 { font-size: 44px !important; font-weight: 400 }
+.fh-hub-episodes .fh-timeline li.open { background: var(--v3-paper) !important; border: 2px solid var(--v3-apple) !important; box-shadow: 0 5px 0 var(--v3-apple) !important; border-radius: 24px !important }
+.fh-hub-episodes .fh-timeline li.open .fh-dot { background: var(--v3-apple) !important; border: 2px solid var(--v3-navy) !important; box-shadow: none !important }
+.fh-hub-episodes .fh-timeline li.open small { display: inline-flex; align-self: flex-start; width: fit-content; background: #FBE3D8; color: var(--v3-apple-dk) !important; border: 2px solid var(--v3-apple); border-radius: 999px; padding: 1px 12px; margin-top: 4px }
+.fh-hub-episodes .fh-timeline li.open .fh-play { background: var(--v3-apple) !important; color: var(--v3-navy) !important; border: 2px solid var(--v3-navy) !important; box-shadow: 0 4px 0 var(--v3-apple-dk) !important }
+.fh-hub-episodes .fh-timeline li.locked { background: #F3ECDD !important; border: 2px dashed #9C8460 !important; box-shadow: none !important; border-radius: 20px !important; color: var(--v3-muted) !important }
+.fh-hub-episodes .fh-timeline li.locked .fh-dot { background: var(--v3-paper) !important; border: 2px solid #9C8460 !important; box-shadow: none !important }
+.fh-hub-episodes .fh-timeline li.locked > svg { width: 48px; height: 48px; padding: 12px; border: 2px solid #9C8460; border-radius: 999px; color: var(--v3-muted) }
+
+/* EP intro (board Intro) */
+.fh-intro { background: var(--v3-paper) !important; border: 2px solid var(--v3-line) !important; box-shadow: 0 5px 0 var(--v3-line), 0 10px 22px rgba(92,64,28,.10) !important; border-radius: 24px !important; overflow: hidden }
+.fh-intro .fh-chip { background: #FBE3D8 !important; color: var(--v3-apple-dk) !important; border: 2px solid var(--v3-apple) !important; border-radius: 999px !important; box-shadow: none !important }
+.fh-intro h1 { font-size: 40px !important; font-weight: 400 }
+.fh-intro .fh-concepts li { background: var(--v3-cream) !important; border: 2px solid var(--v3-line) !important; border-radius: 14px !important; padding: 10px 12px !important; font-size: 16px; box-shadow: none !important }
+.fh-intro .fh-concepts li b { color: var(--v3-blue-dk); font-weight: 400 }
+.fh-intro .fh-bar { height: 12px !important; background: var(--v3-green-lt) !important; border: 1.5px solid var(--v3-green) !important; border-radius: 999px !important; box-shadow: none !important }
+@media (max-width: 640px) { .fh-shell .fh-header h1, .fh-hub-episodes .fh-series-head h1 { font-size: 30px !important } .fh-intro h1 { font-size: 30px !important } .fh-shell .fh-panel { padding: 18px !important } .fh-shell .fh-panel h2 { font-size: 24px !important } }
