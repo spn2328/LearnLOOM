@@ -297,3 +297,4 @@
 .fh-intro .fh-concepts li b { color: var(--v3-blue-dk); font-weight: 400 }
 .fh-intro .fh-bar { height: 12px !important; background: var(--v3-green-lt) !important; border: 1.5px solid var(--v3-green) !important; border-radius: 999px !important; box-shadow: none !important }
 @media (max-width: 640px) { .fh-shell .fh-header h1, .fh-hub-episodes .fh-series-head h1 { font-size: 30px !important } .fh-intro h1 { font-size: 30px !important } .fh-shell .fh-panel { padding: 18px !important } .fh-shell .fh-panel h2 { font-size: 24px !important } }
+.fh-excard-body .fh-mol-img { width: 150px !important; max-width: 100%; height: auto; max-height: 110px; object-fit: contain; border-radius: 12px; background: #FFFFFF }
